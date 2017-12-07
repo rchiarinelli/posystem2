@@ -25,7 +25,7 @@
 				<Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource"
                username="b9d0b7528bac8c" 
                password="71522081" 
-               driverClassName="com.mysql.cj.jdbc.Driver"
+               driverClassName="com.mysql.jdbc.Driver"
                url="jdbc:mysql://us-cdbr-iron-east-05.cleardb.net:3306/heroku_b6f61eb2bee5831" 
                minEvictableIdleTimeMillis="4000"
                timeBetweenEvictionRunsMillis="5000"
@@ -64,7 +64,7 @@
                 -->
 
 		<Realm className="org.apache.catalina.realm.JDBCRealm"
-      	      driverName="com.mysql.cj.jdbc.Driver"
+      	      driverName="com.mysql.jdbc.Driver"
    			  connectionURL="jdbc:mysql://us-cdbr-iron-east-05.cleardb.net:3306/heroku_b6f61eb2bee5831?user=b9d0b7528bac8c&amp;password=71522081"
 		      userTable="t_user" 
 		      userNameCol="user_login" 
