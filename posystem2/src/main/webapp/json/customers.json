@@ -1,0 +1,16 @@
+{ "identifier": "cust_id",
+	"label": "cust_id",
+	"items": [
+		{ "cust_id": "4001", "name": "João da Silva", "custIdent": 931,  "typeName": "Pessoa física",   "type": "pf"},
+		{ "cust_id": "4002", "name": "Maria da Silva", "custIdent": 1894, "typeName": "Pessoa física",   "type": "pf"},
+		{ "cust_id": "4003", "name": "Rian Usinagem", "custIdent": 791,  "typeName": "Pessoa jurídica", "type": "pj"},
+		{ "cust_id": "4004", "name": "Brainy IT Services", "custIdent": 2433, "typeName": "Pessoa jurídica", "type": "pj"},
+		{ "cust_id": "4005", "name": "Rafael Chiarinelli", "custIdent": 3543, "typeName": "Pessoa física",   "type": "pf"},
+		{ "cust_id": "4006", "name": "Maria Angelica", "custIdent": 3285, "typeName": "Pessoa física",   "type": "pf"},
+		{ "cust_id": "4007", "name": "BLAABALBLA", "custIdent": 3285, "typeName": "Pessoa física",   "type": "pf"},
+		{ "cust_id": "4008", "name": "BLBOBOBBLBBOBOBBOBOBLBOBO", "custIdent": 3285, "typeName": "Pessoa física",   "type": "pf"},
+		{ "cust_id": "4009", "name": "AAAAAAAAAA", "custIdent": 3285, "typeName": "Pessoa física",   "type": "pf"},
+		{ "cust_id": "40010", "name": "DADADAADADAADDNONONO", "custIdent": 3285, "typeName": "Pessoa física",   "type": "pf"},
+		{ "cust_id": "40011", "name": "XOXOXOXOXOXXOOX", "custIdent": 3285, "typeName": "Pessoa física",   "type": "pf"},
+		{ "cust_id": "40012", "name": "LOESP ANALAJLAJLSDADKLSJ", "custIdent": 3285, "typeName": "Pessoa física",   "type": "pf"}
+]}

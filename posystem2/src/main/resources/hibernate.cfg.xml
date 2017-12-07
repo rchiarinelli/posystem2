@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<!-- Database connection settings -->
+		<property name="hibernate.connection.datasource">java:/comp/env/jdbc/POSystemDB</property>
+
+		<property name="hibernate.connection.autocommit">false</property>
+		<property name="hibernate.connection.release_mode">after_transaction</property>
+		<property name="hibernate.jdbc.batch_size">10</property>
+
+
+        <!-- SQL dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+
+        <!-- Enable Hibernate's automatic session context management -->
+		<property name="current_session_context_class">thread</property>
+
+
+        <!-- Echo all executed SQL to stdout -->
+		<property name="show_sql">false</property>
+
+
+		<property name="hbm2ddl.auto">update</property>
+
+		<!-- Entities -->		
+		<mapping class="br.com.brainyit.posystem2.domain.Customer" />
+		<mapping class="br.com.brainyit.posystem2.domain.PFCustomer" />
+		<mapping class="br.com.brainyit.posystem2.domain.PJCustomer" />
+		<mapping class="br.com.brainyit.posystem2.domain.CustomerContact" />
+		<mapping class="br.com.brainyit.posystem2.domain.CustomerAddress" />
+		<mapping class="br.com.brainyit.posystem2.domain.Order" />
+		<mapping class="br.com.brainyit.posystem2.domain.ProductionOrder" />
+		<mapping class="br.com.brainyit.posystem2.domain.Billing" />
+		<mapping class="br.com.brainyit.posystem2.domain.Installment" />
+		<mapping class="br.com.brainyit.posystem2.domain.Subscriber" />
+		<mapping class="br.com.brainyit.posystem2.domain.User" />
+		<mapping class="br.com.brainyit.posystem2.domain.Permission" />
+		<mapping class="br.com.brainyit.posystem2.domain.Resource" />
+		 
+	</session-factory>
+</hibernate-configuration>

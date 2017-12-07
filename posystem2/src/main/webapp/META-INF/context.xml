@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/posystem2" docBase="posystem"
+        debug="5" reloadable="true" crossContext="true">
+
+
+
+  <Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource"
+               username="po_system" 
+               password="12345" 
+               driverClassName="com.mysql.jdbc.Driver"
+               url="jdbc:mysql://localhost:3306/posystem_r2" 
+               minEvictableIdleTimeMillis="4000"
+               timeBetweenEvictionRunsMillis="5000"
+               removeAbandoned="true"
+               maxActive="100" 
+               maxIdle="30" 
+               maxWait="15000"
+			   validationQuery="select 1"
+			   testOnBorrow="true"
+			   testOnReturn="true"
+			   testWhileIdle="true"
+			   defaultAutoCommit="false"
+			   numTestsPerEvictionRun="4"
+				/>
+        
+  <!-- DataSource para realm de seguranca 
+
+  <Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource"
+               username="leafar04" 
+               password="rtf4657" 
+               driverClassName="com.mysql.jdbc.Driver"
+               url="jdbc:mysql://mysql.leafar.kinghost.net:3306/leafar04"
+               minEvictableIdleTimeMillis="4000"
+               timeBetweenEvictionRunsMillis="5000"
+               removeAbandoned="true"
+               maxActive="100" 
+               maxIdle="30" 
+               maxWait="15000"
+			   validationQuery="select 1"
+			   testOnBorrow="true"
+			   testOnReturn="true"
+			   testWhileIdle="true"
+			   defaultAutoCommit="false"
+  		       numTestsPerEvictionRun="4"
+               />
+                -->
+
+		<Realm className="org.apache.catalina.realm.JDBCRealm"
+      	      driverName="com.mysql.jdbc.Driver"
+   			  connectionURL="jdbc:mysql://localhost:3306/posystem_r2?user=po_system&amp;password=12345"
+		      userTable="t_user" 
+		      userNameCol="user_login" 
+		      userCredCol="user_password"
+		   	  userRoleTable="t_permission" 
+		   	  roleNameCol="operation_name"/>
+
+</Context>
+

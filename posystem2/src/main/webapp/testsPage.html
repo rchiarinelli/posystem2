@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<script type="text/javascript" src="/posystem/js/dojo/dojo.js" charset="utf-8" djConfig="parseOnLoad:true, locale: 'pt-br',"></script>
+<script src="/posystem/pages/scripts/renderLoginData.jsp"></script>
+<script type="text/javascript" src="/posystem/js/json/json2.js"></script>
+<script type="text/javascript" src="/posystem/pages/scripts/po_scripts.js"></script>
+<script type="text/javascript" src="/posystem/js/jquery-1.2.6.pack.js"></script>
+<script type="text/javascript" src="/posystem/js/jquery.maskedinput-1.2.2.min.js"></script>
+
+<script type="text/javascript">
+	dojo.require("dojox.xml.parser");
+		
+	dojo.addOnLoad(function(){
+	});
+	
+	function callTest(url) {
+		dojo.xhrGet({
+            url: url
+            ,headers: {
+                "Content-Type": "text/plain"
+            }
+            ,handleAs: "json"
+            ,preventCache:true
+            ,load: function(response, ioArgs){
+            	console.info(response);
+            }
+            , error: function(response,ioArgs) {
+            	console.error(response);
+            	console.error('HTTP Response code..: ',response.status);
+            	console.error('HTTP Response text..: ',response.responseText);
+            	console.error('HTTP Response error message..: ',response.message);
+            	var jsonResponse = JSON.parse(response.responseText);
+            	getMessage(jsonResponse.message.key);
+            }
+        });
+
+	}
+	
+	
+	function getMessage(key) {
+		dojo.xhrGet({
+            url: 'services/1/messages/' + key
+            ,headers: {
+                "Content-Type": "text/plain"
+            }
+            ,handleAs: "json"
+            ,preventCache:true
+            ,load: function(response, ioArgs){
+            	console.info(response);
+            }
+            , error: function(response,ioArgs) {
+            	console.info(response.status);
+            }
+        });
+	}
+
+	
+</script>
+<title>USI+</title>
+</head>
+<body>
+Welcome
+<br/>
+<a href="#" onclick="callTest('services/1/customers/pf/a');">Ajax call 400</a><br/>
+<a href="#" onclick="callTest('services/1/customers/pf/2');">Ajax call 404</a><br/>
+<a href="#" onclick="callTest('services/1/customers/pf/1');">Ajax call 200</a><br/>
+<a href="#" onclick="callTest('services/2/customers/pf/1');">Ajax call 403</a>
+
+</body>
+</html>

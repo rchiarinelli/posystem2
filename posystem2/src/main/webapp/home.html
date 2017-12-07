@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<script type="text/javascript" src="/posystem2/js/dojo/dojo.js" charset="utf-8" djConfig="parseOnLoad:true, locale: 'pt-br',"></script>
+<script type="text/javascript" src="/posystem2/js/json/json2.js"></script>
+<script type="text/javascript" src="/posystem2/js/jquery-1.2.6.pack.js"></script>
+<script type="text/javascript" src="/posystem2/js/jquery.maskedinput-1.2.2.min.js"></script>
+
+<script type="text/javascript">
+	dojo.require("dijit.dijit");
+	dojo.require("dijit.layout.ContentPane");
+	dojo.require("dijit.layout.BorderContainer");
+	dojo.require("brainyit.ui.POSystemMainView");
+	dojo.require("brainyit.ui.pieces.TopMenu"); 
+	
+	var mainContent = null;
+	
+	dojo.addOnLoad(function(){
+		var basePath = "/posystem2";
+		dojo.setObject("basePath",basePath);
+		if (this.mainContent==null) {
+			var wrapDiv = dojo.byId('wrap');
+            var standby = new dojox.widget.Standby({
+                target: wrapDiv.id
+            });
+            dojo.place(standby.domNode,wrapDiv);
+            standby.show();
+			
+			this.mainContent = new dijit.layout.BorderContainer();
+			this.mainContent.placeAt('mainContent');
+			this.mainContent.startup();
+
+			var ui = new brainyit.ui.POSystemMainView();
+			this.mainContent.addChild(ui);
+			ui.startup();
+			
+			dojo.setObject("_poSystemMainView",ui);
+			
+			var topMenu = new brainyit.ui.pieces.TopMenu();
+			topMenu.placeAt('topMenu');
+			topMenu.startup();
+			
+			standby.hide();
+		}
+	});
+	
+</script>
+<title>USI+ - Sistema de controle de ordens de servi&ccedil;o</title>
+<link rel="stylesheet" href="/posystem2/css/styles.css" type="text/css" />
+<style type="text/css">
+    @import "/posystem2/js/dijit/themes/tundra/tundra.css";
+	  .dojoxGrid table {
+	    margin: 0;
+	  }
+    @import "/posystem2/js/dojo/resources/dojo.css";
+</style></head>
+<body class="tundra">
+
+<div id="wrap">
+	<div class="header">
+		<div class="title">
+			<h1><a href="/posystem2/index.html">USI+</a></h1>
+			<h2>Sistema gerenciador de Ordens de Servi&ccedil;os</h2>
+		</div>
+		<div id="topMenu">
+		</div>		
+		<div class="clear"></div>
+	</div>
+
+	<div class="pagewrapper">
+		<div class="innerpagewrapper">
+			<div class="page">
+                <div id="mainContent">
+                </div>
+				<div class="footer">
+					<p><a href="#" title="valid XHTML">Brainy IT</a> </p> 
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

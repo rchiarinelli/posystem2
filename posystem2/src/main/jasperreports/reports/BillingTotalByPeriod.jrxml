@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="BillingTotalByPeriod" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fromDate" class="java.lang.String"/>
+	<parameter name="toDate" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     t_billing.id_billing AS t_billing_id_billing,
+     t_billing.billing_final_value AS t_billing_billing_final_value,
+     t_billing.billing_date AS t_billing_billing_date,
+     t_billing.billing_payment_type AS t_billing_billing_payment_type,
+     t_billing.id_order AS t_billing_id_order,
+     t_billing.billing_status AS t_billing_billing_status,
+     t_order.id_order AS t_order_id_order,
+     t_order.close_date AS t_order_close_date,
+     t_order.deliver_date AS t_order_deliver_date,
+     t_order.order_description AS t_order_order_description,
+     t_order.open_date AS t_order_open_date,
+     t_order.order_code AS t_order_order_code,
+     t_order.order_price AS t_order_order_price,
+     t_order.qtd_item AS t_order_qtd_item,
+     t_order.order_status AS t_order_order_status,
+     t_order.id_customer AS t_order_id_customer,
+     t_customer.id_customer AS t_customer_id_customer,
+     t_customer.cust_details AS t_customer_cust_details,
+     t_customer.cust_name AS t_customer_cust_name,
+     t_customer.cust_status AS t_customer_cust_status
+FROM
+     t_order t_order INNER JOIN t_billing t_billing ON t_order.id_order = t_billing.id_order
+     INNER JOIN t_customer t_customer ON t_order.id_customer = t_customer.id_customer
+WHERE
+     billing_status = 1
+and (t_billing.billing_date between $P{fromDate}  and $P{toDate})]]>
+	</queryString>
+	<field name="t_billing_id_billing" class="java.lang.Long"/>
+	<field name="t_billing_billing_final_value" class="java.lang.Double"/>
+	<field name="t_billing_billing_date" class="java.sql.Date"/>
+	<field name="t_billing_billing_payment_type" class="java.lang.Integer"/>
+	<field name="t_billing_id_order" class="java.lang.Long"/>
+	<field name="t_billing_billing_status" class="java.lang.Integer"/>
+	<field name="t_order_id_order" class="java.lang.Long"/>
+	<field name="t_order_close_date" class="java.sql.Date"/>
+	<field name="t_order_deliver_date" class="java.sql.Date"/>
+	<field name="t_order_order_description" class="java.lang.String"/>
+	<field name="t_order_open_date" class="java.sql.Date"/>
+	<field name="t_order_order_code" class="java.lang.String"/>
+	<field name="t_order_order_price" class="java.lang.Double"/>
+	<field name="t_order_qtd_item" class="java.lang.Integer"/>
+	<field name="t_order_order_status" class="java.lang.Integer"/>
+	<field name="t_order_id_customer" class="java.lang.Integer"/>
+	<field name="t_customer_id_customer" class="java.lang.Integer"/>
+	<field name="t_customer_cust_details" class="java.lang.String"/>
+	<field name="t_customer_cust_name" class="java.lang.String"/>
+	<field name="t_customer_cust_status" class="java.lang.Integer"/>
+	<variable name="t_billing_billing_final_value_1" class="java.lang.Double" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{t_billing_billing_final_value}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Double(0D)]]></initialValueExpression>
+	</variable>
+	<variable name="variable1" class="java.lang.String"/>
+	<variable name="t_billing_billing_final_value_2" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{t_billing_billing_final_value}]]></variableExpression>
+	</variable>
+	<variable name="variable2" class="java.lang.String"/>
+	<group name="t_order_id_order">
+		<groupExpression><![CDATA[$F{t_order_id_order}]]></groupExpression>
+		<groupHeader>
+			<band height="43">
+				<textField>
+					<reportElement x="138" y="6" width="100" height="20"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{t_customer_cust_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="138" y="23" width="100" height="20"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{t_order_order_code}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Transparent" x="38" y="23" width="100" height="20"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[Código do pedido:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="38" y="6" width="100" height="20"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[Cliente:]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="0" width="572" height="43"/>
+					<graphicElement>
+						<pen lineWidth="2.75" lineColor="#CF0707"/>
+					</graphicElement>
+				</rectangle>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="12"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="12" y="7" width="572" height="20" forecolor="#B00D0D"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[USI+ - Sistema de gerenciamento de ordens de servico]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="39" width="179" height="20" forecolor="#CF0707"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Relatório de faturamento entre]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement mode="Transparent" x="0" y="0" width="572" height="68"/>
+				<graphicElement>
+					<pen lineWidth="2.75" lineColor="#CF0707"/>
+				</graphicElement>
+			</rectangle>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="191" y="40" width="67" height="20" forecolor="#CF0707"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.text.SimpleDateFormat("yyy-MM-dd").parse($P{fromDate})]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="274" y="40" width="77" height="20" forecolor="#CF0707"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.text.SimpleDateFormat("yyy-MM-dd").parse($P{toDate})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="258" y="40" width="16" height="20" forecolor="#CF0707"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[e]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="13" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="12" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="88" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="138" y="5" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{t_billing_billing_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="27" y="5" width="111" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Data do faturamento:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="138" y="25" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{t_billing_billing_payment_type}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="27" y="25" width="111" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Tipo de pagamento:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="138" y="45" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[( $F{t_billing_billing_status}.intValue()==0 ? "Aberto" : "Fechado" )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="27" y="45" width="111" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Situacão:]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="138" y="65" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{t_billing_billing_final_value}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="27" y="65" width="111" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Valor fatura:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement mode="Transparent" x="0" y="0" width="572" height="88"/>
+				<graphicElement>
+					<pen lineWidth="2.75" lineColor="#CF0707"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="9" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="24" splitType="Stretch">
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="false">
+				<reportElement x="138" y="6" width="100" height="18"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{t_billing_billing_final_value_2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="38" y="6" width="100" height="18"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor total:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement mode="Transparent" x="0" y="0" width="572" height="24"/>
+				<graphicElement>
+					<pen lineWidth="2.75" lineColor="#CF0707"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+	</summary>
+</jasperReport>
