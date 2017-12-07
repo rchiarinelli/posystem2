@@ -2,7 +2,7 @@ package br.com.brainyit.posystem2.util;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.cfg.Configuration;
 
 /**
  * Classe utilitaria usada para recuperar a sessao a partir {@link SessionFactory}.
@@ -16,7 +16,7 @@ public class HibernateUtils {
 	
 	private static SessionFactory sessionFactory;
 	
-	private static AnnotationConfiguration configuration;
+	private static Configuration configuration;
 	
     /**
      * 
@@ -24,7 +24,7 @@ public class HibernateUtils {
     public static void initSessionFactory(String fileName) {
     	if (sessionFactory==null) {
             try {
-            	configuration = new AnnotationConfiguration();
+            	configuration = new Configuration();
             	sessionFactory = configuration.configure(fileName).buildSessionFactory();
             } catch (Throwable ex) {
             	logger.error(ex);

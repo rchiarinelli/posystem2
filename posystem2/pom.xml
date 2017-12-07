@@ -3,11 +3,25 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.valinorti</groupId>
 	<artifactId>posystem2</artifactId>
-	<packaging>war</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>POsystem 2 Maven Webapp</name>
 	<url>http://maven.apache.org</url>
+	<properties>
+		<tomcat.version>8.5.23</tomcat.version>
+		<hibernate.version>5.2.12.Final</hibernate.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<mysql.version></mysql.version>
+	</properties>
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>6.0.6</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
@@ -31,8 +45,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
-			<version>3.3.1.GA</version>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -42,36 +56,15 @@
 					<groupId>org.hibernate</groupId>
 					<artifactId>hibernate-entitymanager</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>javax.transaction</groupId>
-					<artifactId>jta</artifactId>
-				</exclusion>
-			</exclusions>			
-		</dependency>
-		<!--<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.4.0.GA</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate</artifactId>
-			<version>3.3.2.GA</version>
-			<type>pom</type>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
 
-		</dependency>-->
+			</exclusions>
+		</dependency>
+		<!--<dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-entitymanager</artifactId> 
+			<version>3.4.0.GA</version> <exclusions> <exclusion> <groupId>org.slf4j</groupId> 
+			<artifactId>slf4j-api</artifactId> </exclusion> </exclusions> </dependency> 
+			<dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate</artifactId> 
+			<version>3.3.2.GA</version> <type>pom</type> <exclusions> <exclusion> <groupId>org.slf4j</groupId> 
+			<artifactId>slf4j-api</artifactId> </exclusion> </exclusions> </dependency> -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -94,28 +87,15 @@
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.8.3</version>
 		</dependency>
-		<!-- dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>4.0.2.GA</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency -->
+		<!-- dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-validator</artifactId> 
+			<version>4.0.2.GA</version> <exclusions> <exclusion> <groupId>org.slf4j</groupId> 
+			<artifactId>slf4j-api</artifactId> </exclusion> </exclusions> </dependency -->
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.4</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
@@ -149,18 +129,38 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jasper</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jasper-el</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jsp-api</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -174,7 +174,7 @@
 						<classpathContainer>org.eclipse.jst.j2ee.internal.module.container</classpathContainer>
 					</classpathContainers>
 					<additionalProjectFacets>
-						<java>1.7</java>
+						<java>1.8</java>
 						<jst.web>3.0</jst.web>
 						<wst.jsdt.web>1.0</wst.jsdt.web>
 					</additionalProjectFacets>
@@ -192,28 +192,28 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			<!-- Jasper reports compilation -->
-			<!--plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jasperreports-maven-plugin</artifactId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<version>2.0.0</version>
 				<configuration>
-					<outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+					<assembleDirectory>target</assembleDirectory>
+					<programs>
+						<program>
+							<mainClass>br.com.brainyit.bootstrap.StartTomcat</mainClass>
+							<name>webapp</name>
+						</program>
+					</programs>
 				</configuration>
 				<executions>
 					<execution>
+						<phase>package</phase>
 						<goals>
-							<goal>compile-reports</goal>
+							<goal>assemble</goal>
 						</goals>
 					</execution>
 				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>net.sf.jasperreports</groupId>
-						<artifactId>jasperreports</artifactId>
-						<version>3.7.2</version>
-					</dependency>
-				</dependencies>
-			</plugin-->
+			</plugin>
 		</plugins>
 	</build>
 	<repositories>
