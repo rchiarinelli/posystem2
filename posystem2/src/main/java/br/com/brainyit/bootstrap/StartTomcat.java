@@ -23,6 +23,7 @@ public class StartTomcat {
 	public static void main(String[] args) throws ServletException, LifecycleException {
 		String webappDirLocation = "src" + File.separator + "main" + File.separator + "webapp";
 		Tomcat tomcat = new Tomcat();
+		tomcat.enableNaming();
 
 		// The port that we should run on can be set into an environment
 		// variable
@@ -35,6 +36,7 @@ public class StartTomcat {
 		tomcat.setPort(Integer.valueOf(webPort));
 
 		StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
+	
 		System.out.println("configuring app with basedir: " + new File("" + webappDirLocation).getAbsolutePath());
 
 		// Declare an alternative location for your "WEB-INF/classes" dir
