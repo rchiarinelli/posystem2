@@ -3,18 +3,11 @@
  */
 package br.com.brainyit.posystem2.restful.util;
 
-import java.util.Iterator;
-
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONString;
-
 /**
  * @author rafael
  *
  */
-public class CustomJSONObject extends JSONObject {
+public class CustomJSONObject  {
 	
 	
 	
@@ -22,8 +15,8 @@ public class CustomJSONObject extends JSONObject {
 	/* (non-Javadoc)
 	 * @see org.codehaus.jettison.json.JSONObject#toString()
 	 */
-	@SuppressWarnings("rawtypes")
-	@Override
+	
+	/*
 	public String toString() {
         try {
             Iterator     keys = keys();
@@ -124,5 +117,5 @@ public class CustomJSONObject extends JSONObject {
         sb.append('\'');
         return sb.toString();
     }
-
+*/
 }

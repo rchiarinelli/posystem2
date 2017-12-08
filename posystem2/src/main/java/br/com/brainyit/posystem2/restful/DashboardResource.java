@@ -20,15 +20,14 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.annotations.GZIP;
-import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 
 import br.com.brainyit.filterengine.Filter;
 import br.com.brainyit.filterengine.FilterCondition;
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.OrderStatus;
+import br.com.brainyit.posystem2.restbean.dashboard.DashboardInstallmentsRestBean;
 import br.com.brainyit.posystem2.restbean.dashboard.InstallmentsByDaysRestBean;
 import br.com.brainyit.posystem2.restbean.dashboard.OrderDashboard;
-import br.com.brainyit.posystem2.restbean.dashboard.DashboardInstallmentsRestBean;
 import br.com.brainyit.posystem2.util.FakeObjectBuilder;
 import br.com.brainyit.posystem2.util.MessagesUtil;
 
@@ -108,7 +107,7 @@ public class DashboardResource  extends POSystemResource {
 	@Path("/installments/{days}")
 	@Consumes("text/plain")
 	@Produces("application/json")
-	@BadgerFish	
+	
 	public Response retrievePendingInstallments(@PathParam("days")String days) {
 		if (StringUtils.isBlank(days) || !StringUtils.isNumeric(days)) {
 			return this.getResponse(Response.Status.BAD_REQUEST, "Param&acirc;tro inv&aacute;lido.");

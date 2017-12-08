@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jettison.json.JSONArray;
-
 /**
  * @author rafael
  *
@@ -25,7 +23,7 @@ public class JSONGridObject {
 	private String label;
 	
 	@XmlElement
-	private JSONArray items;
+	private Object[] items;
 
 	/**
 	 * @return the identifier
@@ -58,14 +56,14 @@ public class JSONGridObject {
 	/**
 	 * @return the items
 	 */
-	public JSONArray getItems() {
+	public Object[] getItems() {
 		return items;
 	}
 
 	/**
 	 * @param items the items to set
 	 */
-	public void setItems(JSONArray items) {
+	public void setItems(Object[] items) {
 		this.items = items;
 	}
 

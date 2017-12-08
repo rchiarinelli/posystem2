@@ -46,7 +46,8 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
                 dojo.connect(daysGapCombo, "onchange", function() {
                     standby.show();
 					var days = dojo.byId("daysGapCb").value;
-					var url = '/posystem2/services/1/dashboard/installments/'+days;
+					var basePath = dojo.getObject("basePath");
+					var url = basePath + '/services/1/dashboard/installments/'+days;
 					//invoke service
 					dojo.xhrGet({
 			            url: url

@@ -1,76 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/posystem2" docBase="posystem"
-        debug="5" reloadable="true" crossContext="true">
+<Context path="/posystem2" docBase="posystem" debug="5"
+	reloadable="true" crossContext="true">
+	<JarScanner scanManifest="false" />
 
+	<!-- <Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource" 
+		username="po_system" password="12345" driverClassName="com.mysql.jdbc.Driver" 
+		url="jdbc:mysql://localhost:3306/posystem_r2" minEvictableIdleTimeMillis="4000" 
+		timeBetweenEvictionRunsMillis="5000" removeAbandoned="true" maxActive="100" 
+		maxIdle="30" maxWait="15000" validationQuery="select 1" testOnBorrow="true" 
+		testOnReturn="true" testWhileIdle="true" defaultAutoCommit="false" numTestsPerEvictionRun="4" 
+		/> -->
+	<Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource"
+		username="b9d0b7528bac8c" password="71522081" driverClassName="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://us-cdbr-iron-east-05.cleardb.net:3306/heroku_b6f61eb2bee5831"
+		minEvictableIdleTimeMillis="4000" timeBetweenEvictionRunsMillis="5000"
+		removeAbandoned="true" maxActive="100" maxIdle="30" maxWait="15000"
+		validationQuery="select 1" testOnBorrow="true" testOnReturn="true"
+		testWhileIdle="true" defaultAutoCommit="false" numTestsPerEvictionRun="4" />
 
-<!--   <Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource"
-               username="po_system" 
-               password="12345" 
-               driverClassName="com.mysql.jdbc.Driver"
-               url="jdbc:mysql://localhost:3306/posystem_r2" 
-               minEvictableIdleTimeMillis="4000"
-               timeBetweenEvictionRunsMillis="5000"
-               removeAbandoned="true"
-               maxActive="100" 
-               maxIdle="30" 
-               maxWait="15000"
-			   validationQuery="select 1"
-			   testOnBorrow="true"
-			   testOnReturn="true"
-			   testWhileIdle="true"
-			   defaultAutoCommit="false"
-			   numTestsPerEvictionRun="4"
-				/>
-				 -->
-				<Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource"
-               username="b9d0b7528bac8c" 
-               password="71522081" 
-               driverClassName="com.mysql.jdbc.Driver"
-               url="jdbc:mysql://us-cdbr-iron-east-05.cleardb.net:3306/heroku_b6f61eb2bee5831" 
-               minEvictableIdleTimeMillis="4000"
-               timeBetweenEvictionRunsMillis="5000"
-               removeAbandoned="true"
-               maxActive="100" 
-               maxIdle="30" 
-               maxWait="15000"
-			   validationQuery="select 1"
-			   testOnBorrow="true"
-			   testOnReturn="true"
-			   testWhileIdle="true"
-			   defaultAutoCommit="false"
-			   numTestsPerEvictionRun="4"
-				/>
-        
-  <!-- DataSource para realm de seguranca 
+	<!-- DataSource para realm de seguranca <Resource name="jdbc/POSystemDB" 
+		auth="Container" type="javax.sql.DataSource" username="leafar04" password="rtf4657" 
+		driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://mysql.leafar.kinghost.net:3306/leafar04" 
+		minEvictableIdleTimeMillis="4000" timeBetweenEvictionRunsMillis="5000" removeAbandoned="true" 
+		maxActive="100" maxIdle="30" maxWait="15000" validationQuery="select 1" testOnBorrow="true" 
+		testOnReturn="true" testWhileIdle="true" defaultAutoCommit="false" numTestsPerEvictionRun="4" 
+		/> -->
 
-  <Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource"
-               username="leafar04" 
-               password="rtf4657" 
-               driverClassName="com.mysql.jdbc.Driver"
-               url="jdbc:mysql://mysql.leafar.kinghost.net:3306/leafar04"
-               minEvictableIdleTimeMillis="4000"
-               timeBetweenEvictionRunsMillis="5000"
-               removeAbandoned="true"
-               maxActive="100" 
-               maxIdle="30" 
-               maxWait="15000"
-			   validationQuery="select 1"
-			   testOnBorrow="true"
-			   testOnReturn="true"
-			   testWhileIdle="true"
-			   defaultAutoCommit="false"
-  		       numTestsPerEvictionRun="4"
-               />
-                -->
-
-		<Realm className="org.apache.catalina.realm.JDBCRealm"
-      	      driverName="com.mysql.jdbc.Driver"
-   			  connectionURL="jdbc:mysql://us-cdbr-iron-east-05.cleardb.net:3306/heroku_b6f61eb2bee5831?user=b9d0b7528bac8c&amp;password=71522081"
-		      userTable="t_user" 
-		      userNameCol="user_login" 
-		      userCredCol="user_password"
-		   	  userRoleTable="t_permission" 
-		   	  roleNameCol="operation_name"/>
+	<Realm className="org.apache.catalina.realm.JDBCRealm"
+		driverName="com.mysql.jdbc.Driver"
+		connectionURL="jdbc:mysql://us-cdbr-iron-east-05.cleardb.net:3306/heroku_b6f61eb2bee5831?user=b9d0b7528bac8c&amp;password=71522081"
+		userTable="t_user" userNameCol="user_login" userCredCol="user_password"
+		userRoleTable="t_permission" roleNameCol="operation_name" />
 
 </Context>
 

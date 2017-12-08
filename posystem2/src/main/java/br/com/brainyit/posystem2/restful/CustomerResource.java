@@ -16,12 +16,10 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.codehaus.jettison.json.JSONArray;
 import org.jboss.resteasy.annotations.GZIP;
 
 import br.com.brainyit.filterengine.FilterCondition;
 import br.com.brainyit.posystem2.domain.CustomerStatus;
-import br.com.brainyit.posystem2.exception.RestBeanConvertionException;
 import br.com.brainyit.posystem2.facade.FilterProperties;
 import br.com.brainyit.posystem2.facade.domain.CustomerFacade;
 import br.com.brainyit.posystem2.facade.factory.FacadeFactoryManager;
@@ -72,14 +70,14 @@ public class CustomerResource extends POSystemResource {
 		
 		Collection<? extends CustomerGridRownRestfulBean> restCustomerList = customerFilterFacade.filterData(this.getSubscriber(), filterArgs, field);
 		JSONViewHelper helper = new JSONViewHelper();
-		JSONArray resp = null;
-		try {
-			resp = helper.convertBeanListToJSONArray(restCustomerList);
-		} catch (RestBeanConvertionException e) {
-			logger.error("Customer not found.");
-			return this.getResponse(Response.Status.INTERNAL_SERVER_ERROR, new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR),format);	
-		}
-		return this.getResponse(Response.Status.OK, resp.toString(),format);
+//		Object[] resp = null;
+//		try {
+//			resp = restCustomerList;
+//		} catch (RestBeanConvertionException e) {
+//			logger.error("Customer not found.");
+//			return this.getResponse(Response.Status.INTERNAL_SERVER_ERROR, new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR),format);	
+//		}
+		return this.getResponse(Response.Status.OK, restCustomerList,format);
 	}
 
 }

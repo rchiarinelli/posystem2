@@ -5,7 +5,7 @@
 <hibernate-configuration>
 	<session-factory>
 		<!-- Database connection settings -->
-		<property name="hibernate.connection.datasource">java:/comp/env/jdbc/POSystemDB</property>
+		<property name="hibernate.connection.datasource">jdbc/POSystemDB</property>
 
 		<property name="hibernate.connection.autocommit">false</property>
 		<property name="hibernate.connection.release_mode">after_transaction</property>
