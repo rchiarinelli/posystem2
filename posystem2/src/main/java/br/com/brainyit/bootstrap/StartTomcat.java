@@ -5,6 +5,7 @@ package br.com.brainyit.bootstrap;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -16,8 +17,11 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
+import org.jboss.resteasy.plugins.servlet.ResteasyServletInitializer;
 
+import br.com.brainyit.posystem2.exception.POSystem2Exception;
 import br.com.brainyit.posystem2.util.ApplicationEnvironmentServlet;
+import br.com.brainyit.posystem2.util.POSystemApplication;
 
 /**
  * @author Rafael
@@ -49,15 +53,13 @@ public class StartTomcat {
 		File additionWebInfClasses = new File("target/classes");
 		WebResourceRoot resources = new StandardRoot(ctx);
 		resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes", additionWebInfClasses.getAbsolutePath(), "/"));
+		
 		ctx.setResources(resources);
+		
 		
 		tomcat.start();
 		
-//		ServletContext servletContext = ctx.getServletContext();
-//		
-//		ApplicationEnvironmentServlet applicationEnvironmentServlet = new ApplicationEnvironmentServlet();
-//		applicationEnvironmentServlet.onStartup(new HashSet<>(), servletContext);
-		
+			
 		tomcat.getServer().await();
 	}
 

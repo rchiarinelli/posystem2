@@ -22,9 +22,9 @@ import br.com.brainyit.posystem2.restful.util.JSONGridObject;
  * @author rafael
  *
  */
-//@Provider
-//@Produces("application/*+json")
-//@Consumes("application/*+json")
+@Provider
+@Produces("application/*+json")
+@Consumes("application/*+json")
 public class JSONObjectProvider extends AbstractJAXBProvider<JSONGridObject> {
 
 	
@@ -53,6 +53,6 @@ public class JSONObjectProvider extends AbstractJAXBProvider<JSONGridObject> {
 			OutputStream outputStream) throws IOException {
 		outputStream.write(t.toString().getBytes());
 		outputStream.flush();
-		//super.writeTo(t, type, genericType, annotations, mediaType, httpHeaders, outputStream);
+		super.writeTo(t, type, genericType, annotations, mediaType, httpHeaders, outputStream);
 	}
 }

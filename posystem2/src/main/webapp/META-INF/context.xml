@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/posystem2" docBase="posystem" debug="5"
+<Context path="/posystem2" docBase="posystem" 
 	reloadable="true" crossContext="true">
-	<JarScanner scanManifest="false" />
-
+	
 	<!-- <Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource" 
 		username="po_system" password="12345" driverClassName="com.mysql.jdbc.Driver" 
 		url="jdbc:mysql://localhost:3306/posystem_r2" minEvictableIdleTimeMillis="4000" 

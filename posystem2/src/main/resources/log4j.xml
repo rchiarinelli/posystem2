@@ -14,12 +14,18 @@
 	</logger>
  -->
 
+
+
+	<logger name="org.apache.catalina.core.ContainerBase.Standalone.localhost.posystem2">
+		<level value="info" />
+	</logger>
+
 	<logger name="br.com.brainyit">
 		<level value="debug" />
 	</logger>
 
 	<logger name="org.hibernate.hql">
-		<level value="debug"/>
+		<level value="info"/>
 	</logger>
 	
 	<logger name="org.hibernate.SQL">
@@ -27,6 +33,10 @@
 	</logger>
 
 	<logger name="org.hibernate.tool.hbm2ddl">
+		<level value="info"/>
+	</logger>
+	
+	<logger name="org.jboss.resteasy">
 		<level value="info"/>
 	</logger>
 

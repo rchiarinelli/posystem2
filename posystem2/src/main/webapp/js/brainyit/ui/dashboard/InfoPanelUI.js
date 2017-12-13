@@ -91,14 +91,17 @@ if (!dojo._hasResource["brainyit.ui.dashboard.InfoPanelUI"]) {
 			            ,preventCache:true
 			            ,load: function(response, ioArgs){
 			            	console.info(response.orderValues);
-			            	var openPO = response.orderValues.open.value + '';
-			            	var execPO =  response.orderValues.executing.value + '';
-			            	var billedPO = response.orderValues.billed.value + '';
-			            	var closedPO = response.orderValues.closed.value + '';
-			                dojo.html.set(dojo.byId("openPO"), openPO, {parseContent: true	});
-			                dojo.html.set(dojo.byId("execPO"), execPO,{parseContent: true	});
-			                dojo.html.set(dojo.byId("billedPO"), billedPO,{parseContent: true	});
-			                dojo.html.set(dojo.byId("closedPO"), closedPO,{parseContent: true	});
+			            	if (response.orderValues) {
+			            		var openPO = response.orderValues.open.value + '';
+				            	var execPO =  response.orderValues.executing.value + '';
+				            	var billedPO = response.orderValues.billed.value + '';
+				            	var closedPO = response.orderValues.closed.value + '';
+				                dojo.html.set(dojo.byId("openPO"), openPO, {parseContent: true	});
+				                dojo.html.set(dojo.byId("execPO"), execPO,{parseContent: true	});
+				                dojo.html.set(dojo.byId("billedPO"), billedPO,{parseContent: true	});
+				                dojo.html.set(dojo.byId("closedPO"), closedPO,{parseContent: true	});	
+			            	}
+			            	
 			            	standby.hide();	
 			            }
 			            , error: function(response,ioArgs) {

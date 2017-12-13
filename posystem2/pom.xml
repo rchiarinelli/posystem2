@@ -73,7 +73,11 @@
 			<version>${resteasy.version}</version>
 		</dependency>
 
-
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jackson-provider</artifactId>
+			<version>${resteasy.version}</version>
+		</dependency>
 
 
 		<dependency>
@@ -194,11 +198,8 @@
 
 
 		<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.2.7</version>
-		</dependency>
+		<!-- <dependency> <groupId>com.sun.xml.bind</groupId> <artifactId>jaxb-impl</artifactId> 
+			<version>2.2.7</version> </dependency> -->
 
 
 
@@ -220,37 +221,7 @@
 					</compilerArgs>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.8</version>
-				<configuration>
-					<wtpversion>2.0</wtpversion>
-					<wtpContextName>posystem</wtpContextName>
-					<wtpdefaultserver>Apache Tomcat v6.0</wtpdefaultserver>
-					<classpathContainers>
-						<classpathContainer>org.eclipse.jst.j2ee.internal.web.container</classpathContainer>
-						<classpathContainer>org.eclipse.jst.j2ee.internal.module.container</classpathContainer>
-					</classpathContainers>
-					<additionalProjectFacets>
-						<java>1.8</java>
-						<jst.web>3.0</jst.web>
-						<wst.jsdt.web>1.0</wst.jsdt.web>
-					</additionalProjectFacets>
-				</configuration>
-			</plugin>
-			<!-- This is for mvn tomcat:run -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>tomcat-maven-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>mysql</groupId>
-						<artifactId>mysql-connector-java</artifactId>
-						<version>[5.1,)</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>appassembler-maven-plugin</artifactId>

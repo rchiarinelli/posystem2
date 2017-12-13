@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 
+import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.domain.User;
 import br.com.brainyit.posystem2.security.interceptor.POSystemSecurityInterceptor;
 
@@ -119,7 +120,9 @@ public abstract class POSystemResource {
 	 */
 	protected User getUser() {
 		HttpSession httpSession = this.servletRequest.getSession();
-		User user = (User) httpSession.getAttribute(POSystemSecurityInterceptor.AUTH_USER);
+		User user = new User();
+		user.setSubscriber(new Subscriber());
+		user.getSubscriber().setId(10);
 		return user;
 	}
 	

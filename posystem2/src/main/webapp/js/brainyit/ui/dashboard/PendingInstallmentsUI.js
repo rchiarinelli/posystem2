@@ -57,23 +57,26 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
 			            ,handleAs: "json"
 			            ,preventCache:true
 			            ,load: function(response, ioArgs){
-			            	var installments = response.pendingInstallments.installments;
-			            	dojo.html.set(dojo.byId("installments"), '', {parseContent: true});
-		                	var ul = dojo.create("ul", null, "installments");
-		                   	var items = new Array();
-		                   	var item = null;
-		                	if (installments.length==null) {
-		            			item = installments.date + "&nbsp;-&nbsp;" + installments.value;
-		            			items.push(item);
-		                	} else {
-		                		for (var i = 0; i < installments.length; i++) {
-		                			item = installments[i].date.$ + "&nbsp;-&nbsp;" + installments[i].value.$;
-		                			items.push(item);
-		                		}
-		                	}
-		                   	dojo.forEach(items, function(data){
-		                     	  dojo.create("li", { innerHTML: data }, ul);
-							});
+			            	if (response.pendingInstallments) {
+			            		var installments = response.pendingInstallments.installments;
+				            	dojo.html.set(dojo.byId("installments"), '', {parseContent: true});
+			                	var ul = dojo.create("ul", null, "installments");
+			                   	var items = new Array();
+			                   	var item = null;
+			                	if (installments.length==null) {
+			            			item = installments.date + "&nbsp;-&nbsp;" + installments.value;
+			            			items.push(item);
+			                	} else {
+			                		for (var i = 0; i < installments.length; i++) {
+			                			item = installments[i].date.$ + "&nbsp;-&nbsp;" + installments[i].value.$;
+			                			items.push(item);
+			                		}
+			                	}
+			                   	dojo.forEach(items, function(data){
+			                     	  dojo.create("li", { innerHTML: data }, ul);
+								});
+			            	}
+			            	
 			            	standby.hide();	
 			            }
 			            , error: function(response,ioArgs) {
@@ -98,7 +101,8 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
 				var installmentDiv = componentHelper.buildComponent(parentComp,'div',divParams);
 				//Load installements
 				var days = dojo.byId("daysGapCb").value;
-				var url = '/posystem2/services/1/dashboard/installments/'+days;				
+				var basePath = dojo.getObject("basePath");
+				var url = basePath + '/services/1/dashboard/installments/'+days;				
 				dojo.xhrGet({
 		            url: url
 		            ,headers: {
@@ -107,23 +111,26 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
 		            ,handleAs: "json"
 		            ,preventCache:true
 		            ,load: function(response, ioArgs){
-		            	var installments = response.pendingInstallments.installments;
-		            	dojo.html.set(dojo.byId("installments"), '', {parseContent: true});
-	                	var ul = dojo.create("ul", null, "installments");
-	                   	var items = new Array();
-	                   	var item = null;
-	                	if (installments.length==null) {
-	            			item = installments.date + "&nbsp;-&nbsp;" + installments.value;
-	            			items.push(item);
-	                	} else {
-	                		for (var i = 0; i < installments.length; i++) {
-	                			item = installments[i].date.$ + "&nbsp;-&nbsp;" + installments[i].value.$;
-	                			items.push(item);
-	                		}
-	                	}
-	                   	dojo.forEach(items, function(data){
-	                     	  dojo.create("li", { innerHTML: data }, ul);
-						});
+		            	if (response.pendingInstallments) {
+		            		var installments = response.pendingInstallments.installments;
+			            	dojo.html.set(dojo.byId("installments"), '', {parseContent: true});
+		                	var ul = dojo.create("ul", null, "installments");
+		                   	var items = new Array();
+		                   	var item = null;
+		                	if (installments.length==null) {
+		            			item = installments.date + "&nbsp;-&nbsp;" + installments.value;
+		            			items.push(item);
+		                	} else {
+		                		for (var i = 0; i < installments.length; i++) {
+		                			item = installments[i].date.$ + "&nbsp;-&nbsp;" + installments[i].value.$;
+		                			items.push(item);
+		                		}
+		                	}
+		                   	dojo.forEach(items, function(data){
+		                     	  dojo.create("li", { innerHTML: data }, ul);
+							});
+		            	}
+		            	
 		            	standby.hide();	
 		            }
 		            , error: function(response,ioArgs) {

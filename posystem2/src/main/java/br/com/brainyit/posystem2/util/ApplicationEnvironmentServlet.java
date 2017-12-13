@@ -1,29 +1,32 @@
 package br.com.brainyit.posystem2.util;
 
-import java.util.Set;
-
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.HandlesTypes;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
 import org.apache.log4j.Logger;
 
 /**
  * Servlet implementation class ApplicationEnvironmentServlet
  */
-@HandlesTypes(Object.class)
-public class ApplicationEnvironmentServlet implements ServletContainerInitializer {
+@WebListener
+public class ApplicationEnvironmentServlet implements ServletContextListener {
 	
 	private static Logger logger = Logger.getLogger(ApplicationEnvironmentServlet.class);
 	
 	private static final long serialVersionUID = 1L;
 
+	
+
 	@Override
-	public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
+	public void contextInitialized(ServletContextEvent sce) {
 		logger.info("======================Starting application+=======================");
 		HibernateUtils.initSessionFactory("hibernate.cfg.xml");
-		logger.info("==================================================================");
+		logger.info("==================================================================");	
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {
 		
 	}
 
