@@ -47,7 +47,7 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
                     standby.show();
 					var days = dojo.byId("daysGapCb").value;
 					var basePath = dojo.getObject("basePath");
-					var url = basePath + '/services/1/dashboard/installments/'+days;
+					var url = basePath + '/1/dashboard/installments/'+days;
 					//invoke service
 					dojo.xhrGet({
 			            url: url
@@ -102,7 +102,7 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
 				//Load installements
 				var days = dojo.byId("daysGapCb").value;
 				var basePath = dojo.getObject("basePath");
-				var url = basePath + '/services/1/dashboard/installments/'+days;				
+				var url = basePath + '/1/dashboard/installments/'+days;
 				dojo.xhrGet({
 		            url: url
 		            ,headers: {

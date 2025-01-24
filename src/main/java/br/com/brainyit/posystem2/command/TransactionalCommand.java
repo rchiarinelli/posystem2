@@ -3,7 +3,8 @@
  */
 package br.com.brainyit.posystem2.command;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -18,7 +19,7 @@ import br.com.brainyit.posystem2.exception.SystemException;
  */
 public class TransactionalCommand extends CompositeCommand {
 	
-	private static Logger logger = Logger.getLogger(TransactionalCommand.class);
+	private static Logger logger = LogManager.getLogger(TransactionalCommand.class);
 	
 	private Session session;
 	

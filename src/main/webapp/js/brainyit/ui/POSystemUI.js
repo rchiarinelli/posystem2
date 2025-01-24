@@ -13,7 +13,7 @@ if (!dojo._hasResource["brainyit.ui.POSystemUI"]) {
 				console.debug('Checking permissions');
 				var basePath = dojo.getObject("basePath");
 				var subscriber = dojo.getObject("subscriber");
-				var url = basePath + '/services/'+subscriber+'/permissions/'+resource +'/'+operation;
+				var url = basePath + '/'+subscriber+'/permissions/'+resource +'/'+operation;
 				dojo.xhrGet({
 		            url: url
 		            ,headers: {

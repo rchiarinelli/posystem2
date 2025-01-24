@@ -6,7 +6,8 @@ package br.com.brainyit.posystem2.util;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author rafael
@@ -14,7 +15,7 @@ import org.apache.log4j.Logger;
  */
 public class MessagesUtil {
 
-	private static Logger logger = Logger.getLogger(MessagesUtil.class);
+	private static Logger logger = LogManager.getLogger(MessagesUtil.class);
 	
 	private static MessagesUtil instance;
 

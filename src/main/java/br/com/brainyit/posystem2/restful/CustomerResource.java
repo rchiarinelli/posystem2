@@ -1,81 +1,52 @@
 /**
- * 
+ *
  */
 package br.com.brainyit.posystem2.restful;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jboss.resteasy.annotations.GZIP;
-
-import br.com.brainyit.filterengine.FilterCondition;
-import br.com.brainyit.posystem2.domain.CustomerStatus;
-import br.com.brainyit.posystem2.facade.FilterProperties;
 import br.com.brainyit.posystem2.facade.domain.CustomerFacade;
-import br.com.brainyit.posystem2.facade.factory.FacadeFactoryManager;
 import br.com.brainyit.posystem2.facade.filter.CustomerFilterFacade;
-import br.com.brainyit.posystem2.restbean.customer.CustomerGridRownRestfulBean;
 import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
 import br.com.brainyit.posystem2.restbean.response.Message;
-import br.com.brainyit.posystem2.restful.util.JSONViewHelper;
 import br.com.brainyit.posystem2.util.MessagesUtil;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author rafael
- *
  */
-@Path("/{subscriber}/customers")
-public class CustomerResource extends POSystemResource {
-	
-	private static final Logger logger = Logger.getLogger(CustomerResource.class);
-	
-	@GET
-	@Path("/pf/{id}")
-	@Produces("application/json")
-	public Response getPF(@PathParam("id")String id, @QueryParam("format") String format) {
-		if (StringUtils.isBlank(id) || !StringUtils.isNumeric(id)) {
-			logger.error("Blank id");
-			return this.getResponse(Response.Status.BAD_REQUEST, new Message(MessagesUtil.INVALID_OBJECT_IDENTIFIER),format);
-		} 
-		CustomerFacade customerFacade = FacadeFactoryManager.getInstance().getCustomerFacadeFactory().createFacade();
-		Integer customerId = Integer.parseInt(id);
-		CustomerRestfulBean customer = customerFacade.get(customerId);
-		if (customer==null) {
-			logger.error("Customer not found.");
-			return this.getResponse(Response.Status.NOT_FOUND, new Message(MessagesUtil.OBJECT_NOT_FOUND),format);	
-		}
-		return this.getResponse(Response.Status.OK, customer,format);
-	}
-	
-	@GET
-	@Produces("application/json")
-	public Response getCustomers(@QueryParam("format") String format){
-		CustomerFilterFacade customerFilterFacade = FacadeFactoryManager.getInstance().getCustomerFacadeFactory().createFilterFacade();
-		String field = this.getFieldForSort();
+@RestController
+@RequestMapping("/{subscriber}/customers")
+@RequiredArgsConstructor
+public class CustomerResource {
 
-		List<FilterProperties> filterArgs = new ArrayList<FilterProperties>();
-		filterArgs.add(new FilterProperties("customerStatus",FilterCondition.EQUALS, CustomerStatus.ACTIVE));
-		
-		Collection<? extends CustomerGridRownRestfulBean> restCustomerList = customerFilterFacade.filterData(this.getSubscriber(), filterArgs, field);
-		JSONViewHelper helper = new JSONViewHelper();
-//		Object[] resp = null;
-//		try {
-//			resp = restCustomerList;
-//		} catch (RestBeanConvertionException e) {
-//			logger.error("Customer not found.");
-//			return this.getResponse(Response.Status.INTERNAL_SERVER_ERROR, new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR),format);	
-//		}
-		return this.getResponse(Response.Status.OK, restCustomerList,format);
-	}
+    private static final Logger logger = LogManager.getLogger(CustomerResource.class);
+
+    private final CustomerFacade customerFacade;
+
+    private final CustomerFilterFacade customerFilterFacade;
+
+    @GetMapping(value = "/pf/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getPF(@PathVariable("subscriber") final String subscriber, @RequestParam("id") String id, @RequestParam("format") String format) {
+        if (StringUtils.isBlank(id) || !StringUtils.isNumeric(id)) {
+            logger.error("Blank id");
+            return ResponseEntity.badRequest().body(new Message(MessagesUtil.INVALID_OBJECT_IDENTIFIER));
+        }
+        CustomerRestfulBean customer = customerFacade.get(Integer.parseInt(id));
+        if (customer == null) {
+            logger.error("Customer not found.");
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(customer);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getCustomers(@PathVariable("subscriber") final String subscriber) {
+        return ResponseEntity.ok().body(customerFilterFacade.filterData(Integer.parseInt(subscriber), null, null));
+    }
 
 }

@@ -3,7 +3,9 @@
  */
 package br.com.brainyit.filterengine;
 
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author Rafael Chiarinelli
@@ -12,7 +14,7 @@ import org.apache.log4j.Logger;
 @Deprecated
 public class FilterEngine {
 
-	private static Logger logger = Logger.getLogger(FilterEngine.class);
+	private static Logger logger = LogManager.getLogger(FilterEngine.class);
 	
 	private static FilterEngine instance;
 	

@@ -7,7 +7,7 @@ package br.com.brainyit.posystem2.exception;
  * @author rafael
  *
  */
-public class POSystem2Exception extends Exception {
+public class POSystem2Exception extends RuntimeException {
 
 	/**
 	 * 

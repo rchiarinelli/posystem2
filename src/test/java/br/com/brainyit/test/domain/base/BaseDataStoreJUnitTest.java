@@ -11,7 +11,6 @@ import br.com.brainyit.posystem2.domain.CustomerStatus;
 import br.com.brainyit.posystem2.domain.PFCustomer;
 import br.com.brainyit.posystem2.domain.PJCustomer;
 import br.com.brainyit.posystem2.domain.Subscriber;
-import br.com.brainyit.posystem2.util.HibernateUtils;
 
 /**
  * @author Rafael Chiarinelli
@@ -21,7 +20,6 @@ public abstract class BaseDataStoreJUnitTest {
 	
 	@Before
 	public void prepare() throws Exception {
-		HibernateUtils.initSessionFactory("hibernate_test.cfg.xml");
 		this.loadData();
 	}
 	
@@ -160,10 +158,6 @@ public abstract class BaseDataStoreJUnitTest {
 	}
 	
 	private void saveData(Object obj) {
-		Session session = HibernateUtils.getSessionFactory().getCurrentSession();
-		Transaction tx = HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
-		session.save(obj);
-		tx.commit();
 	}
 	
 }

@@ -146,7 +146,7 @@ if (!dojo._hasResource["brainyit.ui.customer.CustomerFilterResultsUI"]) {
 				var basePath = dojo.getObject("basePath");
 				
         		var jsonStore = new dojox.data.JsonRestStore({
-        				target:basePath + '/services/1/customers/'
+        				target:basePath + '/1/customers/'
         		});
 				
         		

@@ -1,12 +1,11 @@
 package br.com.brainyit.filterengine;
 
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-
-import org.apache.commons.lang.Validate;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Factory de queries Hibernate. Cria uma query Hibernate a partir de um filtro
@@ -130,8 +129,6 @@ public class HqlFilterEngine {
 
 	private StringBuilder processBetween(FilterArgument arg) {
 		// Sanity check
-		Validate.isTrue(arg.getValues().length == 2,
-				"Express�o BETWEEN requer dois valores");
 
 		String paramName = PARAM_PREFIX + params.size();
 		StringBuilder sb = new StringBuilder(arg.getField()).append(' ')
