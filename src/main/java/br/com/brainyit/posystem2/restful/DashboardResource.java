@@ -103,12 +103,11 @@ public class DashboardResource {
         }
 
         DashboardInstallmentsRestBean installmentsResponse = new DashboardInstallmentsRestBean();
-        List<InstallmentsByDaysRestBean> list = List.of(
+
+        installmentsResponse.setInstallments(List.of(
                 InstallmentsByDaysRestBean.builder().date("01/01/2011").customerName("Jao da Silva").value("100,00").build(),
                 InstallmentsByDaysRestBean.builder().date("01/01/2011").customerName("Maria").value("20,00").build(),
-                InstallmentsByDaysRestBean.builder().date("01/01/2011").customerName("BBIBNNONO").value("23,00").build());
-
-        installmentsResponse.setInstallments(list);
+                InstallmentsByDaysRestBean.builder().date("01/01/2011").customerName("BBIBNNONO").value("23,00").build()));
 
         return ResponseEntity.ok(installmentsResponse);
     }

@@ -31,7 +31,7 @@ public class CustomerResource {
     private final CustomerFilterFacade customerFilterFacade;
 
     @GetMapping(value = "/pf/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getPF(@PathVariable("subscriber") final String subscriber, @RequestParam("id") String id, @RequestParam("format") String format) {
+    public ResponseEntity<?> get(@PathVariable("subscriber") final String subscriber, @RequestParam("id") String id, @RequestParam("format") String format) {
         if (StringUtils.isBlank(id) || !StringUtils.isNumeric(id)) {
             logger.error("Blank id");
             return ResponseEntity.badRequest().body(new Message(MessagesUtil.INVALID_OBJECT_IDENTIFIER));
@@ -44,7 +44,7 @@ public class CustomerResource {
         return ResponseEntity.ok().body(customer);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping( value = {"","/"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getCustomers(@PathVariable("subscriber") final String subscriber) {
         return ResponseEntity.ok().body(customerFilterFacade.filterData(Integer.parseInt(subscriber), null, null));
     }

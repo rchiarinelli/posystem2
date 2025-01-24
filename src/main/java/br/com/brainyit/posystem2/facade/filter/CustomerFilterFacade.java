@@ -4,8 +4,8 @@
 package br.com.brainyit.posystem2.facade.filter;
 
 import br.com.brainyit.posystem2.domain.Customer;
-import br.com.brainyit.posystem2.domain.PFCustomer;
-import br.com.brainyit.posystem2.domain.PJCustomer;
+import br.com.brainyit.posystem2.domain.Individual;
+import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.facade.FilterProperties;
 import br.com.brainyit.posystem2.repository.CustomerRepository;
 import br.com.brainyit.posystem2.restbean.customer.CustomerGridRownRestfulBean;
@@ -40,13 +40,13 @@ public class CustomerFilterFacade  {
 			bean = new CustomerGridRownRestfulBean();
 			bean.setName(customer.getName());
 			bean.setCust_id(customer.getId());
-			if (customer instanceof PFCustomer) {
-				bean.setCustIdent(((PFCustomer)customer).getCpf());
+			if (customer instanceof Individual) {
+				bean.setCustIdent(((Individual)customer).getCpf());
 				bean.setType("PF");
 				bean.setTypeName("Pessoa física");
 			}
-			if (customer instanceof PJCustomer) {
-				bean.setCustIdent(((PJCustomer)customer).getCnpjCgc());
+			if (customer instanceof Company) {
+				bean.setCustIdent(((Company)customer).getCnpjCgc());
 				bean.setType("PJ");
 				bean.setTypeName("Pessoa juridica");
 			}

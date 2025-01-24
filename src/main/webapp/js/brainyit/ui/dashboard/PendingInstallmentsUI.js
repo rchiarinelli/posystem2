@@ -57,21 +57,16 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
 			            ,handleAs: "json"
 			            ,preventCache:true
 			            ,load: function(response, ioArgs){
-			            	if (response.pendingInstallments) {
-			            		var installments = response.pendingInstallments.installments;
+			            	if (response) {
+			            		var installments = response.installments;
 				            	dojo.html.set(dojo.byId("installments"), '', {parseContent: true});
 			                	var ul = dojo.create("ul", null, "installments");
 			                   	var items = new Array();
 			                   	var item = null;
-			                	if (installments.length==null) {
-			            			item = installments.date + "&nbsp;-&nbsp;" + installments.value;
-			            			items.push(item);
-			                	} else {
-			                		for (var i = 0; i < installments.length; i++) {
-			                			item = installments[i].date.$ + "&nbsp;-&nbsp;" + installments[i].value.$;
-			                			items.push(item);
-			                		}
-			                	}
+                                for (var i = 0; i < installments.length; i++) {
+                                    item = installments[i].date + "&nbsp;-&nbsp;" + installments[i].value;
+                                    items.push(item);
+                                }
 			                   	dojo.forEach(items, function(data){
 			                     	  dojo.create("li", { innerHTML: data }, ul);
 								});
@@ -99,7 +94,7 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
 				divParams[0]=['id','installments'];
 				divParams[1]=['style','overflow: auto;height: 250px;'];
 				var installmentDiv = componentHelper.buildComponent(parentComp,'div',divParams);
-				//Load installements
+				//Load installments
 				var days = dojo.byId("daysGapCb").value;
 				var basePath = dojo.getObject("basePath");
 				var url = basePath + '/1/dashboard/installments/'+days;
@@ -111,27 +106,22 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
 		            ,handleAs: "json"
 		            ,preventCache:true
 		            ,load: function(response, ioArgs){
-		            	if (response.pendingInstallments) {
-		            		var installments = response.pendingInstallments.installments;
+		            	if (response) {
+		            		var installments = response.installments;
 			            	dojo.html.set(dojo.byId("installments"), '', {parseContent: true});
 		                	var ul = dojo.create("ul", null, "installments");
 		                   	var items = new Array();
 		                   	var item = null;
-		                	if (installments.length==null) {
-		            			item = installments.date + "&nbsp;-&nbsp;" + installments.value;
-		            			items.push(item);
-		                	} else {
-		                		for (var i = 0; i < installments.length; i++) {
-		                			item = installments[i].date.$ + "&nbsp;-&nbsp;" + installments[i].value.$;
-		                			items.push(item);
-		                		}
-		                	}
+                            for (var i = 0; i < installments.length; i++) {
+                                item = installments[i].date + "&nbsp;-&nbsp;" + installments[i].value;
+                                items.push(item);
+                            }
 		                   	dojo.forEach(items, function(data){
 		                     	  dojo.create("li", { innerHTML: data }, ul);
 							});
 		            	}
-		            	
-		            	standby.hide();	
+
+		            	standby.hide();
 		            }
 		            , error: function(response,ioArgs) {
 		            	console.error(response);
@@ -145,8 +135,8 @@ if (!dojo._hasResource["brainyit.ui.dashboard.PendingInstallmentsUI"]) {
 		            			});
 		            	dialog.show();
 		            }
-				});	
-				
+				});
+
 			}
 	    }
 	);

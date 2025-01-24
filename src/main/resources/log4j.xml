@@ -8,14 +8,6 @@
 		</layout>
 	</appender>
 
-<!-- 
-	<logger name="org.hibernate">
-		<level value="debug" />
-	</logger>
- -->
-
-
-
 	<logger name="org.apache.catalina.core.ContainerBase.Standalone.localhost.posystem2">
 		<level value="info" />
 	</logger>

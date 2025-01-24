@@ -90,12 +90,11 @@ if (!dojo._hasResource["brainyit.ui.dashboard.InfoPanelUI"]) {
 			            ,handleAs: "json"
 			            ,preventCache:true
 			            ,load: function(response, ioArgs){
-			            	console.info(response.orderValues);
-			            	if (response.orderValues) {
-			            		var openPO = response.orderValues.open.value + '';
-				            	var execPO =  response.orderValues.executing.value + '';
-				            	var billedPO = response.orderValues.billed.value + '';
-				            	var closedPO = response.orderValues.closed.value + '';
+			            	if (response) {
+			            		var openPO = response.open.value + '';
+				            	var execPO =  response.executing.value + '';
+				            	var billedPO = response.billed.value + '';
+				            	var closedPO = response.closed.value + '';
 				                dojo.html.set(dojo.byId("openPO"), openPO, {parseContent: true	});
 				                dojo.html.set(dojo.byId("execPO"), execPO,{parseContent: true	});
 				                dojo.html.set(dojo.byId("billedPO"), billedPO,{parseContent: true	});

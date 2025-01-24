@@ -3,13 +3,11 @@
  */
 package br.com.brainyit.test.domain.base;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import br.com.brainyit.posystem2.domain.Company;
+import br.com.brainyit.posystem2.domain.Individual;
 import org.junit.Before;
 
 import br.com.brainyit.posystem2.domain.CustomerStatus;
-import br.com.brainyit.posystem2.domain.PFCustomer;
-import br.com.brainyit.posystem2.domain.PJCustomer;
 import br.com.brainyit.posystem2.domain.Subscriber;
 
 /**
@@ -42,83 +40,83 @@ public abstract class BaseDataStoreJUnitTest {
 		subscriber.setZipCode("13460-000");
 		this.saveData(subscriber);
 		
-		PFCustomer pfCustomer = new PFCustomer();
-		pfCustomer.setCpf("2232312312");
-		pfCustomer.setDetails("NALNALANLA");
-		pfCustomer.setName("AAAAAA");
-		pfCustomer.setRg("4535354354");
-		pfCustomer.setStatus(CustomerStatus.ACTIVE);
-		pfCustomer.setSubscriber(subscriber);
-		this.saveData(pfCustomer);
+		Individual individual = new Individual();
+		individual.setCpf("2232312312");
+		individual.setDetails("NALNALANLA");
+		individual.setName("AAAAAA");
+		individual.setRg("4535354354");
+		individual.setStatus(CustomerStatus.ACTIVE);
+		individual.setSubscriber(subscriber);
+		this.saveData(individual);
 
-		pfCustomer = new PFCustomer();
-		pfCustomer.setCpf("85678");
-		pfCustomer.setDetails("NALNALANLA");
-		pfCustomer.setName("CCCCC");
-		pfCustomer.setRg("79798798");
-		pfCustomer.setStatus(CustomerStatus.ACTIVE);
-		pfCustomer.setSubscriber(subscriber);
-		this.saveData(pfCustomer);
+		individual = new Individual();
+		individual.setCpf("85678");
+		individual.setDetails("NALNALANLA");
+		individual.setName("CCCCC");
+		individual.setRg("79798798");
+		individual.setStatus(CustomerStatus.ACTIVE);
+		individual.setSubscriber(subscriber);
+		this.saveData(individual);
 
-		pfCustomer = new PFCustomer();
-		pfCustomer.setCpf("345645");
-		pfCustomer.setDetails("NALNALANLA");
-		pfCustomer.setName("WWWWWWW");
-		pfCustomer.setRg("34234234234");
-		pfCustomer.setStatus(CustomerStatus.ACTIVE);
-		pfCustomer.setSubscriber(subscriber);
-		this.saveData(pfCustomer);
+		individual = new Individual();
+		individual.setCpf("345645");
+		individual.setDetails("NALNALANLA");
+		individual.setName("WWWWWWW");
+		individual.setRg("34234234234");
+		individual.setStatus(CustomerStatus.ACTIVE);
+		individual.setSubscriber(subscriber);
+		this.saveData(individual);
 
-		PJCustomer pjCustomer = new PJCustomer();
-		pjCustomer.setCnpjCgc("33423");
-		pjCustomer.setInscrEstadual("55555");
-		pjCustomer.setInscrMunicipal("333333");
-		pjCustomer.setDetails("NALNALANLA");
-		pjCustomer.setName("Usinagem XPTO");
-		pjCustomer.setStatus(CustomerStatus.ACTIVE);
-		pjCustomer.setSubscriber(subscriber);
-		this.saveData(pjCustomer);
+		Company company = new Company();
+		company.setCnpjCgc("33423");
+		company.setInscrEstadual("55555");
+		company.setInscrMunicipal("333333");
+		company.setDetails("NALNALANLA");
+		company.setName("Usinagem XPTO");
+		company.setStatus(CustomerStatus.ACTIVE);
+		company.setSubscriber(subscriber);
+		this.saveData(company);
 	
 		
-		pjCustomer = new PJCustomer();
-		pjCustomer.setCnpjCgc("22222");
-		pjCustomer.setInscrEstadual("33333");
-		pjCustomer.setInscrMunicipal("22222");
-		pjCustomer.setDetails("NALNALANLA");
-		pjCustomer.setName("ABCDC Retifica");
-		pjCustomer.setStatus(CustomerStatus.ACTIVE);
-		pjCustomer.setSubscriber(subscriber);
-		this.saveData(pjCustomer);
+		company = new Company();
+		company.setCnpjCgc("22222");
+		company.setInscrEstadual("33333");
+		company.setInscrMunicipal("22222");
+		company.setDetails("NALNALANLA");
+		company.setName("ABCDC Retifica");
+		company.setStatus(CustomerStatus.ACTIVE);
+		company.setSubscriber(subscriber);
+		this.saveData(company);
 		
-		pjCustomer = new PJCustomer();
-		pjCustomer.setCnpjCgc("234234");
-		pjCustomer.setInscrEstadual("643563456");
-		pjCustomer.setInscrMunicipal("123123");
-		pjCustomer.setDetails("NALNALANLA");
-		pjCustomer.setName("XYZ LABALBAAL");
-		pjCustomer.setStatus(CustomerStatus.ACTIVE);
-		pjCustomer.setSubscriber(subscriber);
-		this.saveData(pjCustomer);
+		company = new Company();
+		company.setCnpjCgc("234234");
+		company.setInscrEstadual("643563456");
+		company.setInscrMunicipal("123123");
+		company.setDetails("NALNALANLA");
+		company.setName("XYZ LABALBAAL");
+		company.setStatus(CustomerStatus.ACTIVE);
+		company.setSubscriber(subscriber);
+		this.saveData(company);
 		
 		//Clientes inativos
-		pfCustomer = new PFCustomer();
-		pfCustomer.setCpf("345645");
-		pfCustomer.setDetails("NALNALANLA");
-		pfCustomer.setName("Jose dos Santos INATIVO");
-		pfCustomer.setRg("34234234234");
-		pfCustomer.setStatus(CustomerStatus.INACTIVE);
-		pfCustomer.setSubscriber(subscriber);
-		this.saveData(pfCustomer);
+		individual = new Individual();
+		individual.setCpf("345645");
+		individual.setDetails("NALNALANLA");
+		individual.setName("Jose dos Santos INATIVO");
+		individual.setRg("34234234234");
+		individual.setStatus(CustomerStatus.INACTIVE);
+		individual.setSubscriber(subscriber);
+		this.saveData(individual);
 
-		pjCustomer = new PJCustomer();
-		pjCustomer.setCnpjCgc("33423");
-		pjCustomer.setInscrEstadual("55555");
-		pjCustomer.setInscrMunicipal("333333");
-		pjCustomer.setDetails("NALNALANLA");
-		pjCustomer.setName("Usinagem Inativa");
-		pjCustomer.setStatus(CustomerStatus.INACTIVE);
-		pjCustomer.setSubscriber(subscriber);
-		this.saveData(pjCustomer);		
+		company = new Company();
+		company.setCnpjCgc("33423");
+		company.setInscrEstadual("55555");
+		company.setInscrMunicipal("333333");
+		company.setDetails("NALNALANLA");
+		company.setName("Usinagem Inativa");
+		company.setStatus(CustomerStatus.INACTIVE);
+		company.setSubscriber(subscriber);
+		this.saveData(company);
 		
 	}
 	
@@ -136,25 +134,25 @@ public abstract class BaseDataStoreJUnitTest {
 		subscriber.setZipCode("13460-000");
 		this.saveData(subscriber);
 		
-		PFCustomer pfCustomer = new PFCustomer();
-		pfCustomer.setCpf("2232312312");
-		pfCustomer.setDetails("NNNNNNONO");
-		pfCustomer.setName("");
-		pfCustomer.setRg("77777777");
-		pfCustomer.setStatus(CustomerStatus.ACTIVE);
-		pfCustomer.setSubscriber(subscriber);
-		this.saveData(pfCustomer);
+		Individual individual = new Individual();
+		individual.setCpf("2232312312");
+		individual.setDetails("NNNNNNONO");
+		individual.setName("");
+		individual.setRg("77777777");
+		individual.setStatus(CustomerStatus.ACTIVE);
+		individual.setSubscriber(subscriber);
+		this.saveData(individual);
 		
 		
-		PJCustomer pjCustomer = new PJCustomer();
-		pjCustomer.setCnpjCgc("33423");
-		pjCustomer.setInscrEstadual("55555");
-		pjCustomer.setInscrMunicipal("333333");
-		pjCustomer.setDetails("NALNALANLA");
-		pjCustomer.setName("BADDADTO Usi");
-		pjCustomer.setStatus(CustomerStatus.ACTIVE);
-		pjCustomer.setSubscriber(subscriber);
-		this.saveData(pjCustomer);
+		Company company = new Company();
+		company.setCnpjCgc("33423");
+		company.setInscrEstadual("55555");
+		company.setInscrMunicipal("333333");
+		company.setDetails("NALNALANLA");
+		company.setName("BADDADTO Usi");
+		company.setStatus(CustomerStatus.ACTIVE);
+		company.setSubscriber(subscriber);
+		this.saveData(company);
 	}
 	
 	private void saveData(Object obj) {

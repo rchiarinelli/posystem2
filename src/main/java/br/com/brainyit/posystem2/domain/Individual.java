@@ -17,13 +17,13 @@ import java.io.Serial;
  * @author leafar
  *
  */
-@Entity(name = "t_pf")
+@Entity(name = "t_individual")
 @PrimaryKeyJoinColumn(name = "id_customer")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PFCustomer extends Customer {
+public class Individual extends Customer {
 
     /**
      *
