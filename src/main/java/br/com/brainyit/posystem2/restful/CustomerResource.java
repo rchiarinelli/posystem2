@@ -42,7 +42,6 @@ public class CustomerResource extends POSystemResource {
 	@GET
 	@Path("/pf/{id}")
 	@Produces("application/json")
-	@GZIP
 	public Response getPF(@PathParam("id")String id, @QueryParam("format") String format) {
 		if (StringUtils.isBlank(id) || !StringUtils.isNumeric(id)) {
 			logger.error("Blank id");
@@ -60,7 +59,6 @@ public class CustomerResource extends POSystemResource {
 	
 	@GET
 	@Produces("application/json")
-	@GZIP
 	public Response getCustomers(@QueryParam("format") String format){
 		CustomerFilterFacade customerFilterFacade = FacadeFactoryManager.getInstance().getCustomerFacadeFactory().createFilterFacade();
 		String field = this.getFieldForSort();

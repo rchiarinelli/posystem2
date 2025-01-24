@@ -30,7 +30,6 @@ public class MessageResource extends POSystemResource {
 	@GET
 	@Path("/{key}")
 	@Produces("application/json")
-	@GZIP
 	public Response get(@PathParam("key") String key,@QueryParam("format") String format) {
 		if (StringUtils.isBlank(key)) {
 			return this.getResponse(Response.Status.BAD_REQUEST, new Message(MessagesUtil.INVALID_OBJECT_IDENTIFIER),format);

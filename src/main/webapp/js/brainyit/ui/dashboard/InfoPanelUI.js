@@ -80,7 +80,7 @@ if (!dojo._hasResource["brainyit.ui.dashboard.InfoPanelUI"]) {
 					var fromDateStr = fromDate.replace("/","-").replace("/","-");
 					var toDateStr = toDate.replace("/","-").replace("/","-");
 					var basePath = dojo.getObject("basePath");
-					var url = basePath  + '/services/1/dashboard/po/'+fromDateStr+"&"+toDateStr;
+					var url = basePath  + '/services/1/dashboard/po?fromDate='+fromDateStr+'&toDate='+toDateStr;
 					//invoke service
 					dojo.xhrGet({
 			            url: url

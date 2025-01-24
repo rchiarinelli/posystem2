@@ -10,11 +10,11 @@
 		testOnReturn="true" testWhileIdle="true" defaultAutoCommit="false" numTestsPerEvictionRun="4" 
 		/> -->
 	<Resource name="jdbc/POSystemDB" auth="Container" type="javax.sql.DataSource"
-		username="b9d0b7528bac8c" password="71522081" driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://us-cdbr-iron-east-05.cleardb.net:3306/heroku_b6f61eb2bee5831"
+		username="sa" password="" driverClassName="org.hsqldb.jdbc.JDBCDriver"
+		url="jdbc:hsqldb:mem:posystem_test_db"
 		minEvictableIdleTimeMillis="4000" timeBetweenEvictionRunsMillis="5000"
 		removeAbandoned="true" maxActive="100" maxIdle="30" maxWait="15000"
-		validationQuery="select 1" testOnBorrow="true" testOnReturn="true"
+		testOnBorrow="true" testOnReturn="true"
 		testWhileIdle="true" defaultAutoCommit="false" numTestsPerEvictionRun="4" />
 
 	<!-- DataSource para realm de seguranca <Resource name="jdbc/POSystemDB" 
@@ -26,8 +26,8 @@
 		/> -->
 
 	<Realm className="org.apache.catalina.realm.JDBCRealm"
-		driverName="com.mysql.jdbc.Driver"
-		connectionURL="jdbc:mysql://us-cdbr-iron-east-05.cleardb.net:3306/heroku_b6f61eb2bee5831?user=b9d0b7528bac8c&amp;password=71522081"
+		driverName="org.hsqldb.jdbc.JDBCDriver"
+		connectionURL="jdbc:hsqldb:mem:posystem_db"
 		userTable="t_user" userNameCol="user_login" userCredCol="user_password"
 		userRoleTable="t_permission" roleNameCol="operation_name" />
 
