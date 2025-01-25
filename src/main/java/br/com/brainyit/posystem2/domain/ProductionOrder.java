@@ -34,7 +34,7 @@ public class ProductionOrder implements Serializable {
 	private static final long serialVersionUID = 2038714951347635662L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id_po")
 	private Long id;
 	

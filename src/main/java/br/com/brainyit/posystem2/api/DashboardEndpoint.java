@@ -1,7 +1,7 @@
 /**
  *
  */
-package br.com.brainyit.posystem2.restful;
+package br.com.brainyit.posystem2.api;
 
 import br.com.brainyit.filterengine.Filter;
 import br.com.brainyit.filterengine.FilterCondition;
@@ -32,9 +32,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/{subscriber}/dashboard")
 @RequiredArgsConstructor
-public class DashboardResource {
+public class DashboardEndpoint {
 
-    private static Logger logger = LogManager.getLogger(DashboardResource.class);
+    private static Logger logger = LogManager.getLogger(DashboardEndpoint.class);
 
     @GetMapping(value = "/po", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getPo(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {

@@ -19,7 +19,7 @@ public class Resource  implements Serializable{
 	private static final long serialVersionUID = 7759010251047999231L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id_resource")
 	private Integer id;
 	

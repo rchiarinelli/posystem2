@@ -36,7 +36,7 @@ public class Order implements Serializable {
     private static Logger logger = LogManager.getLogger(Order.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_order")
     private Long id;
 

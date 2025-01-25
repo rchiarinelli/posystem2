@@ -29,7 +29,7 @@ public class CustomerContact implements Serializable {
 	private static final long serialVersionUID = -6182917470004897444L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id_contact")
 	private Integer id;
 	

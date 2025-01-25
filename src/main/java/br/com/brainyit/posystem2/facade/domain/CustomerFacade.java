@@ -8,6 +8,8 @@ import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.repository.CustomerRepository;
 import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.Optional;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomerFacade {
 
     private final CustomerRepository customerRepository;
@@ -27,19 +30,19 @@ public class CustomerFacade {
     /* (non-Javadoc)
      * @see br.com.brainyit.posystem2.facade.Facade#list()
      */
-    public List<? extends CustomerRestfulBean> list() {
-        List<CustomerRestfulBean> list = new ArrayList<>();
-
-
-        return list;
+    public List<? extends CustomerRestfulBean> list(final Integer subscriberId) {
+        log.debug("Listing customers for subscriber {}", subscriberId);
+        return customerRepository.findBySubscriberId(subscriberId).stream().map(this::map).toList();
     }
 
     /* (non-Javadoc)
      * @see br.com.brainyit.posystem2.facade.Facade#get(java.lang.Object)inscrMunicipal
      */
-    public CustomerRestfulBean get(Integer identity) {
-        final Optional<Customer> result = customerRepository.findById(identity);
-        return result.map(this::map).orElseThrow(() -> new BusinessException("Customer not found."));
+    public CustomerRestfulBean get(final Integer subscriberId, final Integer identity) {
+        log.debug("Getting customer for subscriber {} and identity {}", subscriberId, identity);
+        
+        final List<Customer> result = customerRepository.findCustomersBySubscriberIdAndCustomerId(subscriberId, identity);
+        return result.stream().map(this::map).findFirst().orElseThrow(() -> new BusinessException("Customer not found."));
     }
 
     CustomerRestfulBean map(final Customer customer) {

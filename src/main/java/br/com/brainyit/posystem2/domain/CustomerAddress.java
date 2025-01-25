@@ -27,7 +27,7 @@ public class CustomerAddress implements Serializable {
 
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id_address")
 	private int id;
 	

@@ -3,15 +3,16 @@
  */
 package br.com.brainyit.posystem2.domain;
 
+import java.io.Serial;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.io.Serial;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author leafar
@@ -22,7 +23,8 @@ import java.io.Serial;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class Company extends Customer {
     /**
      *

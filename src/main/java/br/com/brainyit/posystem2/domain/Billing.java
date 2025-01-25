@@ -38,7 +38,7 @@ public class Billing implements Serializable {
 	private static final long serialVersionUID = 6959462450613891534L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id_billing")
 	private Long id;
 	

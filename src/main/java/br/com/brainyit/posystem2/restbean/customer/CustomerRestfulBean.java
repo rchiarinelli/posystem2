@@ -4,8 +4,11 @@
 package br.com.brainyit.posystem2.restbean.customer;
 
 import br.com.brainyit.posystem2.restbean.RestBean;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 
 /**
@@ -13,6 +16,9 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = false)
 @Data
+@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class CustomerRestfulBean extends RestBean {
 
 
