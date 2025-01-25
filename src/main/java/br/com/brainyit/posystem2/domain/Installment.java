@@ -17,6 +17,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -27,6 +31,10 @@ import org.hibernate.annotations.FetchMode;
  */
 @Entity
 @Table(name="t_billing_installments")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Installment implements Serializable {
 
 	/**
@@ -64,173 +72,6 @@ public class Installment implements Serializable {
 	@JoinColumn(name="id_subscriber",nullable=false)
 	@Fetch(FetchMode.JOIN)
 	private Subscriber subscriber;
-
-	
-	/**
-	 * 
-	 */
-	public Installment() {
-		super();
-	}
-
-	/**
-	 * @param value
-	 * @param date
-	 * @param status
-	 */
-	public Installment(Double value, Date date, InstallmentStatus status) {
-		super();
-		this.value = value;
-		this.date = date;
-		this.status = status;
-	}
-
-	/**
-	 * @param value
-	 * @param date
-	 * @param status
-	 * @param billing
-	 */
-	public Installment(Double value, Date date, InstallmentStatus status,
-			Billing billing) {
-		super();
-		this.value = value;
-		this.date = date;
-		this.status = status;
-		this.billing = billing;
-	}
-
-	
-
-
-	/**
-	 * @param value
-	 * @param date
-	 * @param status
-	 * @param billing
-	 * @param subscriber
-	 */
-	public Installment(Double value, Date date, InstallmentStatus status,
-			Billing billing, Subscriber subscriber) {
-		super();
-		this.value = value;
-		this.date = date;
-		this.status = status;
-		this.billing = billing;
-		this.subscriber = subscriber;
-	}
-
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the value
-	 */
-	public Double getValue() {
-		return value;
-	}
-
-	/**
-	 * @param value the value to set
-	 */
-	public void setValue(Double value) {
-		this.value = value;
-	}
-
-	/**
-	 * @return the date
-	 */
-	public Date getDate() {
-		return date;
-	}
-
-	/**
-	 * @param date the date to set
-	 */
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	/**
-	 * @return the status
-	 */
-	public InstallmentStatus getStatus() {
-		return status;
-	}
-
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(InstallmentStatus status) {
-		this.status = status;
-	}
-
-	/**
-	 * @return the billing
-	 */
-	public Billing getBilling() {
-		return billing;
-	}
-
-	/**
-	 * @param billing the billing to set
-	 */
-	public void setBilling(Billing billing) {
-		this.billing = billing;
-	}
-
-	/**
-	 * @return the paymentDate
-	 */
-	public Date getPaymentDate() {
-		return paymentDate;
-	}
-
-	/**
-	 * @param paymentDate the paymentDate to set
-	 */
-	public void setPaymentDate(Date paymentDate) {
-		this.paymentDate = paymentDate;
-	}
-
-	/**
-	 * @return the finalValue
-	 */
-	public Double getFinalValue() {
-		return finalValue;
-	}
-
-	/**
-	 * @param finalValue the finalValue to set
-	 */
-	public void setFinalValue(Double finalValue) {
-		this.finalValue = finalValue;
-	}
-
-	/**
-	 * @return the subscriber
-	 */
-	public Subscriber getSubscriber() {
-		return subscriber;
-	}
-
-	/**
-	 * @param subscriber the subscriber to set
-	 */
-	public void setSubscriber(Subscriber subscriber) {
-		this.subscriber = subscriber;
-	}
 	
 	
 }
