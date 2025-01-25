@@ -4,3 +4,5 @@
 /java/
 /build/
 .gradle/
+.DS_Store
+.vscode/

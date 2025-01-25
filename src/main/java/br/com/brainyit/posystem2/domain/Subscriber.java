@@ -6,6 +6,9 @@ package br.com.brainyit.posystem2.domain;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,10 +17,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import lombok.NoArgsConstructor;
 
 /**
  * @author leafar
@@ -26,6 +29,9 @@ import org.hibernate.annotations.FetchMode;
 @Entity
 @Table(name="t_subscriber")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Subscriber implements Serializable {
 	/**
 	 * 

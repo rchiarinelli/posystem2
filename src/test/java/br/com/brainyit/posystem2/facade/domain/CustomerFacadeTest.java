@@ -20,6 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.brainyit.posystem2.domain.Customer;
 import br.com.brainyit.posystem2.domain.CustomerStatus;
+import br.com.brainyit.posystem2.domain.Individual;
+import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.repository.CustomerRepository;
 import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
@@ -34,7 +36,9 @@ class CustomerFacadeTest {
     private CustomerFacade customerFacade;
 
     private Customer mockCustomer;
-    private static final Integer SUBSCRIBER_ID = 1;
+    
+    private static final Long SUBSCRIBER_ID = 1L;
+    
     private static final Integer CUSTOMER_ID = 5;
 
     @BeforeEach
@@ -123,5 +127,130 @@ class CustomerFacadeTest {
         assertThat(result.getName(), is("Test Customer"));
         assertThat(result.getDetails(), is("Test Details"));
         assertThat(result.getStatus(), is(CustomerStatus.ACTIVE.toString()));
+    }
+
+    @Test
+    void test_createIndividual_whenValidInput_createsAndReturnsCustomer() {
+        // Arrange
+        Individual customer = new Individual();
+        customer.setName("John Doe");
+        customer.setDetails("New customer");
+        customer.setStatus(CustomerStatus.ACTIVE);
+        customer.setCpf("1234567890");
+        customer.setRg("1234567890");
+        customer.setSubscriber(Subscriber.builder().id(SUBSCRIBER_ID).build());
+
+
+        Individual savedCustomer = new Individual();
+        savedCustomer.setName("John Doe");
+        savedCustomer.setDetails("New customer");
+        savedCustomer.setId(CUSTOMER_ID);
+        savedCustomer.setStatus(CustomerStatus.ACTIVE);
+        savedCustomer.setCpf("1234567890");
+        savedCustomer.setRg("1234567890");
+        savedCustomer.setSubscriber(Subscriber.builder().id(SUBSCRIBER_ID).build());
+
+        when(customerRepository.save(customer)).thenReturn(savedCustomer);
+
+        // Act
+        CustomerRestfulBean result = customerFacade.createIndividual(SUBSCRIBER_ID, customer);
+
+        // Assert
+        assertThat(result, is(notNullValue()));
+        assertThat(result.getId(), is(CUSTOMER_ID.toString()));
+        assertThat(result.getName(), is("John Doe"));
+        assertThat(result.getDetails(), is("New customer"));
+        assertThat(result.getStatus(), is(CustomerStatus.ACTIVE.toString()));
+    }
+
+    @Test
+    void test_createIndividual_whenNullInput_throwsBusinessException() {
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.createIndividual(SUBSCRIBER_ID, null));
+        assertThat(exception.getMessage(), is("Individual cannot be null."));
+    }
+
+    @Test
+    void test_createIndividual_whenInvalidInput_throwsBusinessException() {
+        // Arrange
+        Individual individual = new Individual();
+        // Missing required name
+
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.createIndividual(SUBSCRIBER_ID, individual));
+        assertThat(exception.getMessage(), is("Name is required."));
+    }
+
+    @Test
+    void test_updateIndividual_whenValidInput_updatesAndReturnsCustomer() {
+        // Arrange
+        Individual existingCustomer = new Individual();
+        existingCustomer.setId(CUSTOMER_ID);
+        existingCustomer.setName("John Doe");
+        existingCustomer.setDetails("Old details");
+        existingCustomer.setStatus(CustomerStatus.ACTIVE);
+        existingCustomer.setCpf("1234567890");
+        existingCustomer.setRg("1234567890");
+        existingCustomer.setSubscriber(Subscriber.builder().id(SUBSCRIBER_ID).build());
+
+        Individual updatedCustomer = new Individual();
+        updatedCustomer.setId(CUSTOMER_ID);
+        updatedCustomer.setName("John Smith");
+        updatedCustomer.setDetails("Updated details");
+        updatedCustomer.setStatus(CustomerStatus.INACTIVE);
+        updatedCustomer.setCpf("9876543210");
+        updatedCustomer.setRg("9876543210");
+        updatedCustomer.setSubscriber(Subscriber.builder().id(SUBSCRIBER_ID).build());
+
+        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(SUBSCRIBER_ID, CUSTOMER_ID))
+            .thenReturn(List.of(existingCustomer));
+        when(customerRepository.save(updatedCustomer)).thenReturn(updatedCustomer);
+
+        // Act
+        CustomerRestfulBean result = customerFacade.updateIndividual(SUBSCRIBER_ID, updatedCustomer);
+
+        // Assert
+        assertThat(result, is(notNullValue()));
+        assertThat(result.getName(), is("John Smith"));
+        assertThat(result.getDetails(), is("Updated details")); 
+        assertThat(result.getStatus(), is(CustomerStatus.INACTIVE.toString()));
+    }
+
+    @Test
+    void test_updateIndividual_whenCustomerNotFound_throwsBusinessException() {
+        // Arrange
+        Individual updatedCustomer = new Individual();
+        updatedCustomer.setId(CUSTOMER_ID);
+        updatedCustomer.setName("John Smith");
+        
+        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(SUBSCRIBER_ID, CUSTOMER_ID))
+            .thenReturn(List.of());
+
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.updateIndividual(SUBSCRIBER_ID, updatedCustomer));
+        assertThat(exception.getMessage(), is("Customer not found."));
+    }
+
+    @Test
+    void test_updateIndividual_whenNullInput_throwsBusinessException() {
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.updateIndividual(SUBSCRIBER_ID, null));
+        assertThat(exception.getMessage(), is("Individual cannot be null."));
+    }
+
+    @Test
+    void test_updateIndividual_whenInvalidInput_throwsBusinessException() {
+        // Arrange
+        Individual individual = new Individual();
+        // Missing required name
+
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.updateIndividual(SUBSCRIBER_ID, individual));
+        assertThat(exception.getMessage(), is("Name is required."));
     }
 }

@@ -5,7 +5,9 @@ package br.com.brainyit.posystem2.api;
 
 import br.com.brainyit.posystem2.facade.domain.CustomerFacade;
 import br.com.brainyit.posystem2.facade.filter.CustomerFilterFacade;
+import br.com.brainyit.posystem2.mapper.IndividualMapper;
 import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
+import br.com.brainyit.posystem2.restbean.customer.IndividualRestBean;
 import br.com.brainyit.posystem2.restbean.response.Message;
 import br.com.brainyit.posystem2.util.MessagesUtil;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,7 @@ public class CustomerEndpoint {
             logger.error("Blank id");
             return ResponseEntity.badRequest().body(new Message(MessagesUtil.INVALID_OBJECT_IDENTIFIER));
         }
-        CustomerRestfulBean customer = customerFacade.get(Integer.parseInt(subscriber), Integer.parseInt(id));
+        CustomerRestfulBean customer = customerFacade.get(Long.parseLong(subscriber), Integer.parseInt(id));
         if (customer == null) {
             logger.error("Customer not found.");
             return ResponseEntity.notFound().build();
@@ -43,9 +45,43 @@ public class CustomerEndpoint {
         return ResponseEntity.ok().body(customer);
     }
 
-    @GetMapping( value = {"","/"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getCustomers(@PathVariable("subscriber") final String subscriber) {
-        return ResponseEntity.ok().body(customerFacade.list(Integer.parseInt(subscriber)));
+        return ResponseEntity.ok().body(customerFacade.list(Long.parseLong(subscriber)));
+    }
+
+    @PostMapping(value = {"/individuals"}, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createIndividual(@PathVariable("subscriber") final String subscriber, @RequestBody IndividualRestBean customer) {
+        if (customer == null) {
+            logger.error("Individual is null");
+            return ResponseEntity.badRequest().body(new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR));
+        }
+            return ResponseEntity.ok().body(customerFacade.createIndividual(Long.parseLong(subscriber), IndividualMapper.builder().build().mapToDomain(customer)));
+    }
+
+    @PutMapping(value = "/individuals/{customerId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateIndividual(@PathVariable("subscriber") final String subscriber, 
+                                            @PathVariable("customerId") String customerId,
+                                            @RequestBody IndividualRestBean customer) {
+        if (customer == null) {
+            logger.error("Individual is null");
+            return ResponseEntity.badRequest().body(new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR));
+        }
+
+        if (StringUtils.isBlank(customerId) || !StringUtils.isNumeric(customerId)) {
+            logger.error("Invalid customer ID");
+            return ResponseEntity.badRequest().body(new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR));
+        }
+
+        if (!StringUtils.equalsAnyIgnoreCase(customerId, customer.getId())) {
+            logger.error("Customer ID is not the same as the one in the request body");
+            return ResponseEntity.badRequest().body(new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR));
+        }
+
+        return ResponseEntity.ok().body(customerFacade.updateIndividual(
+            Long.parseLong(subscriber), 
+            IndividualMapper.builder().build().mapToDomain(customer)
+        ));
     }
 
 }
