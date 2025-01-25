@@ -13,8 +13,8 @@ import br.com.brainyit.posystem2.domain.Customer;
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
     @Query(value = "select c from Customer c where c.subscriber.id = :subscriberId and c.id = :customerId")
-    List<Customer> findCustomersBySubscriberIdAndCustomerId(@Param("subscriberId") Integer subscriberId, @Param("customerId") Integer customerId);
+    List<Customer> findCustomersBySubscriberIdAndCustomerId(@Param("subscriberId") Long subscriberId, @Param("customerId") Integer customerId);
 
-    List<Customer> findBySubscriberId(Integer subscriberId);
+    List<Customer> findBySubscriberId(Long subscriberId);
 
 }
