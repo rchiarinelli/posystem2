@@ -10,7 +10,7 @@ package br.com.brainyit.posystem2.domain;
  */
 public enum BillingStatus {
 
-	OPEN("Aberto"), CLOSED("Fechado");
+	OPEN("Aberto"), CLOSED("Fechado"), CANCELLED("Cancelado"), RENEWED("Renegociado");
 	
 	
 	private final String status;

@@ -9,7 +9,7 @@ package br.com.brainyit.posystem2.domain;
  */
 public enum PaymentType {
 
-	INSTALLMENTS("Parcelado"),NO_INTALLMENTS("A vista");
+	INSTALLMENTS("Parcelado"),NO_INTALLMENTS("A vista"),CREDIT_CARD("Cartão de crédito");
 	
 	private final String type;
 	

@@ -6,7 +6,7 @@ package br.com.brainyit.posystem2.domain;
  */
 public enum POStatus {
 	
-	PLANNING("Em planejamento"),EXECUTING("Executando"),DONE("Finalizada");
+	PLANNING("Em preparação"),EXECUTING("Executando"),DONE("Finalizada"),CANCELLED("Cancelada");
 	
 	private final String status;
 	
