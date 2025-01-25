@@ -3,21 +3,21 @@
  */
 package br.com.brainyit.posystem2.facade.domain;
 
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.domain.Customer;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.mapper.IndividualMapper;
 import br.com.brainyit.posystem2.repository.CustomerRepository;
+import br.com.brainyit.posystem2.repository.SubscriberRepository;
 import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * @author rafael
@@ -29,6 +29,8 @@ import java.util.Optional;
 public class CustomerFacade {
 
     private final CustomerRepository customerRepository;
+
+    private final SubscriberRepository subscriberRepository;
 
     /* (non-Javadoc)
      * @see br.com.brainyit.posystem2.facade.Facade#list()
@@ -91,6 +93,42 @@ public class CustomerFacade {
         individual.setSubscriber(existingCustomers.get(0).getSubscriber());
 
         return IndividualMapper.builder().build().mapFromDomain(customerRepository.save(individual));
+    }
+
+    public Company createCompany(final Long subscriberId, final Company company) {
+        log.debug("Creating company customer for subscriber {}", subscriberId);
+        
+        if (company == null) {
+            throw new BusinessException("Company cannot be null.");
+        }
+        
+        if (company.getName() == null || company.getName().trim().isEmpty()) {
+            throw new BusinessException("Name is required.");
+        }
+
+        company.setSubscriber(subscriberRepository.findById(subscriberId).orElseThrow(() -> new BusinessException("Subscriber not found.")));
+        return customerRepository.save(company);
+    }
+
+    public Company updateCompany(final Long subscriberId, final Company company) {
+        log.debug("Updating company");
+
+        if (company == null) {
+            throw new BusinessException("Company cannot be null.");
+        }
+
+        if (company.getName() == null || company.getName().trim().isEmpty()) {
+            throw new BusinessException("Name is required.");
+        }
+
+        List<Customer> existingCustomers = customerRepository.findCustomersBySubscriberIdAndCustomerId(subscriberId, company.getId());
+        if (existingCustomers.isEmpty()) {
+            throw new BusinessException("Company not found.");
+        }
+
+        company.setSubscriber(existingCustomers.get(0).getSubscriber());
+
+        return customerRepository.save(company);
     }
 
 

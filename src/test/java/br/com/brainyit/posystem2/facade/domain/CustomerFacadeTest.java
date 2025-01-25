@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,22 +19,27 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.domain.Customer;
 import br.com.brainyit.posystem2.domain.CustomerStatus;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.repository.CustomerRepository;
+import br.com.brainyit.posystem2.repository.SubscriberRepository;
 import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerFacadeTest {
 
+    @InjectMocks
+    private CustomerFacade customerFacade;
+
     @Mock
     private CustomerRepository customerRepository;
 
-    @InjectMocks
-    private CustomerFacade customerFacade;
+    @Mock
+    private SubscriberRepository subscriberRepository;
 
     private Customer mockCustomer;
     
@@ -253,4 +259,158 @@ class CustomerFacadeTest {
                 () -> customerFacade.updateIndividual(SUBSCRIBER_ID, individual));
         assertThat(exception.getMessage(), is("Name is required."));
     }
+
+    @Test
+    void test_createCompany_whenValidInput_returnsCompany() {
+
+        Subscriber subscriber = Subscriber.builder().id(SUBSCRIBER_ID).build();
+
+        // Arrange
+        Company company = new Company();
+        company.setName("ACME Corporation");
+        company.setDetails("Large company");
+        company.setStatus(CustomerStatus.ACTIVE);
+        company.setCnpjCgc("12.345.678/0001-90");
+        company.setInscrEstadual("123456789");
+        company.setInscrMunicipal("987654321");
+        
+        Company savedCompany = new Company();
+        savedCompany.setId(CUSTOMER_ID);
+        savedCompany.setName("ACME Corporation");
+        savedCompany.setDetails("Large company");
+        savedCompany.setStatus(CustomerStatus.ACTIVE);
+        savedCompany.setCnpjCgc("12.345.678/0001-90");
+        savedCompany.setInscrEstadual("123456789");
+        savedCompany.setInscrMunicipal("987654321");
+        savedCompany.setSubscriber(subscriber);
+        
+        when(subscriberRepository.findById(SUBSCRIBER_ID)).thenReturn(Optional.of(subscriber));
+        when(customerRepository.save(company)).thenReturn(savedCompany);
+
+        // Act
+        Company result = customerFacade.createCompany(SUBSCRIBER_ID, company);
+
+        // Assert
+        assertThat(result, is(notNullValue()));
+        assertThat(result.getId(), is(CUSTOMER_ID));
+        assertThat(result.getName(), is("ACME Corporation"));
+        assertThat(result.getDetails(), is("Large company"));
+        assertThat(result.getStatus(), is(CustomerStatus.ACTIVE));
+        assertThat(result.getCnpjCgc(), is("12.345.678/0001-90"));
+        assertThat(result.getInscrEstadual(), is("123456789"));
+        assertThat(result.getInscrMunicipal(), is("987654321"));
+        assertThat(result.getSubscriber(), is(subscriber));
+    }
+
+    @Test
+    void test_createCompany_whenNullInput_throwsBusinessException() {
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.createCompany(SUBSCRIBER_ID, null));
+        assertThat(exception.getMessage(), is("Company cannot be null."));
+    }
+
+    @Test
+    void test_createCompany_whenInvalidInput_throwsBusinessException() {
+        // Arrange
+        Company company = new Company();
+        // Missing required name
+
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.createCompany(SUBSCRIBER_ID, company));
+        assertThat(exception.getMessage(), is("Name is required."));
+    }
+
+
+    @Test
+    void test_createCompany_whenSubscriberNotFound_throwsBusinessException() {
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.createCompany(SUBSCRIBER_ID, Company.builder().name("ACME Corporation").build()));
+        assertThat(exception.getMessage(), is("Subscriber not found."));
+    }
+
+    @Test
+    void test_updateCompany_whenValidInput_updatesAndReturnsCompany() {
+        // Arrange
+        Company company = new Company();
+        company.setId(CUSTOMER_ID);
+        company.setName("ACME Corporation");
+        company.setDetails("Updated company");
+        company.setStatus(CustomerStatus.ACTIVE);
+        company.setCnpjCgc("12.345.678/0001-90");
+        company.setInscrEstadual("123456789");
+        company.setInscrMunicipal("987654321");
+
+        Subscriber subscriber = Subscriber.builder()
+                .id(SUBSCRIBER_ID)
+                .build();
+
+        Company savedCompany = new Company();
+        savedCompany.setId(CUSTOMER_ID);
+        savedCompany.setName("ACME Corporation");
+        savedCompany.setDetails("Updated company");
+        savedCompany.setStatus(CustomerStatus.ACTIVE);
+        savedCompany.setCnpjCgc("12.345.678/0001-90");
+        savedCompany.setInscrEstadual("123456789");
+        savedCompany.setInscrMunicipal("987654321");
+        savedCompany.setSubscriber(subscriber);
+
+        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(SUBSCRIBER_ID, CUSTOMER_ID))
+                .thenReturn(List.of(Company.builder().build()));
+        when(customerRepository.save(company)).thenReturn(savedCompany);
+
+        // Act
+        Company result = customerFacade.updateCompany(SUBSCRIBER_ID, company);
+
+        // Assert
+        assertThat(result, is(notNullValue()));
+        assertThat(result.getId(), is(CUSTOMER_ID));
+        assertThat(result.getName(), is("ACME Corporation"));
+        assertThat(result.getDetails(), is("Updated company"));
+        assertThat(result.getStatus(), is(CustomerStatus.ACTIVE));
+        assertThat(result.getCnpjCgc(), is("12.345.678/0001-90"));
+        assertThat(result.getInscrEstadual(), is("123456789"));
+        assertThat(result.getInscrMunicipal(), is("987654321"));
+        assertThat(result.getSubscriber(), is(subscriber));
+    }
+
+    @Test
+    void test_updateCompany_whenCompanyNotFound_throwsBusinessException() {
+        // Arrange
+        Company company = new Company();
+        company.setId(CUSTOMER_ID);
+        company.setName("ACME Corporation");
+
+        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(SUBSCRIBER_ID, CUSTOMER_ID))
+                .thenReturn(List.of());
+
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.updateCompany(SUBSCRIBER_ID, company));
+        assertThat(exception.getMessage(), is("Company not found."));
+    }
+
+    @Test
+    void test_updateCompany_whenNullInput_throwsBusinessException() {
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.updateCompany(SUBSCRIBER_ID, null));
+        assertThat(exception.getMessage(), is("Company cannot be null."));
+    }
+
+    @Test
+    void test_updateCompany_whenInvalidInput_throwsBusinessException() {
+        // Arrange
+        Company company = new Company();
+        company.setId(CUSTOMER_ID);
+        // Missing required name
+
+        // Act & Assert
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.updateCompany(SUBSCRIBER_ID, company));
+        assertThat(exception.getMessage(), is("Name is required."));
+    }
+
 }

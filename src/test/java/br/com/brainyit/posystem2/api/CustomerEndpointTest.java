@@ -1,14 +1,5 @@
 package br.com.brainyit.posystem2.api;
 
-import br.com.brainyit.api.BaseApiTest;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-
-import com.google.gson.Gson;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -16,6 +7,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
+import com.google.gson.Gson;
+
+import br.com.brainyit.api.BaseApiTest;
+import br.com.brainyit.util.TestUtils;
 
 class CustomerEndpointTest extends BaseApiTest {
 
@@ -87,12 +88,7 @@ class CustomerEndpointTest extends BaseApiTest {
         createResult.andExpect(status().isOk());
 
         // Get the ID from the response for update
-        String responseContent = createResult.andReturn().getResponse().getContentAsString();
-        Gson gson = new Gson();
-        
-        Map<String, Object> responseMap = gson.fromJson(responseContent, Map.class);
-        
-        String customerId = (String) responseMap.get("id");
+        final String customerId = TestUtils.convertResponseToMap(createResult.andReturn().getResponse().getContentAsString()).get("id").toString();
 
         // Update request
         String updateRequestBody = """
@@ -122,6 +118,95 @@ class CustomerEndpointTest extends BaseApiTest {
                 .andExpect(jsonPath("$.rg").value("98.765.432-1"));
     }
     
+// POST /{subscriber}/customers/companies
+
+    @Test
+    void test_createCompany_whenValidInput_returnsCreatedCompany() throws Exception {
+        // Arrange
+        String subscriber = "1";
+        String createRequestBody = """
+                {
+                    "name": "ACME Corporation",
+                    "details": "Large company that makes everything",
+                    "status": "ACTIVE", 
+                    "cnpj": "12.345.678/0001-90",
+                    "ie": "123456789",
+                    "im": "987654321"
+                }""";
+
+        MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/companies", subscriber)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createRequestBody);
+
+        // Act & Assert
+        mockMvc.perform(createRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value("ACME Corporation"))
+                .andExpect(jsonPath("$.details").value("Large company that makes everything"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.cnpj").value("12.345.678/0001-90"))
+                .andExpect(jsonPath("$.ie").value("123456789"))
+                .andExpect(jsonPath("$.im").value("987654321"));
+    }
+
+
+// PUT /{subscriber}/customers/organizations/{customerId}
+
+    @Test
+    void test_updateCompany_whenValidInput_returnsUpdatedCompany() throws Exception {
+        // Arrange
+        String subscriber = "1";
+        
+        // First create a company
+        String createRequestBody = """
+                {
+                    "name": "ACME Corporation",
+                    "details": "Large company",
+                    "status": "ACTIVE",
+                    "cnpj": "12.345.678/0001-90", 
+                    "ie": "123456789",
+                    "im": "987654321"
+                }""";
+
+        MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/companies", subscriber)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createRequestBody);
+
+        // Get the ID from create response
+        ResultActions createResult = mockMvc.perform(createRequest);
+        createResult.andExpect(status().isOk());
+
+        // Get the ID from the response for update
+        final String customerId = TestUtils.convertResponseToMap(createResult.andReturn().getResponse().getContentAsString()).get("id").toString();
+
+        // Update the company
+        String updateRequestBody = """
+                {
+                    "id": "%s",
+                    "name": "ACME Corporation Updated",
+                    "details": "Updated company details",
+                    "status": "INACTIVE",
+                    "cnpj": "12.345.678/0001-90",
+                    "ie": "987654321",
+                    "im": "123456789"
+                }""".formatted(customerId);
+
+        MockHttpServletRequestBuilder updateRequest = put("/{subscriber}/customers/companies/{customerId}", subscriber, customerId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateRequestBody);
+
+        // Act & Assert
+        mockMvc.perform(updateRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(customerId))
+                .andExpect(jsonPath("$.name").value("ACME Corporation Updated"))
+                .andExpect(jsonPath("$.details").value("Updated company details"))
+                .andExpect(jsonPath("$.status").value("INACTIVE"))
+                .andExpect(jsonPath("$.cnpj").value("12.345.678/0001-90"))
+                .andExpect(jsonPath("$.ie").value("987654321"))
+                .andExpect(jsonPath("$.im").value("123456789"));
+    }
 
 
 }

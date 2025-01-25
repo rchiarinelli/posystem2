@@ -3,37 +3,44 @@
  */
 package br.com.brainyit.posystem2.domain;
 
-import br.com.brainyit.posystem2.exception.BusinessException;
-import br.com.brainyit.posystem2.exception.SystemException;
-import br.com.brainyit.posystem2.repository.OrderRepository;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.springframework.stereotype.Component;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import br.com.brainyit.posystem2.repository.OrderRepository;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Rafael Chiarinelli
  */
-@Component
 @Entity
 @Table(name = "t_order")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class Order implements Serializable {
-
-    private static Logger logger = LogManager.getLogger(Order.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -88,46 +95,46 @@ public class Order implements Serializable {
     @Transient
     private OrderRepository orderRepository;
 
-    /**
-     * @param id
-     */
-    public void close(Long id) {
+    // /**
+    //  * @param id
+    //  */
+    // public void close(Long id) {
 
-    }
+    // }
 
-    /**
-     * @param id
-     */
-    public void cancel(Long id) {
+    // /**
+    //  * @param id
+    //  */
+    // public void cancel(Long id) {
 
 
-    }
+    // }
 
-    /**
-     * @param id
-     */
-    public void bill(Long id) {
+    // /**
+    //  * @param id
+    //  */
+    // public void bill(Long id) {
 
-    }
+    // }
 
-    /**
-     * @param order
-     * @param po
-     * @return
-     */
-    public Long addPO(Order order, ProductionOrder po) {
-        throw new UnsupportedOperationException("Operation not implemented.");
-    }
+    // /**
+    //  * @param order
+    //  * @param po
+    //  * @return
+    //  */
+    // public Long addPO(Order order, ProductionOrder po) {
+    //     throw new UnsupportedOperationException("Operation not implemented.");
+    // }
 
-    /**
-     * Realiza a execucao da venda, retornando o ID gerado.
-     *
-     * @param order
-     * @return
-     * @throws BusinessException
-     */
-    public Long perform(Order order) throws BusinessException, SystemException {
-        logger.debug("Performing the order.");
-        return orderRepository.saveAndFlush(order).getId();
-    }
+    // /**
+    //  * Realiza a execucao da venda, retornando o ID gerado.
+    //  *
+    //  * @param order
+    //  * @return
+    //  * @throws BusinessException
+    //  */
+    // public Long perform(Order order) throws BusinessException, SystemException {
+    //     logger.debug("Performing the order.");
+    //     return orderRepository.saveAndFlush(order).getId();
+    // }
 }

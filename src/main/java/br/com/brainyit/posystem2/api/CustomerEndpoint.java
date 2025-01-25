@@ -5,7 +5,9 @@ package br.com.brainyit.posystem2.api;
 
 import br.com.brainyit.posystem2.facade.domain.CustomerFacade;
 import br.com.brainyit.posystem2.facade.filter.CustomerFilterFacade;
+import br.com.brainyit.posystem2.mapper.CompanyMapper;
 import br.com.brainyit.posystem2.mapper.IndividualMapper;
+import br.com.brainyit.posystem2.restbean.customer.CompanyRestBean;
 import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
 import br.com.brainyit.posystem2.restbean.customer.IndividualRestBean;
 import br.com.brainyit.posystem2.restbean.response.Message;
@@ -84,4 +86,32 @@ public class CustomerEndpoint {
         ));
     }
 
+    @PostMapping(value = {"/companies"}, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createCompany(@PathVariable("subscriber") final String subscriber, @RequestBody CompanyRestBean company) {
+        if (company == null) {
+            logger.error("Company is null");
+            return ResponseEntity.badRequest().body(new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR));
+        }
+        return ResponseEntity.ok().body(CompanyMapper.builder().build().mapFromDomain(customerFacade.createCompany(Long.parseLong(subscriber), CompanyMapper.builder().build().mapToDomain(company))));
+    }
+
+    @PutMapping(value = "/companies/{customerId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateCompany(@PathVariable("subscriber") final String subscriber, @PathVariable("customerId") String customerId, @RequestBody CompanyRestBean company) {
+        if (company == null) {
+            logger.error("Company is null");
+            return ResponseEntity.badRequest().body(new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR));
+        }
+
+        if (StringUtils.isBlank(customerId) || !StringUtils.isNumeric(customerId)) {
+            logger.error("Invalid customer ID");
+            return ResponseEntity.badRequest().body(new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR));
+        }
+
+        if (!StringUtils.equalsAnyIgnoreCase(customerId, company.getId())) {
+            logger.error("Customer ID is not the same as the one in the request body");
+            return ResponseEntity.badRequest().body(new Message(MessagesUtil.RESTBEAN_CONVERTION_ERROR));
+        }
+
+        return ResponseEntity.ok().body(CompanyMapper.builder().build().mapFromDomain(customerFacade.updateCompany(Long.parseLong(subscriber), CompanyMapper.builder().build().mapToDomain(company))));
+    }
 }
