@@ -1,0 +1,6 @@
+/target/
+/tomcat.8080/
+.idea/
+/java/
+/build/
+.gradle/

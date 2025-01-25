@@ -1,0 +1,62 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.8'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+ext {
+	testContainerVersion = '1.20.1'
+	mockitoVersion = '5.13.0'
+	hamcrestVersion = '3.0'
+}
+
+
+group = 'com.brainyit'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	implementation 'org.apache.commons:commons-lang3:3.17.0'
+
+//	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+//	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'com.h2database:h2:2.3.232'
+
+//	runtimeOnly 'io.micrometer:micrometer-registry-datadog'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:mysql'
+
+	testImplementation "org.hamcrest:hamcrest:$hamcrestVersion"
+	testImplementation "org.testcontainers:testcontainers:$testContainerVersion"
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

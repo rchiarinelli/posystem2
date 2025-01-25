@@ -1,0 +1,27 @@
+server:
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    br.com.brainyit: DEBUG
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    hikari:
+      pool-name: posystem-ds-test
+      driver-class-name: org.h2.Driver
+      jdbc-url: jdbc:h2:mem::posystem_db-test
+      username: sa
+      password:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+
+
+
