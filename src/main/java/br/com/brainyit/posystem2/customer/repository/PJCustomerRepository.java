@@ -1,4 +1,4 @@
-package br.com.brainyit.posystem2.repository;
+package br.com.brainyit.posystem2.customer.repository;
 
 import br.com.brainyit.posystem2.domain.Company;
 import org.springframework.data.jpa.repository.JpaRepository;

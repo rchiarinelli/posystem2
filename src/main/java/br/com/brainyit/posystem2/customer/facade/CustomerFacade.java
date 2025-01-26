@@ -1,7 +1,7 @@
 /**
  *
  */
-package br.com.brainyit.posystem2.facade.domain;
+package br.com.brainyit.posystem2.customer.facade;
 
 import java.util.List;
 
@@ -12,10 +12,10 @@ import br.com.brainyit.posystem2.domain.Customer;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
-import br.com.brainyit.posystem2.mapper.IndividualMapper;
-import br.com.brainyit.posystem2.repository.CustomerRepository;
+import br.com.brainyit.posystem2.customer.mapper.IndividualMapper;
+import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 import br.com.brainyit.posystem2.repository.SubscriberRepository;
-import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
+import br.com.brainyit.posystem2.customer.api.CustomerRestfulBean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

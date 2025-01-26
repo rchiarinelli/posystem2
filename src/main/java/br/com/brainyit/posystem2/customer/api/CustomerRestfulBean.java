@@ -1,7 +1,7 @@
 /**
  *
  */
-package br.com.brainyit.posystem2.restbean.customer;
+package br.com.brainyit.posystem2.customer.api;
 
 import br.com.brainyit.posystem2.restbean.RestBean;
 import lombok.AllArgsConstructor;

@@ -1,15 +1,11 @@
 /**
  *
  */
-package br.com.brainyit.posystem2.api;
+package br.com.brainyit.posystem2.customer.api;
 
-import br.com.brainyit.posystem2.facade.domain.CustomerFacade;
-import br.com.brainyit.posystem2.facade.filter.CustomerFilterFacade;
-import br.com.brainyit.posystem2.mapper.CompanyMapper;
-import br.com.brainyit.posystem2.mapper.IndividualMapper;
-import br.com.brainyit.posystem2.restbean.customer.CompanyRestBean;
-import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
-import br.com.brainyit.posystem2.restbean.customer.IndividualRestBean;
+import br.com.brainyit.posystem2.customer.facade.CustomerFacade;
+import br.com.brainyit.posystem2.customer.mapper.CompanyMapper;
+import br.com.brainyit.posystem2.customer.mapper.IndividualMapper;
 import br.com.brainyit.posystem2.restbean.response.Message;
 import br.com.brainyit.posystem2.util.MessagesUtil;
 import lombok.RequiredArgsConstructor;

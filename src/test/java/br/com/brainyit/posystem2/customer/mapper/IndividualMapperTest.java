@@ -1,4 +1,4 @@
-package br.com.brainyit.posystem2.mapper;
+package br.com.brainyit.posystem2.customer.mapper;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.brainyit.posystem2.domain.CustomerStatus;
 import br.com.brainyit.posystem2.domain.Individual;
-import br.com.brainyit.posystem2.restbean.customer.IndividualRestBean;
+import br.com.brainyit.posystem2.customer.api.IndividualRestBean;
 
 @ExtendWith(MockitoExtension.class)
 class IndividualMapperTest {

@@ -1,8 +1,8 @@
-package br.com.brainyit.posystem2.mapper;
+package br.com.brainyit.posystem2.customer.mapper;
 
 import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.domain.CustomerStatus;
-import br.com.brainyit.posystem2.restbean.customer.CompanyRestBean;
+import br.com.brainyit.posystem2.customer.api.CompanyRestBean;
 import lombok.Builder;
 
 @Builder

@@ -1,4 +1,4 @@
-package br.com.brainyit.posystem2.facade.domain;
+package br.com.brainyit.posystem2.customer.facade;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -25,9 +25,9 @@ import br.com.brainyit.posystem2.domain.CustomerStatus;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
-import br.com.brainyit.posystem2.repository.CustomerRepository;
+import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 import br.com.brainyit.posystem2.repository.SubscriberRepository;
-import br.com.brainyit.posystem2.restbean.customer.CustomerRestfulBean;
+import br.com.brainyit.posystem2.customer.api.CustomerRestfulBean;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerFacadeTest {

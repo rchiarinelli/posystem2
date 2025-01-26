@@ -1,4 +1,4 @@
-package br.com.brainyit.posystem2.repository;
+package br.com.brainyit.posystem2.customer.repository;
 
 import java.util.List;
 
