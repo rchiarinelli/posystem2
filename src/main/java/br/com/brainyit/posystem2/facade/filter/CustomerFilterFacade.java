@@ -7,8 +7,8 @@ import br.com.brainyit.posystem2.domain.Customer;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.facade.FilterProperties;
-import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 import br.com.brainyit.posystem2.customer.api.CustomerGridRownRestfulBean;
+import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

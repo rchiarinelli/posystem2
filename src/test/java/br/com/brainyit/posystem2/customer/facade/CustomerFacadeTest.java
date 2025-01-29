@@ -25,9 +25,9 @@ import br.com.brainyit.posystem2.domain.CustomerStatus;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
-import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 import br.com.brainyit.posystem2.repository.SubscriberRepository;
 import br.com.brainyit.posystem2.customer.api.CustomerRestfulBean;
+import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerFacadeTest {

@@ -1,8 +1,15 @@
 package br.com.brainyit.util;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.google.gson.Gson;
+
+import br.com.brainyit.posystem2.domain.Company;
+import br.com.brainyit.posystem2.domain.Customer;
+import br.com.brainyit.posystem2.domain.Individual;
+import br.com.brainyit.posystem2.domain.Order;
+import br.com.brainyit.posystem2.domain.OrderStatus;
 
 public class TestUtils {
 
@@ -22,4 +29,29 @@ public class TestUtils {
         return GSON.fromJson(response, Map.class);
     }
 
+
+    public static Customer createIndividualCustomer(final String name, final String document) {
+        return Individual.builder()
+                .name(name)
+                .cpf(document)
+                .build();
+    }
+
+    public static Customer createCompanyCustomer(final String name, final String document) {
+        return Company.builder()
+                .name(name)
+                .cnpjCgc(document)
+                .build();
+    }
+
+    public static Order createOrder(final Customer customer, final String description, final Double quantity, final OrderStatus status, final Date openDate, final String orderCode) {
+        return Order.builder()
+                .customer(customer)
+                .description(description)
+                .quantity(quantity)
+                .status(status)
+                .openDate(openDate)
+                .orderCode(orderCode)
+                .build();
+    }
 }

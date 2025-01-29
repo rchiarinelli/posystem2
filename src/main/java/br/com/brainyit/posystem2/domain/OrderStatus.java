@@ -9,7 +9,7 @@ package br.com.brainyit.posystem2.domain;
  */
 public enum OrderStatus {
 
-	OPEN("Aberto"),CLOSED("Fechado"),BILLED("Faturado"),CANCELLED("Cancelado"),EXECUTING("Executando"),DELIVERED("Entregue");
+	PENDING("Pendente"),CLOSED("Fechado"),BILLED("Faturado"),CANCELLED("Cancelado"),EXECUTING("Executando"),DELIVERED("Entregue");
 	
 	private final String status;
 	

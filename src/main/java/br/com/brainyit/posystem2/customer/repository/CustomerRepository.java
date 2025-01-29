@@ -17,4 +17,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
     List<Customer> findBySubscriberId(Long subscriberId);
 
+
 }

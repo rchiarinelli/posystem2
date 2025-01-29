@@ -1,4 +1,5 @@
 insert into t_subscriber(id_subscriber, subscriber_city,subscriber_complement,subscriber_doc,subscriber_email,subscriber_name,subscriber_number,subscriber_street,subscriber_zip_code)values (1,'NY','West Side','99999','johnsmith@brainyit.com.br','BrainyIT','4321','Main street','999999');
+insert into t_subscriber(id_subscriber, subscriber_city,subscriber_complement,subscriber_doc,subscriber_email,subscriber_name,subscriber_number,subscriber_street,subscriber_zip_code)values (2,'LA','Cupertino','99999','janesmith@brainyit.com.br','Jane Smith','4321','NNNNOONNOOO','999999');
 
 insert into t_resource(resource_name) values ('Res1');
 insert into t_resource(resource_name) values ('Res2');

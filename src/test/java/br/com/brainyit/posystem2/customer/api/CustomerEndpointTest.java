@@ -74,7 +74,7 @@ class CustomerEndpointTest extends BaseApiTest {
                     "status": "ACTIVE", 
                     "cpf": "123.456.789-00",
                     "rg": "12.345.678-9"
-                }""";
+        }""";
 
         MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/individuals", subscriber)
                 .contentType(MediaType.APPLICATION_JSON)
