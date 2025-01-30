@@ -28,6 +28,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -47,6 +48,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public abstract class Customer implements Serializable, Domain {
 
     /**
@@ -85,120 +87,10 @@ public abstract class Customer implements Serializable, Domain {
     @Fetch(FetchMode.JOIN)
     private Subscriber subscriber;
 
-    /**
-     *
-     * @param id
-     * @param name
-     */
+
     public Customer(Integer id, String name) {
-        super();
         this.id = id;
         this.name = name;
-    }
-
-
-    /**
-     * @return the id
-     */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the details
-     */
-    public String getDetails() {
-        return details;
-    }
-
-    /**
-     * @param details the details to set
-     */
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-
-    /**
-     * @return the status
-     */
-    public CustomerStatus getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(CustomerStatus status) {
-        this.status = status;
-    }
-
-    /**
-     * @return the addresses
-     */
-    public Set<CustomerAddress> getAddresses() {
-        return addresses;
-    }
-
-    /**
-     * @param addresses the addresses to set
-     */
-    public void setAddresses(Set<CustomerAddress> addresses) {
-        this.addresses = addresses;
-    }
-
-    /**
-     * @return the contacts
-     */
-    public Set<CustomerContact> getContacts() {
-        return contacts;
-    }
-
-    /**
-     * @param contacts the contacts to set
-     */
-    public void setContacts(Set<CustomerContact> contacts) {
-        this.contacts = contacts;
-    }
-
-    /**
-     * @return the subscriber
-     */
-    public Subscriber getSubscriber() {
-        return subscriber;
-    }
-
-    /**
-     * @param subscriber the subscriber to set
-     */
-    public void setSubscriber(Subscriber subscriber) {
-        this.subscriber = subscriber;
-    }
-
-
-    public void addCustomer(Customer customer) {
-
     }
 
 }

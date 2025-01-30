@@ -53,7 +53,7 @@ public class DashboardEndpoint {
 
             Filter openReqFilter = new Filter();
             openReqFilter.setClazz(Order.class);
-            openReqFilter.addArgument(FilterCondition.EQUALS, "status", OrderStatus.OPEN);
+            openReqFilter.addArgument(FilterCondition.EQUALS, "status", OrderStatus.PENDING);
             openReqFilter.addArgument(FilterCondition.BETWEEN, "openDate",
                     new Date[]{startDate, endDate});
 

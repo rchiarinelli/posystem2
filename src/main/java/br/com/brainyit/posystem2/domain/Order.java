@@ -1,6 +1,4 @@
-/**
- *
- */
+
 package br.com.brainyit.posystem2.domain;
 
 import java.io.Serializable;
@@ -10,7 +8,7 @@ import java.util.Set;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import br.com.brainyit.posystem2.repository.OrderRepository;
+import br.com.brainyit.posystem2.order.repository.OrderRepository;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -65,13 +63,13 @@ public class Order implements Serializable {
     private Double price;
 
     @Column(name = "qtd_item", nullable = false)
-    private Integer quantity;
+    private Double quantity;
 
     @Column(name = "order_status", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private OrderStatus status;
 
-    @Column(name = "order_code", nullable = false, length = 20)
+    @Column(name = "order_code", nullable = false, length = 100, unique = true)
     private String orderCode;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = ProductionOrder.class)
@@ -95,46 +93,4 @@ public class Order implements Serializable {
     @Transient
     private OrderRepository orderRepository;
 
-    // /**
-    //  * @param id
-    //  */
-    // public void close(Long id) {
-
-    // }
-
-    // /**
-    //  * @param id
-    //  */
-    // public void cancel(Long id) {
-
-
-    // }
-
-    // /**
-    //  * @param id
-    //  */
-    // public void bill(Long id) {
-
-    // }
-
-    // /**
-    //  * @param order
-    //  * @param po
-    //  * @return
-    //  */
-    // public Long addPO(Order order, ProductionOrder po) {
-    //     throw new UnsupportedOperationException("Operation not implemented.");
-    // }
-
-    // /**
-    //  * Realiza a execucao da venda, retornando o ID gerado.
-    //  *
-    //  * @param order
-    //  * @return
-    //  * @throws BusinessException
-    //  */
-    // public Long perform(Order order) throws BusinessException, SystemException {
-    //     logger.debug("Performing the order.");
-    //     return orderRepository.saveAndFlush(order).getId();
-    // }
 }
