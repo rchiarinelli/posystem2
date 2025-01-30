@@ -62,11 +62,11 @@ class OrderEndpointTest extends BaseApiTest {
     }
 
     @Test
-    void test_placeOrder_whenServerError_returnsInternalServerError() throws Exception {
+    void test_placeOrder_whenUserNotFound_returnsInternalServerError() throws Exception {
         // Arrange - Invalid quantity that may cause server error
         String requestBody = """
                 {
-                    "customerDocument": "123.456.789-00",
+                    "customerDocument": "998.888.999-99",
                     "customerName": "John Doe",
                     "orderDescription": "Sample order 1",
                     "quantity": -1
