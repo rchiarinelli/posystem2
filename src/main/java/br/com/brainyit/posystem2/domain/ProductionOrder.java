@@ -4,7 +4,7 @@
 package br.com.brainyit.posystem2.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -22,6 +22,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -36,10 +37,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ProductionOrder implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2038714951347635662L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -51,35 +48,36 @@ public class ProductionOrder implements Serializable {
 	@Fetch(FetchMode.JOIN)
 	private Order order;
 	
-	@Column(name="po_number",nullable=false)
-	private Integer poNumber;
+	@Column(name="po_number", nullable=false, unique = true, length = 100)
+	private String poNumber;
 	
 	@Column(name="description",nullable=true,length=255)
 	private String description ;
 	
-	@Column(name="due_date",nullable=false)
-	private Date dueDate;
-	
+	@Builder.Default
 	@Column(name="qtd_pieces",nullable=true)
-	private Integer qtd;
+	private Integer qtd = 0;
 	
 	@Column(name="deliver_date",nullable=true)
-	private Date deliverDate;
-	
+	private LocalDate estimatedDueDate;
+
+	@Column(name="actual_delivery_date",nullable=true)
+	private LocalDate actualDeliveryDate;
+
 	@Column(name="po_status",nullable=false)
 	@Enumerated(EnumType.ORDINAL)
 	private POStatus status;
 	
-	@Column(name="estimated_time",nullable=true)
-	private Double estimatedTime;
+	@Builder.Default
+	@Column(name="estimated_time",nullable=false)
+	private Double estimatedTime = 0.0;
 	
 	@Column(name="open_date",nullable=false)
-	private Date openDate;
+	private LocalDate openDate;
 	
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="id_subscriber",nullable=false)
 	@Fetch(FetchMode.JOIN)
 	private Subscriber subscriber;
-
 	
 }
