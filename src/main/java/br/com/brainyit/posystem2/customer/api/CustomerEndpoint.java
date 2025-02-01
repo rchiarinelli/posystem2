@@ -43,7 +43,7 @@ public class CustomerEndpoint {
         return ResponseEntity.ok().body(customer);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = {"", "/"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getCustomers(@PathVariable("subscriber") final String subscriber) {
         return ResponseEntity.ok().body(customerFacade.list(Long.parseLong(subscriber)));
     }
