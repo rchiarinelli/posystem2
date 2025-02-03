@@ -6,14 +6,16 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.Test;
 
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.POStatus;
-import br.com.brainyit.posystem2.domain.ProductionOrder;
+import br.com.brainyit.posystem2.po.ProductionOrder;
 import br.com.brainyit.posystem2.po.api.ProductionOrderRestBean;
+import br.com.brainyit.posystem2.util.MessagesUtil;
 
 class ProductionOrderMapperTest {
 
@@ -53,10 +55,10 @@ class ProductionOrderMapperTest {
         assertThat(result.getDescription(), is(po.getDescription()));
         assertThat(result.getStatus(), is(po.getStatus().name()));
         assertThat(result.getEstimatedTime(), is(po.getEstimatedTime()));
-        assertThat(result.getOpenDate(), is(po.getOpenDate().toString()));
-        assertThat(result.getEstimatedDueDate(), is(po.getEstimatedDueDate().toString()));
+        assertThat(result.getOpenDate(), is(po.getOpenDate().format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern")))));
+        assertThat(result.getEstimatedDueDate(), is(po.getEstimatedDueDate().format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern")))));
         assertThat(result.getQuantity(), is(po.getQtd()));
-        assertThat(result.getActualDeliveryDate(), is(po.getActualDeliveryDate().toString()));
+        assertThat(result.getActualDeliveryDate(), is(po.getActualDeliveryDate().format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern")))));
         assertThat(result.getCustomerName(), is(customer.getName()));
     }
 

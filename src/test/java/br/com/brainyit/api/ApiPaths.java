@@ -1,0 +1,22 @@
+package br.com.brainyit.api;
+
+public class ApiPaths {
+
+    
+    private ApiPaths() {
+        throw new IllegalStateException("Utility class");
+    }
+    
+    public static final String ORDERS_ENDPOINT_PATH = "/{subscriberId}/orders";
+
+    public static final String ORDER_ENDPOINT_PATH = "/{subscriberId}/orders/{orderCode}";
+
+    public static final String PRODUCTION_ORDER_ENDPOINT_PATH = "/{subscriberId}/production-orders/{poNumber}";
+
+    public static final String PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH = "/{subscriberId}/production-orders/{poNumber}/cancel";
+
+    public static final String PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH = "/{subscriberId}/production-orders/{poNumber}/proceed";
+
+    public static final String PLACE_PRODUCTION_ORDER_ENDPOINT_PATH = "/{subscriberId}/orders/{orderCode}/place-production-order";
+
+}

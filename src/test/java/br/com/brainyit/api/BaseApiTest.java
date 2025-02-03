@@ -2,10 +2,9 @@ package br.com.brainyit.api;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -16,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase
 @ActiveProfiles("test")
 @TestPropertySource("classpath:application-test.yml")
 @Slf4j
@@ -36,6 +36,19 @@ public abstract class BaseApiTest {
 //        log.info("Registering ReliaQuest base url: {}", mockServer.getEndpoint());
 //        registry.add("reliaquest.base-url", () -> mockServer.getEndpoint());
     }
+
+
+
+    @Autowired
+    protected MockMvc mockMvc;
+
+    // @Autowired
+    // EntityManager entityManager;
+
+    // @AfterEach
+    // public void tearDown() {
+    //     entityManager.clear();
+    // }
 
     @BeforeAll
     static void setup() {
@@ -58,8 +71,6 @@ public abstract class BaseApiTest {
 //                        .withBody(json(REMOVED_EMPLOYEE_RESPONSE)));
     }
 
-    @Autowired
-    protected MockMvc mockMvc;
 
 
 }
