@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,21 +24,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/{subscriberId}")
+@RequestMapping("/{subscriberId}/production-orders")
 @RequiredArgsConstructor
 public class ProductionOrderEndpoint {
 
     private final ProductionOrderService productionOrderService;
 
-    @PostMapping("/orders/{orderCode}/place-production-order")
-    public ResponseEntity<ProductionOrderRestBean> placeProductionOrder(@PathVariable final Long subscriberId,
-            @PathVariable final String orderCode, @Valid @RequestBody final ProcutionOrderRequestBody requestBody) {
-        return ResponseEntity.ok(ProductionOrderMapper.builder().build()
-                .toRestBean(productionOrderService.createProductionOrder(subscriberId, orderCode, requestBody.getQtd(),
-                        requestBody.getEstimatedTime(), requestBody.getDescription())));
-    }
-
-    @GetMapping({ "/production-orders", "/production-orders?status={status}" })
+    @GetMapping
     public ResponseEntity<List<ProductionOrderRestBean>> getProductionOrdersByStatus(
             @PathVariable final Long subscriberId,
             @RequestParam(required = false) final String status) {
@@ -55,14 +46,14 @@ public class ProductionOrderEndpoint {
                 .map(mapper::toRestBean).collect(Collectors.toList()));
     }
 
-    @GetMapping("/production-orders/{poNumber}")
+    @GetMapping("/{poNumber}")
     public ResponseEntity<ProductionOrderRestBean> getProductionOrder(@PathVariable final Long subscriberId,
             @PathVariable final String poNumber) {
         return ResponseEntity.ok(ProductionOrderMapper.builder().build()
                 .toRestBean(productionOrderService.retrieveProductionOrderByPoNumber(subscriberId, poNumber)));
     }
 
-    @PutMapping("/production-orders/{poNumber}")
+    @PutMapping("/{poNumber}")
     public ResponseEntity<ProductionOrderRestBean> updateProductionOrder(@PathVariable final Long subscriberId,
             @PathVariable final String poNumber, @Valid @RequestBody final UpdateProductionOrderRequestBody requestBody) {
 
@@ -80,7 +71,7 @@ public class ProductionOrderEndpoint {
                 .toRestBean(productionOrderService.updateProductionOrder(subscriberId, poNumber, productionOrder)));
     }
 
-    @PutMapping("/production-orders/{poNumber}/cancel")
+    @PutMapping("/{poNumber}/cancel")
     public ResponseEntity<?> cancelProductionOrder(@PathVariable final Long subscriberId,
             @PathVariable final String poNumber, @Valid @RequestBody final UpdateProductionOrderRequestBody requestBody) {
         

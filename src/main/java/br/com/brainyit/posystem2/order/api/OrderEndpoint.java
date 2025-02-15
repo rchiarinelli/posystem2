@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.brainyit.posystem2.order.mapper.OrderMapper;
 import br.com.brainyit.posystem2.order.service.OrderService;
+import br.com.brainyit.posystem2.po.api.ProcutionOrderRequestBody;
+import br.com.brainyit.posystem2.po.api.ProductionOrderRestBean;
+import br.com.brainyit.posystem2.po.mapper.ProductionOrderMapper;
+import br.com.brainyit.posystem2.po.service.ProductionOrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 public class OrderEndpoint {
 
     private final OrderService orderService;
+
+    private final ProductionOrderService productionOrderService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrderRestBean> placeOrder(@PathVariable String subscriberId, @RequestBody @Valid CreateOrderRequestBody requestBody) {
@@ -42,6 +48,14 @@ public class OrderEndpoint {
     @GetMapping
     public ResponseEntity<List<OrderRestBean>> getOrders(@PathVariable final String subscriberId) {
         return ResponseEntity.ok(orderService.getOrdersBySubscriberId(Long.parseLong(subscriberId)).stream().map(OrderMapper.builder().build()::toRestBean).toList());
+    }
+
+    @PostMapping("/{orderCode}/place-production-order")
+    public ResponseEntity<ProductionOrderRestBean> placeProductionOrder(@PathVariable final Long subscriberId,
+            @PathVariable final String orderCode, @Valid @RequestBody final ProcutionOrderRequestBody requestBody) {
+        return ResponseEntity.ok(ProductionOrderMapper.builder().build()
+                .toRestBean(productionOrderService.createProductionOrder(subscriberId, orderCode, requestBody.getQtd(),
+                        requestBody.getEstimatedTime(), requestBody.getDescription())));
     }
 }
 

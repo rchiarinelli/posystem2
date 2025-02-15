@@ -11,15 +11,15 @@ import org.hibernate.Transaction;
 
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.exception.SystemException;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
  * @author rafael
  *
  */
+@Slf4j
 public class TransactionalCommand extends CompositeCommand {
-	
-	private static Logger logger = LogManager.getLogger(TransactionalCommand.class);
 	
 	private Session session;
 	
@@ -27,7 +27,7 @@ public class TransactionalCommand extends CompositeCommand {
 	 * 
 	 * @param session
 	 */
-	public TransactionalCommand(Session session,Command...commands) {
+	public TransactionalCommand(Session session, Command...commands) {
 		super(commands);
 		this.session = session;
 	}
@@ -39,20 +39,20 @@ public class TransactionalCommand extends CompositeCommand {
 	public void execute() throws BusinessException, SystemException {
 		Transaction tx = null;
 		try {
-			logger.debug("Opening transaction.");
+			log.debug("Opening transaction.");
 			tx = this.session.beginTransaction();
 			super.execute();
 			tx.commit();
-			logger.debug("Transaction committed.");
+			log.debug("Transaction committed.");
 		} catch (HibernateException he) {
-			logger.error(he);
+			log.error("Error during transaction", he);
 			tx.rollback();
-			logger.debug("Transaction rolled back.");
+			log.debug("Transaction rolled back.");
 			throw new SystemException(he);
 		} catch (BusinessException bu) {
-			logger.error(bu);
+			log.error("Error during transaction", bu);
 			tx.rollback();
-			logger.debug("Transaction rolled back.");
+			log.debug("Transaction rolled back.");
 			throw bu;
 		}
 	}
