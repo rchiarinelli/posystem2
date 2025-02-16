@@ -4,9 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -14,18 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brainyit.api.BaseApiTest;
 import br.com.brainyit.util.TestUtils;
-import jakarta.persistence.EntityManager;
 
-class ProductionOrderEndpointTest extends BaseApiTest {
+@Transactional
+class CreateProductionOrderEndpointTest extends BaseApiTest {
 
-        @Autowired
-        private EntityManager entityManager;
-
-        @AfterEach
-        void tearDown() {
-                entityManager.clear();
-        }
-
+        
         @Test
         void test_placeProductionOrder_success() throws Exception {
                 // Arrange - First create an order
@@ -128,7 +119,6 @@ class ProductionOrderEndpointTest extends BaseApiTest {
         }
 
         @Test
-        @Transactional
         void test_placeProductionOrder_whenOrderNotInPendingStatus_returnsBadRequest() throws Exception {
                 // Arrange - First create an order and a production order
                 String orderRequestBody = """

@@ -8,13 +8,14 @@ ext {
 	testContainerVersion = '1.20.1'
 	mockitoVersion = '5.13.0'
 	hamcrestVersion = '3.0'
+	springDocOpenAPIVersion = '2.6.0'
 }
 
 
 group = 'com.brainyit'
 
 java {
-	sourceCompatibility = '17'
+	sourceCompatibility = '21'
 }
 
 configurations {
@@ -36,6 +37,9 @@ dependencies {
 	implementation 'com.google.code.gson:gson'
 
 	implementation 'org.apache.commons:commons-lang3:3.17.0'
+
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenAPIVersion"
+    
 
 //	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 //	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
