@@ -13,6 +13,10 @@ public class ApiPaths {
 
     public static final String PRODUCTION_ORDER_ENDPOINT_PATH = "/{subscriberId}/production-orders/{poNumber}";
 
+    public static final String PRODUCTION_ORDERS_PATH = "/{subscriberId}/production-orders";
+
+    public static final String PRODUCTION_ORDERS_BY_STATUS_PATH = "/{subscriberId}/production-orders?status={status}";
+
     public static final String PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH = "/{subscriberId}/production-orders/{poNumber}/cancel";
 
     public static final String PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH = "/{subscriberId}/production-orders/{poNumber}/proceed";

@@ -37,7 +37,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                     "quantity": 1
                 }""";
 
-        ResultActions orderResult = mockMvc.perform(post("/{subscriberId}/orders", validSubscriberId)
+        ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(orderRequestBody));
 
@@ -195,7 +195,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                     "quantity": 1
                 }""";
 
-        ResultActions orderResult = mockMvc.perform(post("/{subscriberId}/orders", validSubscriberId)
+        ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(orderRequestBody));
 
@@ -303,7 +303,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                     "orderDescription": "Test order 1",
                     "quantity": 1
                 }""";
-        ResultActions orderResult = mockMvc.perform(post("/{subscriberId}/orders", validSubscriberId)
+        ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(orderRequestBody));
 
@@ -369,7 +369,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                     "orderDescription": "Test order 1",
                     "quantity": 1
                 }""";
-        ResultActions orderResult = mockMvc.perform(post("/{subscriberId}/orders", validSubscriberId)
+        ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(orderRequestBody));
 
@@ -408,7 +408,186 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value("Description cannot be empty"));
     }
-    
+
+    @Test
+    void test_proceedProductionOrder_success() throws Exception {
+        // Arrange - First create an order and a production order
+        String orderRequestBody = """
+                {
+                    "customerDocument": "345.678.901-22",
+                    "customerName": "Robert Williams",
+                    "orderDescription": "Test order 1",
+                    "quantity": 1
+                }""";
+
+        ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(orderRequestBody));
+
+        String orderCode = (String) TestUtils
+                .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
+                .get("orderCode");
+
+        String poRequestBody = """
+                {
+                    "estimatedTime": 10,
+                    "description": "Production order description",
+                    "qtd": 1
+                }""";
+
+        ResultActions poResult = mockMvc.perform(post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(poRequestBody));
+
+        String poNumber = (String) TestUtils
+                .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
+                .get("poNumber");
+
+        // Act & Assert - Move to the next phase
+        mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("EXECUTING"));
+    }
+
+    @Test
+    void test_proceedProductionOrder_whenAlreadyInProgress_returns400() throws Exception {
+        // Arrange - First create an order and a production order
+        String orderRequestBody = """
+                {
+                    "customerDocument": "345.678.901-22",
+                    "customerName": "Robert Williams",
+                    "orderDescription": "Test order 1",
+                    "quantity": 1
+                }""";
+
+        ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(orderRequestBody));
+
+        String orderCode = (String) TestUtils
+                .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
+                .get("orderCode");
+
+        String poRequestBody = """
+                {
+                    "estimatedTime": 10,
+                    "description": "Production order description",
+                    "qtd": 1
+                }""";
+
+        ResultActions poResult = mockMvc.perform(post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(poRequestBody));
+
+        String poNumber = (String) TestUtils
+                .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
+                .get("poNumber");
+
+        // Move to the next phase first
+        mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber));
+
+        // Act & Assert - Try to proceed again
+        ResultActions progResultActions =mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        progResultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("DONE"));
+   
+    }
+
+
+    @Test
+    void test_proceedAndCancelProductionOrder_returns500() throws Exception {
+        // Arrange - First create an order and a production order
+        String orderRequestBody = """
+                {
+                    "customerDocument": "345.678.901-22",
+                    "customerName": "Robert Williams",
+                    "orderDescription": "Test order 1",
+                    "quantity": 1
+                }""";
+
+        ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(orderRequestBody));
+
+        String orderCode = (String) TestUtils
+                .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
+                .get("orderCode");
+
+        String poRequestBody = """
+                {
+                    "estimatedTime": 10,
+                    "description": "Production order description",
+                    "qtd": 1
+                }""";
+
+        ResultActions poResult = mockMvc.perform(post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(poRequestBody));
+
+        String poNumber = (String) TestUtils
+                .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
+                .get("poNumber");
+
+        // Proceed to the next phase until it is done
+        mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber));
+        mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber));
+
+        // Act & Assert - Try to cancel the production order which should fail
+        ResultActions cancelResultActions = mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH, validSubscriberId, poNumber)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"description\": \"Canceling after done\"}"));
+
+        cancelResultActions.andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void test_cancelProductionOrderTwice_returns500() throws Exception {
+        // Arrange - First create an order and a production order
+        String orderRequestBody = """
+                {
+                    "customerDocument": "345.678.901-22",
+                    "customerName": "Robert Williams",
+                    "orderDescription": "Test order 1",
+                    "quantity": 1
+                }""";
+
+        ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(orderRequestBody));
+
+        String orderCode = (String) TestUtils
+                .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
+                .get("orderCode");
+
+        String poRequestBody = """
+                {
+                    "estimatedTime": 10,
+                    "description": "Production order description",
+                    "qtd": 1
+                }""";
+
+        ResultActions poResult = mockMvc.perform(post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(poRequestBody));
+
+        String poNumber = (String) TestUtils
+                .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
+                .get("poNumber");
+
+        // Act - Cancel the production order
+        ResultActions cancelFirstResultActions = mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH, validSubscriberId, poNumber)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"description\": \"First cancellation\"}"));
+
+        cancelFirstResultActions.andExpect(status().isOk());
+
+        // Act & Assert - Try to cancel the production order again which should fail
+        ResultActions cancelSecondResultActions = mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber));
+
+        cancelSecondResultActions.andExpect(status().isInternalServerError());
+    }
 }
 
 

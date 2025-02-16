@@ -73,7 +73,7 @@ public class ProductionOrderEndpoint {
 
     @PutMapping("/{poNumber}/cancel")
     public ResponseEntity<?> cancelProductionOrder(@PathVariable final Long subscriberId,
-            @PathVariable final String poNumber, @Valid @RequestBody final UpdateProductionOrderRequestBody requestBody) {
+            @PathVariable final String poNumber, @RequestBody final UpdateProductionOrderRequestBody requestBody) {
         
         if (StringUtils.isBlank(requestBody.getDescription())) {
             return ResponseEntity.badRequest().body("Description cannot be empty");
@@ -81,5 +81,10 @@ public class ProductionOrderEndpoint {
 
         return ResponseEntity.ok(ProductionOrderMapper.builder().build()
                 .toRestBean(productionOrderService.cancelProductionOrder(subscriberId, poNumber, requestBody.getDescription())));
+    }
+
+    @PutMapping("/{poNumber}/proceed")
+    public ResponseEntity<?> putMethodName(@PathVariable final String subscriberId, @PathVariable final String poNumber) {
+        return ResponseEntity.ok(ProductionOrderMapper.builder().build().toRestBean(productionOrderService.proceedToNextPhase(Long.valueOf(subscriberId), poNumber)));
     }
 }
