@@ -1,0 +1,237 @@
+openapi: 3.0.0
+
+tags:
+  - name: ProductionOrder
+    description: Production order management endpoints
+    x-interface-name: ProductionOrderApi
+
+parameters:
+  subscriberParam:
+    name: subscriber
+    in: path
+    required: true
+    schema:
+      type: int64
+    description: Subscriber identifier
+
+paths:
+  /{subscriber}/production-orders:
+    get:
+      tags:
+        - ProductionOrder
+      x-interface-name: ProductionOrderApi  
+      summary: Get production orders by status
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [EXECUTING, PLANNING]
+          description: Filter by production order status
+      responses:
+        '200':
+          description: List of production orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductionOrderRestModel'
+
+  /{subscriber}/production-orders/{poNumber}:
+    get:
+      tags:
+        - ProductionOrder
+      x-interface-name: ProductionOrderApi  
+      summary: Get production order by PO number
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: poNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Production order number
+      responses:
+        '200':
+          description: Production order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionOrderRestModel'
+
+    put:
+      tags:
+        - ProductionOrder
+      x-interface-name: ProductionOrderApi
+      summary: Update production order
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: poNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Production order number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductionOrderRequestBody'
+      responses:
+        '200':
+          description: Updated production order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionOrderRestModel'
+
+  /{subscriber}/production-orders/{poNumber}/cancel:
+    put:
+      tags:
+        - ProductionOrder
+      x-interface-name: ProductionOrderApi  
+      summary: Cancel production order
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: poNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Production order number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductionOrderRequestBody'
+      responses:
+        '200':
+          description: Cancelled production order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionOrderRestModel'
+        '400':
+          description: Bad request - Description cannot be empty
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /{subscriber}/production-orders/{poNumber}/proceed:
+    put:
+      tags:
+        - ProductionOrder
+      x-interface-name: ProductionOrderApi  
+      summary: Proceed to next phase
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: poNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Production order number
+      responses:
+        '200':
+          description: Production order moved to next phase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionOrderRestModel'
+
+components:
+  schemas:
+    UpdateProductionOrderRequestBody:
+      type: object
+      required:
+        - qtd
+        - estimatedTime
+        - description
+        - status
+        - actualDeliveryDate
+        - estimatedDueDate
+      properties:
+        qtd:
+          type: number
+          format: double   
+          minimum: 0
+          exclusiveMinimum: true
+          required: false
+        estimatedTime:
+          type: number
+          format: double
+          minimum: 0
+          exclusiveMinimum: true
+          required: false
+        description:
+          type: string
+          required: true
+        status:
+          type: string
+          required: false
+        actualDeliveryDate:
+          type: string
+          format: date
+          required: false
+        estimatedDueDate:
+          type: string
+          format: date
+          required: false
+
+    ProductionOrderRestModel:
+      type: object
+      properties:
+        poNumber:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        estimatedTime:
+          type: double
+        openDate:
+          type: string
+        estimatedDueDate:
+          type: string
+        quantity:
+          type: integer
+        actualDeliveryDate:
+          type: string
+        customerName:
+          type: string

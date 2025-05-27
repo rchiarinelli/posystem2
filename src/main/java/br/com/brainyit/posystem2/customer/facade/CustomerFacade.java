@@ -7,15 +7,17 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import br.com.brainyit.posystem2.customer.mapper.IndividualMapper;
+import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.domain.Customer;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
-import br.com.brainyit.posystem2.customer.mapper.IndividualMapper;
-import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
+import br.com.brainyit.posystem2.model.CompanyRestModel;
+import br.com.brainyit.posystem2.model.CustomerRestModel;
+import br.com.brainyit.posystem2.model.IndividualRestModel;
 import br.com.brainyit.posystem2.repository.SubscriberRepository;
-import br.com.brainyit.posystem2.customer.api.CustomerRestfulBean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,7 +37,7 @@ public class CustomerFacade {
     /* (non-Javadoc)
      * @see br.com.brainyit.posystem2.facade.Facade#list()
      */
-    public List<? extends CustomerRestfulBean> list(final Long subscriberId) {
+    public List<CustomerRestModel> list(final Long subscriberId) {
         log.debug("Listing customers for subscriber {}", subscriberId);
         return customerRepository.findBySubscriberId(subscriberId).stream().map(this::map).toList();
     }
@@ -43,15 +45,15 @@ public class CustomerFacade {
     /* (non-Javadoc)
      * @see br.com.brainyit.posystem2.facade.Facade#get(java.lang.Object)inscrMunicipal
      */
-    public CustomerRestfulBean get(final Long subscriberId, final Integer identity) {
+    public CustomerRestModel get(final Long subscriberId, final Integer identity) {
         log.debug("Getting customer for subscriber {} and identity {}", subscriberId, identity);
         
         final List<Customer> result = customerRepository.findCustomersBySubscriberIdAndCustomerId(subscriberId, identity);
         return result.stream().map(this::map).findFirst().orElseThrow(() -> new BusinessException("Customer not found."));
     }
 
-    CustomerRestfulBean map(final Customer customer) {
-        CustomerRestfulBean restBean = new CustomerRestfulBean();
+    CustomerRestModel map(final Customer customer) {
+        CustomerRestModel restBean = new CompanyRestModel();
         restBean.setDetails(customer.getDetails());
         restBean.setId(customer.getId().toString());
         restBean.setName(customer.getName());
@@ -59,7 +61,7 @@ public class CustomerFacade {
         return restBean;
     }
 
-    public CustomerRestfulBean createIndividual(final Long subscriberId, final Individual individual) {
+    public IndividualRestModel createIndividual(final Long subscriberId, final Individual individual) {
         log.debug("Creating individual customer for subscriber {}", subscriberId);
         
         if (individual == null) {
@@ -74,7 +76,7 @@ public class CustomerFacade {
         return IndividualMapper.builder().build().mapFromDomain(customerRepository.save(individual));
     }
 
-    public CustomerRestfulBean updateIndividual(final Long subscriberId, final Individual individual) {
+    public IndividualRestModel updateIndividual(final Long subscriberId, final Individual individual) {
         log.debug("Updating individual");
 
         if (individual == null) {
@@ -121,7 +123,7 @@ public class CustomerFacade {
             throw new BusinessException("Name is required.");
         }
 
-        List<Customer> existingCustomers = customerRepository.findCustomersBySubscriberIdAndCustomerId(subscriberId, company.getId());
+        final List<Customer> existingCustomers = customerRepository.findCustomersBySubscriberIdAndCustomerId(subscriberId, company.getId());
         if (existingCustomers.isEmpty()) {
             throw new BusinessException("Company not found.");
         }

@@ -1,7 +1,12 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.8'
+	id 'org.springframework.boot' version '3.3.11'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.openapi.generator' version '7.2.0'
+}
+
+springBoot {
+    mainClass.set("br.com.brainyit.InitApplication")
 }
 
 ext {
@@ -9,6 +14,13 @@ ext {
 	mockitoVersion = '5.13.0'
 	hamcrestVersion = '3.0'
 	springDocOpenAPIVersion = '2.6.0'
+	openApiGeneratorVersion = '7.2.0'
+	jakartaValidationVersion = '3.1.1'
+	swaggerVersion = '2.2.20'
+	jacksonDatabindVersion = '0.2.6'
+	jakartaXmlBindVersion = '4.0.1'
+	jaxbRuntimeVersion = '4.0.4'
+	commonsLangVersion = '3.17.0'
 }
 
 
@@ -18,46 +30,66 @@ java {
 	sourceCompatibility = '21'
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
 }
 
 repositories {
 	mavenCentral()
 }
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'com.google.code.gson:gson'
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
 
-	implementation 'org.apache.commons:commons-lang3:3.17.0'
+configurations.all {
+	exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+}
+
+
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-actuator"
+	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+	implementation "org.springframework.boot:spring-boot-starter-hateoas"
+	implementation "org.springframework.boot:spring-boot-starter-web"
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+	implementation "com.google.code.gson:gson"
+	implementation "org.springframework.boot:spring-boot-starter-log4j2"
+    implementation "org.slf4j:slf4j-api"
+
+	implementation "org.apache.commons:commons-lang3:$commonsLangVersion"
 
 	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenAPIVersion"
-    
+
+    implementation "org.openapitools:openapi-generator:$openApiGeneratorVersion"
+    implementation "jakarta.validation:jakarta.validation-api:$jakartaValidationVersion"
+    implementation "io.swagger.core.v3:swagger-annotations:$swaggerVersion"
+
+    implementation "org.openapitools:jackson-databind-nullable:$jacksonDatabindVersion"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+	implementation "jakarta.xml.bind:jakarta.xml.bind-api:$jakartaXmlBindVersion"
+    implementation "org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion"
 
 //	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 //	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	runtimeOnly 'com.h2database:h2:2.3.232'
+	runtimeOnly "com.mysql:mysql-connector-j"
+	runtimeOnly "com.h2database:h2:2.3.232"
 
 //	runtimeOnly 'io.micrometer:micrometer-registry-datadog'
 
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly "org.projectlombok:lombok"
+	annotationProcessor "org.projectlombok:lombok"
 
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly "org.projectlombok:lombok"
+	testAnnotationProcessor "org.projectlombok:lombok"
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:mysql'
+	testImplementation "org.springframework.boot:spring-boot-starter-test"
+	testImplementation "org.springframework.boot:spring-boot-testcontainers"
+	testImplementation "org.testcontainers:junit-jupiter"
+	testImplementation "org.testcontainers:mysql"
 
 	testImplementation "org.hamcrest:hamcrest:$hamcrestVersion"
 	testImplementation "org.testcontainers:testcontainers:$testContainerVersion"
@@ -65,4 +97,43 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+
+openApiGenerate {
+    generatorName = "spring"
+	inputSpecRootDirectory.set("$rootDir/src/main/openApiSpecs/")
+    outputDir = "$buildDir/generated"
+    apiPackage = "br.com.brainyit.posystem2.api"
+    modelPackage = "br.com.brainyit.posystem2.model"
+    configOptions = [
+        useJakartaEe: "true", 
+        useSpringBoot3: "true",
+		unhandledException: "true",
+		useSpringController: "true",
+        documentationProvider: "springdoc",
+		delegatePattern: "true",
+		serializableModel: "true",
+		useSpringBuiltInValidation: "true",
+		removeUnusedImports: "true",
+		useTags: "true",
+		apiSuffix: "Api",
+        serviceInterface: "true",
+		generatedConstructorWithRequiredArgs:"false",
+		additionalModelTypeAnnotations:"@lombok.AllArgsConstructor;@lombok.NoArgsConstructor"
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "${buildDir}/generated/src/main/java"
+        }
+    }
+}
+
+compileJava.dependsOn('openApiGenerate')
+
+clean {
+    delete "${buildDir}/generated"
 }

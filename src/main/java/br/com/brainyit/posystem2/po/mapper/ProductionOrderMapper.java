@@ -2,8 +2,8 @@ package br.com.brainyit.posystem2.po.mapper;
 
 import java.time.format.DateTimeFormatter;
 
+import br.com.brainyit.posystem2.model.ProductionOrderRestModel;
 import br.com.brainyit.posystem2.po.ProductionOrder;
-import br.com.brainyit.posystem2.po.api.ProductionOrderRestBean;
 import br.com.brainyit.posystem2.util.MessagesUtil;
 import lombok.Builder;
 
@@ -16,8 +16,9 @@ public class ProductionOrderMapper {
 
     private ProductionOrderMapper(){}
 
-    public ProductionOrderRestBean toRestBean(final ProductionOrder po) {
-        return ProductionOrderRestBean.builder()
+    public ProductionOrderRestModel toRestBean(final ProductionOrder po) {
+        final ProductionOrderRestModel productionOrderRestModel = new ProductionOrderRestModel();
+        return productionOrderRestModel
                 .poNumber(po.getPoNumber() != null ? po.getPoNumber() : null)
                 .description(po.getDescription())
                 .status(po.getStatus() != null ? po.getStatus().name() : null)
@@ -26,7 +27,6 @@ public class ProductionOrderMapper {
                 .estimatedDueDate(po.getEstimatedDueDate() != null ? po.getEstimatedDueDate().format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern"))) : null)
                 .quantity(po.getQtd())
                 .actualDeliveryDate(po.getActualDeliveryDate() != null ? po.getActualDeliveryDate().format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern"))) : null)
-                .customerName(po.getOrder() != null && po.getOrder().getCustomer() != null ? po.getOrder().getCustomer().getName() : null)
-                .build();
+                .customerName(po.getOrder() != null && po.getOrder().getCustomer() != null ? po.getOrder().getCustomer().getName() : null);
     }
 }

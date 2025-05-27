@@ -43,7 +43,8 @@ class CustomerEndpointTest extends BaseApiTest {
                     "details": "New customer",
                     "status": "ACTIVE",
                     "cpf": "123.456.789-00",
-                    "rg": "12.345.678-9"
+                    "rg": "12.345.678-9",
+                    "customerType":"IndividualRestModel"
                 }""";
 
         // Act
@@ -73,7 +74,8 @@ class CustomerEndpointTest extends BaseApiTest {
                     "details": "New customer",
                     "status": "ACTIVE", 
                     "cpf": "123.456.789-00",
-                    "rg": "12.345.678-9"
+                    "rg": "12.345.678-9",
+                    "customerType":"IndividualRestModel"
         }""";
 
         MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/individuals", subscriber)
@@ -94,6 +96,7 @@ class CustomerEndpointTest extends BaseApiTest {
                     "status": "INACTIVE",
                     "cpf": "987.654.321-00",
                     "rg": "98.765.432-1",
+                    "customerType":"IndividualRestModel",
                     "id": """ + customerId + """
                 }""";
 
@@ -126,8 +129,9 @@ class CustomerEndpointTest extends BaseApiTest {
                     "details": "Large company that makes everything",
                     "status": "ACTIVE", 
                     "cnpj": "12.345.678/0001-90",
-                    "ie": "123456789",
-                    "im": "987654321"
+                    "inscricaoEstadual": "123456789",
+                    "inscricaoMunicipal": "987654321",
+                    "customerType":"CompanyRestModel"
                 }""";
 
         MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/companies", subscriber)
@@ -142,8 +146,8 @@ class CustomerEndpointTest extends BaseApiTest {
                 .andExpect(jsonPath("$.details").value("Large company that makes everything"))
                 .andExpect(jsonPath("$.status").value("ACTIVE"))
                 .andExpect(jsonPath("$.cnpj").value("12.345.678/0001-90"))
-                .andExpect(jsonPath("$.ie").value("123456789"))
-                .andExpect(jsonPath("$.im").value("987654321"));
+                .andExpect(jsonPath("$.inscricaoEstadual").value("123456789"))
+                .andExpect(jsonPath("$.inscricaoMunicipal").value("987654321"));
     }
 
 
@@ -162,7 +166,8 @@ class CustomerEndpointTest extends BaseApiTest {
                     "status": "ACTIVE",
                     "cnpj": "12.345.678/0001-90", 
                     "ie": "123456789",
-                    "im": "987654321"
+                    "im": "987654321",
+                    "customerType":"CompanyRestModel"
                 }""";
 
         MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/companies", subscriber)
@@ -184,8 +189,9 @@ class CustomerEndpointTest extends BaseApiTest {
                     "details": "Updated company details",
                     "status": "INACTIVE",
                     "cnpj": "12.345.678/0001-90",
-                    "ie": "987654321",
-                    "im": "123456789"
+                    "inscricaoEstadual": "987654321",
+                    "inscricaoMunicipal": "123456789",
+                    "customerType":"CompanyRestModel"
                 }""".formatted(customerId);
 
         MockHttpServletRequestBuilder updateRequest = put("/{subscriber}/customers/companies/{customerId}", subscriber, customerId)
@@ -200,8 +206,8 @@ class CustomerEndpointTest extends BaseApiTest {
                 .andExpect(jsonPath("$.details").value("Updated company details"))
                 .andExpect(jsonPath("$.status").value("INACTIVE"))
                 .andExpect(jsonPath("$.cnpj").value("12.345.678/0001-90"))
-                .andExpect(jsonPath("$.ie").value("987654321"))
-                .andExpect(jsonPath("$.im").value("123456789"));
+                .andExpect(jsonPath("$.inscricaoEstadual").value("987654321"))
+                .andExpect(jsonPath("$.inscricaoMunicipal").value("123456789"));
     }
 
 

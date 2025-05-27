@@ -19,15 +19,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.domain.Customer;
 import br.com.brainyit.posystem2.domain.CustomerStatus;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
+import br.com.brainyit.posystem2.model.CustomerRestModel;
 import br.com.brainyit.posystem2.repository.SubscriberRepository;
-import br.com.brainyit.posystem2.customer.api.CustomerRestfulBean;
-import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerFacadeTest {
@@ -68,12 +68,12 @@ class CustomerFacadeTest {
                 .thenReturn(List.of(mockCustomer));
 
         // Act
-        List<? extends CustomerRestfulBean> result = customerFacade.list(SUBSCRIBER_ID);
+        List<? extends CustomerRestModel> result = customerFacade.list(SUBSCRIBER_ID);
 
         // Assert
         assertThat(result, is(not(empty())));
         assertThat(result.size(), is(1));
-        CustomerRestfulBean resultBean = result.get(0);
+        CustomerRestModel resultBean = result.get(0);
         assertThat(resultBean.getId(), is(CUSTOMER_ID.toString()));
         assertThat(resultBean.getName(), is("Test Customer"));
         assertThat(resultBean.getDetails(), is("Test Details"));
@@ -87,7 +87,7 @@ class CustomerFacadeTest {
                 .thenReturn(List.of());
 
         // Act
-        List<? extends CustomerRestfulBean> result = customerFacade.list(SUBSCRIBER_ID);
+        List<? extends CustomerRestModel> result = customerFacade.list(SUBSCRIBER_ID);
 
         // Assert
         assertThat(result, is(empty()));
@@ -100,7 +100,7 @@ class CustomerFacadeTest {
                 .thenReturn(List.of(mockCustomer));
 
         // Act
-        CustomerRestfulBean result = customerFacade.get(SUBSCRIBER_ID, CUSTOMER_ID);
+        CustomerRestModel result = customerFacade.get(SUBSCRIBER_ID, CUSTOMER_ID);
 
         // Assert
         assertThat(result, is(notNullValue()));
@@ -125,7 +125,7 @@ class CustomerFacadeTest {
     @Test
     void test_map_convertsCustomerToRestBean() {
         // Act
-        CustomerRestfulBean result = customerFacade.map(mockCustomer);
+        CustomerRestModel result = customerFacade.map(mockCustomer);
 
         // Assert
         assertThat(result, is(notNullValue()));
@@ -159,7 +159,7 @@ class CustomerFacadeTest {
         when(customerRepository.save(customer)).thenReturn(savedCustomer);
 
         // Act
-        CustomerRestfulBean result = customerFacade.createIndividual(SUBSCRIBER_ID, customer);
+        CustomerRestModel result = customerFacade.createIndividual(SUBSCRIBER_ID, customer);
 
         // Assert
         assertThat(result, is(notNullValue()));
@@ -215,7 +215,7 @@ class CustomerFacadeTest {
         when(customerRepository.save(updatedCustomer)).thenReturn(updatedCustomer);
 
         // Act
-        CustomerRestfulBean result = customerFacade.updateIndividual(SUBSCRIBER_ID, updatedCustomer);
+        CustomerRestModel result = customerFacade.updateIndividual(SUBSCRIBER_ID, updatedCustomer);
 
         // Assert
         assertThat(result, is(notNullValue()));

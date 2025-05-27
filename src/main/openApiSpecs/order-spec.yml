@@ -1,0 +1,189 @@
+openapi: 3.0.0
+
+tags:
+  - name: Order
+    description: Customer order management endpoints
+    x-interface-name: OrderApi
+
+parameters:
+  subscriberParam:
+    name: subscriber
+    in: path
+    required: true
+    schema:
+      type: string
+    description: Subscriber identifier
+
+paths:
+  /{subscriber}/orders:
+    post:
+      tags:
+        - Order
+      summary: Create a new order
+      x-interface-name: OrderApi
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequestBody'
+      responses:
+        '200':
+          description: Order successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderRestModel'
+
+    get:
+      tags:
+        - Order
+      summary: Get all orders for a subscriber
+      x-interface-name: OrderApi
+      parameters:
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderRestModel'
+
+  /{subscriber}/orders/{orderCode}:
+    get:
+      summary: Get order by code
+      tags:
+        - Order
+      x-interface-name: OrderApi
+      parameters:
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: orderCode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Order code
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderRestModel'
+
+    
+  /{subscriber}/orders/{orderCode}/place-production-order:
+    post:
+      tags:
+        - Order
+      summary: Create a production order for an existing order
+      x-interface-name: OrderApi
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: orderCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcutionOrderRequestBody'
+      responses:
+        '200':
+          description: Production order successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionOrderRestModel'
+
+
+components:
+  schemas:
+    CreateOrderRequestBody:
+      type: object
+      required:
+        - customerDocument
+        - customerName
+        - orderDescription
+        - quantity
+      properties:
+        customerDocument:
+          type: string
+        customerName:
+          type: string
+        orderDescription:
+          type: string
+        quantity:
+          type: number
+          format: double
+
+    OrderRestModel:
+      type: object
+      properties:
+        orderCode:
+          type: string
+        customerName:
+          type: string
+        orderDescription:
+          type: string        
+        price:
+          type: double
+        quantity:
+          type: double
+        deliverDate:
+          type: string
+        status:
+          type: string
+
+    ProcutionOrderRequestBody:
+      type: object
+      required:
+        - qtd
+        - estimatedTime
+        - description
+      properties:
+        qtd:
+          type: number
+          format: int
+          minimum: 0
+          exclusiveMinimum: true
+        estimatedTime:
+          type: number
+          format: double
+          minimum: 0
+          exclusiveMinimum: true
+        description:
+          type: string
+
+    ProductionOrderRestModel:
+        $ref: './order-spec.yml#/components/schemas/ProductionOrderRestModel'

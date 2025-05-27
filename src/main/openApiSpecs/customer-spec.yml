@@ -1,0 +1,266 @@
+openapi: 3.0.0
+
+
+info:
+  title: Customer API
+  version: 1.0.0
+
+tags:
+  - name: Customer
+    description: Customer management endpoints
+    x-interface-name: CustomerApi
+
+parameters:
+  subscriberParam:
+    name: subscriber
+    in: path
+    required: true
+    schema:
+      type: string
+    description: Subscriber identifier
+
+paths:
+  /{subscriber}/customers/{id}:
+    get:
+      tags:
+        - Customer
+      summary: Get customer by ID
+      x-interface-name: CustomerApi
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerRestModel'
+        '400':
+          description: Invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '404':
+          description: Customer not found
+
+  /{subscriber}/customers:
+    get:
+      tags:
+        - Customer
+      summary: Get all customers
+      x-interface-name: CustomerApi
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerRestModel'
+
+  /{subscriber}/customers/individuals:
+    post:
+      tags:
+        - Customer
+      summary: Create individual customer
+      x-interface-name: CustomerApi
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualRestModel'
+      responses:
+        '200':
+          description: Individual customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndividualRestModel'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
+  /{subscriber}/customers/individuals/{customerId}:
+    put:
+      tags:
+        - Customer
+      summary: Update individual customer
+      x-interface-name: CustomerApi
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualRestModel'
+      responses:
+        '200':
+          description: Individual customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndividualRestModel'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
+  /{subscriber}/customers/companies:
+    post:
+      tags:
+        - Customer
+      summary: Create company customer
+      x-interface-name: CustomerApi
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyRestModel'
+      responses:
+        '200':
+          description: Company created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyRestModel'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
+  /{subscriber}/customers/companies/{customerId}:
+    put:
+      tags:
+        - Customer
+      summary: Update company customer
+      x-interface-name: CustomerApi
+      parameters:
+        - $ref: '#/parameters/subscriberParam'
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyRestModel'
+      responses:
+        '200':
+          description: Company updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyRestModel'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+
+    CustomerRestModel:
+      type: object
+      discriminator:
+        propertyName: customerType
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        details:
+          type: string
+        status:
+          type: string
+        customerType:
+          type: string
+
+    IndividualRestModel:
+      allOf:
+        - $ref: '#/components/schemas/CustomerRestModel'
+        - type: object
+          properties:
+            cpf:
+              type: string
+            rg:
+              type: string
+
+    CompanyRestModel:
+      allOf:
+        - $ref: '#/components/schemas/CustomerRestModel'
+        - type: object
+          properties:
+            cnpj:
+              type: string
+            inscricaoEstadual:
+              type: string
+            inscricaoMunicipal:
+              type: string

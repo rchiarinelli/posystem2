@@ -150,7 +150,7 @@ class OrderEndpointTest extends BaseApiTest {
         String orderCode = (String) responseMap.get("orderCode");
 
         // Act - Get the created order
-        MockHttpServletRequestBuilder getRequest = get("/1/orders/{orderCode}", orderCode)
+        MockHttpServletRequestBuilder getRequest = get("/{subscriberId}/orders/{orderCode}", "1", orderCode)
                 .contentType(MediaType.APPLICATION_JSON);
 
         ResultActions results = mockMvc.perform(getRequest);

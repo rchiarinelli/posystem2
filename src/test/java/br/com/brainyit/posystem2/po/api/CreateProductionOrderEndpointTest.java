@@ -15,7 +15,6 @@ import br.com.brainyit.util.TestUtils;
 
 @Transactional
 class CreateProductionOrderEndpointTest extends BaseApiTest {
-
         
         @Test
         void test_placeProductionOrder_success() throws Exception {

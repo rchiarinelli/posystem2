@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.OrderStatus;
-import br.com.brainyit.posystem2.order.api.OrderRestBean;
+import br.com.brainyit.posystem2.model.OrderRestModel;
 
 class OrderMapperTest {
 
@@ -40,7 +40,7 @@ class OrderMapperTest {
                 .build();
 
         // when
-        OrderRestBean result = OrderMapper.builder().build().toRestBean(order);
+        OrderRestModel result = OrderMapper.builder().build().toRestBean(order);
 
         // then
         assertThat(result, is(notNullValue()));
@@ -62,7 +62,7 @@ class OrderMapperTest {
                 .build();
 
         // when
-        OrderRestBean result = OrderMapper.builder().build().toRestBean(order);
+        OrderRestModel result = OrderMapper.builder().build().toRestBean(order);
 
         // then
         assertThat(result, is(notNullValue()));
