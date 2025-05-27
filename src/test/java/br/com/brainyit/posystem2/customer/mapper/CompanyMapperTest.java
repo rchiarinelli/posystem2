@@ -11,13 +11,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.domain.CustomerStatus;
-import br.com.brainyit.posystem2.customer.api.CompanyRestBean;
+import br.com.brainyit.posystem2.model.CompanyRestModel;
 
 @ExtendWith(MockitoExtension.class)
 class CompanyMapperTest {
 
     @Test
-    void test_mapFromDomain_whenValidCompany_returnsCompanyRestBean() {
+    void test_mapFromDomain_whenValidCompany_returnsCompanyRestModel() {
         // Arrange
         Company company = Company.builder()
             .cnpjCgc("12.345.678/0001-90")
@@ -30,7 +30,7 @@ class CompanyMapperTest {
         company.setStatus(CustomerStatus.ACTIVE);
 
         // Act
-        CompanyRestBean result = CompanyMapper.builder().build().mapFromDomain(company);
+        CompanyRestModel result = CompanyMapper.builder().build().mapFromDomain(company);
 
         // Assert
         assertThat(result, is(notNullValue()));
@@ -39,14 +39,14 @@ class CompanyMapperTest {
         assertThat(result.getDetails(), is("Company details"));
         assertThat(result.getStatus(), is(CustomerStatus.ACTIVE.toString()));
         assertThat(result.getCnpj(), is("12.345.678/0001-90"));
-        assertThat(result.getIe(), is("123456789"));
-        assertThat(result.getIm(), is("987654321"));
+        assertThat(result.getInscricaoEstadual(), is("123456789"));
+        assertThat(result.getInscricaoMunicipal(), is("987654321"));
     }
 
     @Test
     void test_mapFromDomain_whenCompanyIsNull_returnsNull() {
         // Act
-        CompanyRestBean result = CompanyMapper.builder().build().mapFromDomain(null);
+        CompanyRestModel result = CompanyMapper.builder().build().mapFromDomain(null);
 
         // Assert
         assertThat(result, is(nullValue()));
@@ -60,7 +60,7 @@ class CompanyMapperTest {
         company.setStatus(CustomerStatus.ACTIVE);
 
         // Act
-        CompanyRestBean result = CompanyMapper.builder().build().mapFromDomain(company);
+        CompanyRestModel result = CompanyMapper.builder().build().mapFromDomain(company);
 
         // Assert
         assertThat(result, is(notNullValue()));
@@ -69,22 +69,21 @@ class CompanyMapperTest {
         assertThat(result.getDetails(), is(nullValue()));
         assertThat(result.getStatus(), is(CustomerStatus.ACTIVE.toString()));
         assertThat(result.getCnpj(), is(nullValue()));
-        assertThat(result.getIe(), is(nullValue()));
-        assertThat(result.getIm(), is(nullValue()));
+        assertThat(result.getInscricaoEstadual(), is(nullValue()));
+        assertThat(result.getInscricaoMunicipal(), is(nullValue()));
     }
 
     @Test
     void test_mapToDomain_whenValidRestBean_returnsCompany() {
         // Arrange
-        CompanyRestBean restBean = CompanyRestBean.builder()
-                .id("1")
-                .name("Test Company")
-                .details("Company details")
-                .status(CustomerStatus.ACTIVE.toString())
-                .cnpj("12.345.678/0001-90")
-                .ie("123456789")
-                .im("987654321")
-                .build();
+        CompanyRestModel restBean = new CompanyRestModel();
+        restBean.id("1");
+        restBean.name("Test Company");
+        restBean.details("Company details");
+        restBean.status(CustomerStatus.ACTIVE.toString());
+        restBean.cnpj("12.345.678/0001-90");
+        restBean.inscricaoEstadual("123456789");
+        restBean.inscricaoMunicipal("987654321");
 
         // Act
         Company result = CompanyMapper.builder().build().mapToDomain(restBean);
@@ -112,20 +111,18 @@ class CompanyMapperTest {
     @Test
     void test_mapToDomain_whenEmptyRestBean_returnsEmptyCompany() {
         // Arrange
-        CompanyRestBean restBean = CompanyRestBean.builder()
-                .id("1")
-                .status(CustomerStatus.ACTIVE.toString())
-                .build();
+        CompanyRestModel restBean = new CompanyRestModel();
+
 
         // Act
         Company result = CompanyMapper.builder().build().mapToDomain(restBean);
 
         // Assert
         assertThat(result, is(notNullValue()));
-        assertThat(result.getId(), is(1));
+        assertThat(result.getId(), is(nullValue()));
         assertThat(result.getName(), is(nullValue()));
         assertThat(result.getDetails(), is(nullValue()));
-        assertThat(result.getStatus(), is(CustomerStatus.ACTIVE));
+        assertThat(result.getStatus(), is(nullValue()));
         assertThat(result.getCnpjCgc(), is(nullValue()));
         assertThat(result.getInscrEstadual(), is(nullValue()));
         assertThat(result.getInscrMunicipal(), is(nullValue()));

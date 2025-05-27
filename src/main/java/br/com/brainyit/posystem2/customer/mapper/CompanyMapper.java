@@ -2,29 +2,31 @@ package br.com.brainyit.posystem2.customer.mapper;
 
 import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.domain.CustomerStatus;
-import br.com.brainyit.posystem2.customer.api.CompanyRestBean;
+import br.com.brainyit.posystem2.model.CompanyRestModel;
 import lombok.Builder;
 
 @Builder
 public class CompanyMapper {
 
-    public CompanyRestBean mapFromDomain(final Company company) {
+    public CompanyRestModel mapFromDomain(final Company company) {
         if (company == null) {
             return null;
         }
 
-        return CompanyRestBean.builder()
-                .id(company.getId().toString())
-                .name(company.getName())
-                .details(company.getDetails())
-                .status(company.getStatus().toString())
-                .cnpj(company.getCnpjCgc())
-                .ie(company.getInscrEstadual())
-                .im(company.getInscrMunicipal())
-                .build();
+        final CompanyRestModel companyRestModel = new CompanyRestModel();
+        companyRestModel.setCnpj(company.getCnpjCgc());
+        companyRestModel.setInscricaoEstadual(company.getInscrEstadual());
+        companyRestModel.setInscricaoMunicipal(company.getInscrMunicipal());
+
+        companyRestModel.setId(company.getId().toString());
+        companyRestModel.setName(company.getName());;
+        companyRestModel.setDetails(company.getDetails());;
+        companyRestModel.setStatus(company.getStatus().name());;
+
+        return companyRestModel;
     }
 
-    public Company mapToDomain(final CompanyRestBean restBean) {
+    public Company mapToDomain(final CompanyRestModel restBean) {
         if (restBean == null) {
             return null;
         }
@@ -35,8 +37,8 @@ public class CompanyMapper {
                 .details(restBean.getDetails())
                 .status(restBean.getStatus() != null ? CustomerStatus.valueOf(restBean.getStatus()) : null)
                 .cnpjCgc(restBean.getCnpj())
-                .inscrEstadual(restBean.getIe())
-                .inscrMunicipal(restBean.getIm())
+                .inscrEstadual(restBean.getInscricaoEstadual())
+                .inscrMunicipal(restBean.getInscricaoMunicipal())
                 .build();
     }
 

@@ -2,28 +2,30 @@ package br.com.brainyit.posystem2.customer.mapper;
 
 import br.com.brainyit.posystem2.domain.CustomerStatus;
 import br.com.brainyit.posystem2.domain.Individual;
-import br.com.brainyit.posystem2.customer.api.IndividualRestBean;
+import br.com.brainyit.posystem2.model.IndividualRestModel;
 import lombok.Builder;
 
 @Builder
 public class IndividualMapper {
 
-    public IndividualRestBean mapFromDomain(final Individual individual) {
+    public IndividualRestModel mapFromDomain(final Individual individual) {
         if (individual == null) {
             return null;
         }
 
-        return IndividualRestBean.builder()
-                .id(individual.getId().toString())
-                .name(individual.getName())
-                .details(individual.getDetails())
-                .status(individual.getStatus().toString())
-                .cpf(individual.getCpf())
-                .rg(individual.getRg())
-                .build();
+        final IndividualRestModel individualRestModel = new IndividualRestModel();
+        individualRestModel.setCpf(individual.getCpf());
+        individualRestModel.setRg(individual.getRg());
+
+        individualRestModel.setId(individual.getId().toString());
+        individualRestModel.setName(individual.getName());;
+        individualRestModel.setDetails(individual.getDetails());;
+        individualRestModel.setStatus(individual.getStatus().name());;
+
+        return individualRestModel;
     }
 
-    public Individual mapToDomain(final IndividualRestBean restBean) {
+    public Individual mapToDomain(final IndividualRestModel restBean) {
         if (restBean == null) {
             return null;
         }

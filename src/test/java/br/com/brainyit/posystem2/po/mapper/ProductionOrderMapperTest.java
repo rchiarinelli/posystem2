@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.POStatus;
+import br.com.brainyit.posystem2.model.ProductionOrderRestModel;
 import br.com.brainyit.posystem2.po.ProductionOrder;
-import br.com.brainyit.posystem2.po.api.ProductionOrderRestBean;
 import br.com.brainyit.posystem2.util.MessagesUtil;
 
 class ProductionOrderMapperTest {
@@ -25,15 +25,15 @@ class ProductionOrderMapperTest {
         Individual customer = Individual.builder()
                 .name("Test Customer")
                 .build();
-                
+
         Order order = Order.builder()
                 .customer(customer)
                 .build();
-                
+
         LocalDate openDate = LocalDate.now();
         LocalDate estimatedDueDate = LocalDate.now().plusDays(7);
         LocalDate actualDeliveryDate = LocalDate.now().plusDays(6);
-        
+
         ProductionOrder po = ProductionOrder.builder()
                 .poNumber("PO123")
                 .order(order)
@@ -47,7 +47,8 @@ class ProductionOrderMapperTest {
                 .build();
 
         // when
-        ProductionOrderRestBean result = ProductionOrderMapper.builder().build().toRestBean(po);
+
+        ProductionOrderRestModel result = ProductionOrderMapper.builder().build().toRestBean(po);
 
         // then
         assertThat(result, is(notNullValue()));
@@ -55,10 +56,13 @@ class ProductionOrderMapperTest {
         assertThat(result.getDescription(), is(po.getDescription()));
         assertThat(result.getStatus(), is(po.getStatus().name()));
         assertThat(result.getEstimatedTime(), is(po.getEstimatedTime()));
-        assertThat(result.getOpenDate(), is(po.getOpenDate().format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern")))));
-        assertThat(result.getEstimatedDueDate(), is(po.getEstimatedDueDate().format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern")))));
+        assertThat(result.getOpenDate(), is(po.getOpenDate()
+                .format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern")))));
+        assertThat(result.getEstimatedDueDate(), is(po.getEstimatedDueDate()
+                .format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern")))));
         assertThat(result.getQuantity(), is(po.getQtd()));
-        assertThat(result.getActualDeliveryDate(), is(po.getActualDeliveryDate().format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern")))));
+        assertThat(result.getActualDeliveryDate(), is(po.getActualDeliveryDate()
+                .format(DateTimeFormatter.ofPattern(MessagesUtil.getInstance().getSystemProp("date_pattern")))));
         assertThat(result.getCustomerName(), is(customer.getName()));
     }
 
@@ -66,7 +70,8 @@ class ProductionOrderMapperTest {
     void test_toRestBean_productionOrderMappedToRestBean_withNullValues() {
 
         // when
-        ProductionOrderRestBean result = ProductionOrderMapper.builder().build().toRestBean(ProductionOrder.builder().build());
+        ProductionOrderRestModel result = ProductionOrderMapper.builder().build()
+                .toRestBean(ProductionOrder.builder().build());
 
         // then
         assertThat(result, is(notNullValue()));
@@ -81,4 +86,3 @@ class ProductionOrderMapperTest {
         assertThat(result.getCustomerName(), is(nullValue()));
     }
 }
-

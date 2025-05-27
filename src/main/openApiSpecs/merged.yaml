@@ -1,0 +1,35 @@
+---
+servers:
+- url: "http://localhost:8080"
+openapi: "3.0.0"
+paths:
+  /{subscriber}/customers/{id}:
+    $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1{id}"
+  /{subscriber}/production-orders/{poNumber}/cancel:
+    $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}~1cancel"
+  /{subscriber}/production-orders:
+    $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders"
+  /{subscriber}/customers/individuals/{customerId}:
+    $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1individuals~1{customerId}"
+  /{subscriber}/production-orders/{poNumber}/proceed:
+    $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}~1proceed"
+  /{subscriber}/production-orders/{poNumber}:
+    $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}"
+  /{subscriber}/customers/companies:
+    $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1companies"
+  /{subscriber}/orders/{orderCode}/place-production-order:
+    $ref: "./order-spec.yml#/paths/~1{subscriber}~1orders~1{orderCode}~1place-production-order"
+  /{subscriber}/orders/{orderCode}:
+    $ref: "./order-spec.yml#/paths/~1{subscriber}~1orders~1{orderCode}"
+  /{subscriber}/customers:
+    $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers"
+  /{subscriber}/customers/companies/{customerId}:
+    $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1companies~1{customerId}"
+  /{subscriber}/customers/individuals:
+    $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1individuals"
+  /{subscriber}/orders:
+    $ref: "./order-spec.yml#/paths/~1{subscriber}~1orders"
+info:
+  title: "merged spec"
+  description: "merged spec"
+  version: "1.0.0"
