@@ -3,6 +3,21 @@
  */
 package br.com.brainyit.posystem2.api;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import br.com.brainyit.filterengine.Filter;
 import br.com.brainyit.filterengine.FilterCondition;
 import br.com.brainyit.posystem2.domain.Order;
@@ -13,18 +28,7 @@ import br.com.brainyit.posystem2.restbean.dashboard.OrderDashboard;
 import br.com.brainyit.posystem2.util.FakeObjectBuilder;
 import br.com.brainyit.posystem2.util.MessagesUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author rafael
@@ -32,9 +36,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/{subscriber}/dashboard")
 @RequiredArgsConstructor
+@Slf4j
 public class DashboardEndpoint {
 
-    private static Logger logger = LogManager.getLogger(DashboardEndpoint.class);
 
     @GetMapping(value = "/po", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getPo(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
@@ -91,7 +95,7 @@ public class DashboardEndpoint {
 
             return ResponseEntity.ok(dashboard);
         } catch (ParseException exc) {
-            logger.error(exc);
+            log.error(exc.getMessage(), exc);
             return ResponseEntity.badRequest().build();
         }
     }

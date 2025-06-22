@@ -4,17 +4,16 @@
 package br.com.brainyit.filterengine;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Rafael Chiarinelli
  *
  */
 @Deprecated
+@Slf4j
 public class FilterEngine {
 
-	private static Logger logger = LogManager.getLogger(FilterEngine.class);
 	
 	private static FilterEngine instance;
 	
@@ -36,7 +35,7 @@ public class FilterEngine {
 	 * @return
 	 */
 	public String parseFilter(Filter filter){
-		logger.debug("Gerando filtro.");
+		log.debug("Gerando filtro.");
 		StringBuilder query = new StringBuilder();
 		query.append("from\t");
 		query.append(filter.getClazz().getName());

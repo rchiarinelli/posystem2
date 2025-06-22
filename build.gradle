@@ -2,13 +2,13 @@ plugins {
 	id 'java'
 	id 'java-library'
 	id 'maven-publish'
-	id 'org.springframework.boot' version '3.5.0'
+	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'com.javiersc.semver' version '0.8.0'
 	id 'org.openapi.generator' version '7.2.0'
 }
 
-group = 'br.com.brainy.posystem2'
+group = 'br.com.brainyi'
 
 semver.tagPrefix='v'
 
@@ -40,9 +40,9 @@ bootJar {
     archiveClassifier.set('')
 }
 
-
 springBoot {
-    mainClass.set("br.com.brainyit.InitApplication")
+	buildInfo()
+	mainClass.set("br.com.brainyit.InitApplication")
 }
 
 java {
@@ -80,7 +80,6 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-validation"
 	implementation "com.google.code.gson:gson"
 	implementation "org.springframework.boot:spring-boot-starter-log4j2"
-	implementation "org.springframework.boot:spring-boot-starter-actuator"
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
@@ -98,8 +97,6 @@ dependencies {
 	implementation "jakarta.xml.bind:jakarta.xml.bind-api:$jakartaXmlBindVersion"
     implementation "org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion"
 
-
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly "com.mysql:mysql-connector-j"
 	testImplementation "com.h2database:h2:2.3.232"
 

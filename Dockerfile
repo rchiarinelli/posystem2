@@ -14,5 +14,5 @@ EXPOSE 8080
 WORKDIR /opt/app
 
 
-ENTRYPOINT ["java", "-jar", "/opt/app/app.jar", "--spring.config.location=/opt/config/application.yml"]
+ENTRYPOINT ["java", "-Dspring.config.location=/opt/config/application.yml", "-jar", "/opt/app/app.jar"]
 
