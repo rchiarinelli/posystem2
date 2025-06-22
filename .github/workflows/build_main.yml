@@ -1,0 +1,58 @@
+
+name: Build and Release
+
+on:
+  push:
+    branches: [ "master","main" ]
+  
+permissions:
+  checks: write
+
+jobs:
+  build:
+    permissions:
+      contents: write
+      checks: write
+    uses: rchiarinelli/common-cd_cd-workflows/.github/workflows/java_build.yml@main
+    with:
+      gh_user_name: ${{ github.actor }}
+    secrets: 
+      packages_token: ${{ secrets.GH_PACKAGES_TOKEN }}
+  release:
+    permissions:
+      contents: write
+      checks: write
+    needs: build
+    uses: rchiarinelli/common-cd_cd-workflows/.github/workflows/release.yml@main
+    with:
+      dry_run: false
+    secrets: 
+      packages_token: ${{ secrets.GH_PACKAGES_TOKEN }}
+      
+  publish_java_artifacts:
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    needs: [build,release]
+    uses: rchiarinelli/common-cd_cd-workflows/.github/workflows/java_publish.yml@main
+    with:
+      gh_user_name: ${{ github.actor }}
+    secrets: 
+      packages_token: ${{ secrets.GH_PACKAGES_TOKEN }}
+        
+
+  publish_docker_image:
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    needs: [publish_java_artifacts]
+    uses: rchiarinelli/common-cd_cd-workflows/.github/workflows/docker_publish.yml@main
+    with:
+      gh_user_name: ${{ github.actor }}
+    secrets: 
+      packages_token: ${{ secrets.GH_PACKAGES_TOKEN }}
+        

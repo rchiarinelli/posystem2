@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +39,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
 
                 ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -54,7 +56,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions poResult = mockMvc.perform(
                                 post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(poRequestBody));
+                                                .content(poRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String poNumber = (String) TestUtils
                                 .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
@@ -74,7 +77,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions results = mockMvc
                                 .perform(put(ApiPaths.PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, poNumber)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(updateRequestBody));
+                                                .content(updateRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 // Assert
                 results.andExpect(status().isOk())
@@ -103,7 +107,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions results = mockMvc
                                 .perform(put(ApiPaths.PRODUCTION_ORDER_ENDPOINT_PATH, invalidSubscriberId, "PO-123")
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(updateRequestBody));
+                                                .content(updateRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 results.andExpect(status().isInternalServerError())
                                 .andExpect(jsonPath("$").value("Subscriber not found"));
@@ -124,7 +129,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions results = mockMvc
                                 .perform(put(ApiPaths.PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, "INVALID-PO")
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(updateRequestBody));
+                                                .content(updateRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 results.andExpect(status().isInternalServerError())
                                 .andExpect(jsonPath("$").value("Production Order not found"));
@@ -145,7 +151,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions results = mockMvc
                                 .perform(put(ApiPaths.PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, "PO-123")
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(updateRequestBody));
+                                                .content(updateRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 results.andExpect(status().isBadRequest());
         }
@@ -165,7 +172,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions results = mockMvc
                                 .perform(put(ApiPaths.PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, "PO-123")
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(updateRequestBody));
+                                                .content(updateRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 results.andExpect(status().isBadRequest());
         }
@@ -185,7 +193,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions results = mockMvc
                                 .perform(put(ApiPaths.PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, "PO-123")
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(updateRequestBody));
+                                                .content(updateRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 results.andExpect(status().isBadRequest());
         }
@@ -203,7 +212,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
 
                 ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -219,7 +229,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions poResult = mockMvc.perform(
                                 post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(poRequestBody));
+                                                .content(poRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String poNumber = (String) TestUtils
                                 .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
@@ -242,7 +253,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions results = mockMvc.perform(
                                 put(ApiPaths.PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH, validSubscriberId, poNumber)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(cancelRequestBody));
+                                                .content(cancelRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 // Assert
                 results.andExpect(status().isOk())
@@ -273,7 +285,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Act & Assert
                 mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH, invalidSubscriberId, poNumber)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(cancelRequestBody))
+                                .content(cancelRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
                                 .andExpect(status().isInternalServerError())
                                 .andExpect(jsonPath("$").value("Subscriber not found"));
         }
@@ -296,7 +309,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Act & Assert
                 mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH, validSubscriberId, invalidPoNumber)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(cancelRequestBody))
+                                .content(cancelRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
                                 .andExpect(status().isInternalServerError())
                                 .andExpect(jsonPath("$").value("Production Order not found"));
         }
@@ -314,7 +328,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
                 ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -330,7 +345,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions poResult = mockMvc.perform(
                                 post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(poRequestBody));
+                                                .content(poRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String poNumber = (String) TestUtils
                                 .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
@@ -349,7 +365,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
 
                 mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, poNumber)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(updateRequestBody));
+                                .content(updateRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String cancelRequestBody = """
                                 {
@@ -364,7 +381,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Act & Assert
                 mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH, validSubscriberId, poNumber)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(cancelRequestBody))
+                                .content(cancelRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
                                 .andExpect(status().isInternalServerError())
                                 .andExpect(jsonPath("$").value("Cannot cancel production order in DONE status"));
         }
@@ -381,7 +399,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
                 ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -397,7 +416,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions poResult = mockMvc.perform(
                                 post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(poRequestBody));
+                                                .content(poRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String poNumber = (String) TestUtils
                                 .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
@@ -415,7 +435,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Act & Assert
                 mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH, validSubscriberId, poNumber)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(cancelRequestBody))
+                                .content(cancelRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -432,7 +453,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
 
                 ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -448,14 +470,17 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions poResult = mockMvc.perform(
                                 post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(poRequestBody));
+                                                .content(poRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String poNumber = (String) TestUtils
                                 .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
                                 .get("poNumber");
 
                 // Act & Assert - Move to the next phase
-                mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber))
+                mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status").value("EXECUTING"));
         }
@@ -473,7 +498,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
 
                 ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -489,19 +515,23 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions poResult = mockMvc.perform(
                                 post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(poRequestBody));
+                                                .content(poRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String poNumber = (String) TestUtils
                                 .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
                                 .get("poNumber");
 
                 // Move to the next phase first
-                mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber));
+                mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 // Act & Assert - Try to proceed again
                 ResultActions progResultActions = mockMvc.perform(
                                 put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber)
-                                                .contentType(MediaType.APPLICATION_JSON));
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 progResultActions.andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status").value("DONE"));
@@ -520,6 +550,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
 
                 ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(orderRequestBody));
 
@@ -537,20 +568,26 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions poResult = mockMvc.perform(
                                 post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(poRequestBody));
+                                                .content(poRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String poNumber = (String) TestUtils
                                 .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
                                 .get("poNumber");
 
                 // Proceed to the next phase until it is done
-                mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber));
-                mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber));
+                mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+                mockMvc.perform(put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 // Act & Assert - Try to cancel the production order which should fail
                 ResultActions cancelResultActions = mockMvc.perform(
                                 put(ApiPaths.PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH, validSubscriberId, poNumber)
                                                 .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt())
                                                 .content("""
                                                                 {
                                                                     "description": "Cancelling after done",
@@ -577,7 +614,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
 
                 ResultActions orderResult = mockMvc.perform(post(ApiPaths.ORDERS_ENDPOINT_PATH, validSubscriberId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -593,7 +631,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 ResultActions poResult = mockMvc.perform(
                                 post(ApiPaths.PLACE_PRODUCTION_ORDER_ENDPOINT_PATH, validSubscriberId, orderCode)
                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                .content(poRequestBody));
+                                                .content(poRequestBody)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String poNumber = (String) TestUtils
                                 .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
@@ -602,6 +641,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Act - Cancel the production order
                 ResultActions cancelFirstResultActions = mockMvc.perform(
                                 put(ApiPaths.PRODUCTION_ORDER_CANCEL_ENDPOINT_PATH, validSubscriberId, poNumber)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt())
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content("""
                                                                 {
@@ -617,7 +657,9 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
 
                 // Act & Assert - Try to cancel the production order again which should fail
                 ResultActions cancelSecondResultActions = mockMvc.perform(
-                                put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber));
+                                put(ApiPaths.PRODUCTION_ORDER_PROCEED_ENDPOINT_PATH, validSubscriberId, poNumber)
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 cancelSecondResultActions.andExpect(status().isInternalServerError());
         }
