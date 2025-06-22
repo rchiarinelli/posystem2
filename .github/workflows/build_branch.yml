@@ -1,0 +1,21 @@
+
+name: Build branch
+
+on:
+  workflow_dispatch:   
+  pull_request:
+    branches: [ "master","main" ]
+  
+permissions:
+  checks: write
+
+jobs:
+  build:
+    permissions:
+      contents: write
+      checks: write
+    uses: rchiarinelli/common-cd_cd-workflows/.github/workflows/java_build.yml@main
+    with:
+      gh_user_name: ${{ github.actor }}
+    secrets: 
+      packages_token: ${{ secrets.GH_PACKAGES_TOKEN }}

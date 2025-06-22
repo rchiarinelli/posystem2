@@ -52,8 +52,6 @@ public class User implements Serializable {
 	@Fetch(FetchMode.JOIN)
 	private Set<Permission> permissions;
 	
-	
-	
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

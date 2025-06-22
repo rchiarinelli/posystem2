@@ -1,22 +1,24 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.11'
+	id 'java-library'
+	id 'maven-publish'
+	id 'org.springframework.boot' version '3.5.0'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.javiersc.semver' version '0.8.0'
 	id 'org.openapi.generator' version '7.2.0'
 }
 
-springBoot {
-    mainClass.set("br.com.brainyit.InitApplication")
-}
+group = 'br.com.brainy.posystem2'
+
+semver.tagPrefix='v'
 
 ext {
-	testContainerVersion = '1.20.1'
 	mockitoVersion = '5.13.0'
 	hamcrestVersion = '3.0'
-	springDocOpenAPIVersion = '2.6.0'
-	openApiGeneratorVersion = '7.2.0'
+	springDocOpenAPIVersion = '2.8.8'
+	openApiGeneratorVersion = '7.13.0'
 	jakartaValidationVersion = '3.1.1'
-	swaggerVersion = '2.2.20'
+	swaggerVersion = '2.2.31'
 	jacksonDatabindVersion = '0.2.6'
 	jakartaXmlBindVersion = '4.0.1'
 	jaxbRuntimeVersion = '4.0.4'
@@ -24,18 +26,29 @@ ext {
 }
 
 
-group = 'com.brainyit'
+bootRun {
+    if (project.hasProperty('args')) {
+        args project.args.split(',')
+    }
+}
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    archiveClassifier.set('')
+}
+
+
+springBoot {
+    mainClass.set("br.com.brainyit.InitApplication")
+}
 
 java {
-	sourceCompatibility = '21'
-}
-
-tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
-}
-
-repositories {
-	mavenCentral()
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 configurations {
@@ -44,41 +57,51 @@ configurations {
 	}
 }
 
+repositories {
+	mavenLocal()
+	mavenCentral()
+	maven {
+        url = uri("https://maven.pkg.github.com/rchiarinelli/posystem2")
+        credentials {
+            username = project.findProperty("gpr.usr") ?: System.getenv("GH_USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("GH_TOKEN")
+        }
+   }
+}
+
 configurations.all {
 	exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 }
 
-
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-actuator"
 	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-	implementation "org.springframework.boot:spring-boot-starter-hateoas"
 	implementation "org.springframework.boot:spring-boot-starter-web"
 	implementation "org.springframework.boot:spring-boot-starter-validation"
 	implementation "com.google.code.gson:gson"
 	implementation "org.springframework.boot:spring-boot-starter-log4j2"
+	implementation "org.springframework.boot:spring-boot-starter-actuator"
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
     implementation "org.slf4j:slf4j-api"
+	implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenAPIVersion"
+    implementation "org.openapitools:openapi-generator:$openApiGeneratorVersion"
+    implementation "jakarta.validation:jakarta.validation-api:$jakartaValidationVersion"
 
 	implementation "org.apache.commons:commons-lang3:$commonsLangVersion"
 
-	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenAPIVersion"
-
-    implementation "org.openapitools:openapi-generator:$openApiGeneratorVersion"
-    implementation "jakarta.validation:jakarta.validation-api:$jakartaValidationVersion"
-    implementation "io.swagger.core.v3:swagger-annotations:$swaggerVersion"
-
-    implementation "org.openapitools:jackson-databind-nullable:$jacksonDatabindVersion"
-    implementation "com.fasterxml.jackson.core:jackson-databind"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+	implementation "org.openapitools:jackson-databind-nullable:$jacksonDatabindVersion"
 	implementation "jakarta.xml.bind:jakarta.xml.bind-api:$jakartaXmlBindVersion"
     implementation "org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion"
 
-//	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-//	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-	runtimeOnly "com.mysql:mysql-connector-j"
-	runtimeOnly "com.h2database:h2:2.3.232"
 
-//	runtimeOnly 'io.micrometer:micrometer-registry-datadog'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly "com.mysql:mysql-connector-j"
+	testImplementation "com.h2database:h2:2.3.232"
 
 	compileOnly "org.projectlombok:lombok"
 	annotationProcessor "org.projectlombok:lombok"
@@ -86,13 +109,20 @@ dependencies {
 	testCompileOnly "org.projectlombok:lombok"
 	testAnnotationProcessor "org.projectlombok:lombok"
 
-	testImplementation "org.springframework.boot:spring-boot-starter-test"
-	testImplementation "org.springframework.boot:spring-boot-testcontainers"
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation "org.testcontainers:junit-jupiter"
 	testImplementation "org.testcontainers:mysql"
 
 	testImplementation "org.hamcrest:hamcrest:$hamcrestVersion"
-	testImplementation "org.testcontainers:testcontainers:$testContainerVersion"
+	testImplementation "org.testcontainers:testcontainers"
+	
+	constraints {
+        implementation("io.swagger.core.v3:swagger-annotations:$swaggerVersion")
+        implementation("io.swagger.core.v3:swagger-models:$swaggerVersion")
+        implementation("io.swagger.core.v3:swagger-core-jakarta:$swaggerVersion")
+    }
 }
 
 tasks.named('test') {
@@ -137,3 +167,37 @@ compileJava.dependsOn('openApiGenerate')
 clean {
     delete "${buildDir}/generated"
 }
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact bootJar
+            
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+            
+            pom {
+                name = project.name
+                description = 'POSystem2 Backend Application'
+                url = 'https://github.com/rchiarinelli/posystem2'
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/rchiarinelli/posystem2"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+
+

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -31,6 +32,7 @@ class OrderEndpointTest extends BaseApiTest {
         // Act
         final MockHttpServletRequestBuilder request = post("/1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
 
         final ResultActions results = mockMvc.perform(request);
@@ -53,6 +55,7 @@ class OrderEndpointTest extends BaseApiTest {
         // Act
         final MockHttpServletRequestBuilder request = post("/1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
 
         final ResultActions results = mockMvc.perform(request);
@@ -75,6 +78,7 @@ class OrderEndpointTest extends BaseApiTest {
         // Act
         final MockHttpServletRequestBuilder request = post("/1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
 
         final ResultActions results = mockMvc.perform(request);
@@ -97,6 +101,7 @@ class OrderEndpointTest extends BaseApiTest {
         // Act
         final MockHttpServletRequestBuilder request = post("/1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
 
         final ResultActions results = mockMvc.perform(request);
@@ -120,6 +125,7 @@ class OrderEndpointTest extends BaseApiTest {
         // Act
         final MockHttpServletRequestBuilder request = post("/1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
 
         final ResultActions results = mockMvc.perform(request);
@@ -142,6 +148,7 @@ class OrderEndpointTest extends BaseApiTest {
 
         MockHttpServletRequestBuilder createRequest = post("/1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(createOrderRequest);
 
         ResultActions createResult = mockMvc.perform(createRequest);
@@ -151,7 +158,8 @@ class OrderEndpointTest extends BaseApiTest {
 
         // Act - Get the created order
         MockHttpServletRequestBuilder getRequest = get("/{subscriberId}/orders/{orderCode}", "1", orderCode)
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
         ResultActions results = mockMvc.perform(getRequest);
 
@@ -168,7 +176,8 @@ class OrderEndpointTest extends BaseApiTest {
     void test_getOrder_whenOrderNotFound_returnsInternalServerError() throws Exception {
         // Act
         MockHttpServletRequestBuilder request = get("/1/orders/non-existent-order")
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
         ResultActions results = mockMvc.perform(request);
 
@@ -181,7 +190,8 @@ class OrderEndpointTest extends BaseApiTest {
     void test_getOrder_whenEmptyOrderCode_returnsInternalServerError() throws Exception {
         // Act
         MockHttpServletRequestBuilder request = get("/1/orders/")
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
         ResultActions results = mockMvc.perform(request);
 
@@ -204,13 +214,15 @@ class OrderEndpointTest extends BaseApiTest {
         for (int i = 0; i < 3; i++) {
             MockHttpServletRequestBuilder createRequest = post("/1/orders")
                     .contentType(MediaType.APPLICATION_JSON)
+                    .with(SecurityMockMvcRequestPostProcessors.jwt())
                     .content(requestBody);
             mockMvc.perform(createRequest);
         }
 
         // Act
         MockHttpServletRequestBuilder request = get("/1/orders")
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
         ResultActions results = mockMvc.perform(request);
 
@@ -224,7 +236,8 @@ class OrderEndpointTest extends BaseApiTest {
     void test_getOrdersBySubscriberId_whenNoOrders_returnsEmptyArray() throws Exception {
         // Act
         MockHttpServletRequestBuilder request = get("/2/orders")
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
         ResultActions results = mockMvc.perform(request);
 

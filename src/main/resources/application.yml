@@ -1,20 +1,50 @@
 server:
   servlet:
-    context-path: /
+    context-path: /api
+  port: 9081
 
 spring:
-  datasource:
-    hikari:
-      pool-name: posystem-ds
-      driver-class-name: org.h2.Driver
-      jdbc-url: jdbc:h2:mem::posystem_db
-      username: sa
-      password:
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: create
-  h2:
-    console:
-      enabled: true
+  application:
+    name: posystem2
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/po
+          jwk-set-uri: http://localhost:8081/realms/po/protocol/openid-connect/certs
+
+  datasource:
+      name: posystem2-ds
+      url: jdbc:mysql://localhost:3306/posystem_db
+      username: sas_app
+      password: abcd4321
+      driver-class-name: com.mysql.cj.jdbc.Driver        
+  jpa:
+      show-sql: true
+      defer-datasource-initialization: true
+      hibernate:
+          ddl-auto: update
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+#### application and security settings
+
+application:
+    language: pt-BR
+
+
+cors:
+    mapping: /**
+    allowed-origins-patterns: http://**, https://**
+    allowed-methods: GET, POST, PUT, DELETE, OPTIONS
+    allowed-headers: "*"
+
+security:
+    api:
+        non-protected-apis: /actuator/**, /swagger-ui/**, /v3/api-docs/**
+        protected-apis: /**

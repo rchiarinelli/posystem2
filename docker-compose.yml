@@ -1,0 +1,74 @@
+services:
+
+  db:
+    image: mysql:9.3.0
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+        - ./src/main/resources/sql/:/docker-entrypoint-initdb.d/
+    networks:
+      - local-env-network
+    environment:
+      MYSQL_USER: sas_app
+      MYSQL_PASSWORD: abcd4321
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+
+  auth-server:
+    image: ghcr.io/rchiarinelli/base-auth-server:latest
+    depends_on:
+      - db
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://db:3306/sas_auth_server_db
+      KC_DB_USERNAME: sas_app
+      KC_DB_PASSWORD: abcd4321
+      
+      QUARKUS_DATASOURCE_USERS_DB_KIND: mysql
+      QUARKUS_DATASOURCE_USERS_USERNAME: sas_app
+      QUARKUS_DATASOURCE_USERS_PASSWORD: abcd4321
+      QUARKUS_DATASOURCE_USERS_JDBC_URL: jdbc:mysql://db:3306/sas_db
+      QUARKUS_DATASOURCE_USERS_JDBC_DRIVER: com.mysql.cj.jdbc.MysqlXADataSource
+      QUARKUS_DATASOURCE_USERS_JDBC_TRANSACTIONS: xa
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health/ready"]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    command: ["start-dev", "--http-port", "7080", "--https-port", "7443", "--import-realm"]
+    restart: always
+    volumes:
+      - ./src/main/containers/authserver/local-po-realm.json:/opt/keycloak/data/import/po-realm.json
+    ports:
+      - "8081:7080"
+      - "7443:7443"
+      - "5005:5005"
+    networks:
+      - local-env-network
+
+  admin-services:
+    image: ghcr.io/rchiarinelli/base-sas-backend:latest
+    network_mode: host
+    depends_on:
+      - db
+      - auth-server
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src/main/containers/sas-services/application.yml:/opt/config/application.yml
+
+
+networks:
+    local-env-network:
+        driver: bridge

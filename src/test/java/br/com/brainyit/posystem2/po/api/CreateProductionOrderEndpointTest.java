@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +30,8 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
 
                 ResultActions orderResult = mockMvc.perform(post("/1/orders")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -45,7 +47,8 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                 // Act
                 MockHttpServletRequestBuilder request = post("/1/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(poRequestBody);
+                                .content(poRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
                 ResultActions results = mockMvc.perform(request);
 
@@ -71,7 +74,8 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                 // Act
                 MockHttpServletRequestBuilder request = post("/1/orders/INVALID_ORDER/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(poRequestBody);
+                                .content(poRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
                 ResultActions results = mockMvc.perform(request);
 
@@ -93,7 +97,8 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
 
                 ResultActions orderResult = mockMvc.perform(post("/1/orders")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -109,7 +114,8 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                 // Act
                 MockHttpServletRequestBuilder request = post("/1/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(poRequestBody);
+                                .content(poRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
                 ResultActions results = mockMvc.perform(request);
 
@@ -130,7 +136,8 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
 
                 ResultActions orderResult = mockMvc.perform(post("/1/orders")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(orderRequestBody));
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 String orderCode = (String) TestUtils
                                 .convertResponseToMap(orderResult.andReturn().getResponse().getContentAsString())
@@ -146,12 +153,14 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                 // Create first production order to change order status
                 mockMvc.perform(post("/1/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(poRequestBody));
+                                .content(poRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 // Act - Try to create another production order
                 MockHttpServletRequestBuilder request = post("/1/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(poRequestBody);
+                                .content(poRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
                 ResultActions results = mockMvc.perform(request);
 
