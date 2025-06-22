@@ -6,7 +6,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-        - ./src/main/resources/sql/:/docker-entrypoint-initdb.d/
+        - ./src/etc/containers/db/sql/:/docker-entrypoint-initdb.d/
     networks:
       - local-env-network
     environment:
@@ -48,7 +48,7 @@ services:
     command: ["start-dev", "--http-port", "7080", "--https-port", "7443", "--import-realm"]
     restart: always
     volumes:
-      - ./src/main/containers/authserver/local-po-realm.json:/opt/keycloak/data/import/po-realm.json
+      - ./src/etc/containers/authserver/local-po-realm.json:/opt/keycloak/data/import/po-realm.json
     ports:
       - "8081:7080"
       - "7443:7443"
@@ -56,17 +56,15 @@ services:
     networks:
       - local-env-network
 
-  admin-services:
-    image: ghcr.io/rchiarinelli/base-sas-backend:latest
+  posystem-services:
+    image: ghcr.io/rchiarinelli/posystem2:local
     network_mode: host
     depends_on:
       - db
       - auth-server
     restart: always
-    ports:
-      - "8080:8080"
     volumes:
-      - ./src/main/containers/sas-services/application.yml:/opt/config/application.yml
+      - ./src/etc/containers/posystem/application.yml:/opt/config/application.yml
 
 
 networks:

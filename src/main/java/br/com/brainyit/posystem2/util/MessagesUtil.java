@@ -6,16 +6,15 @@ package br.com.brainyit.posystem2.util;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author rafael
  *
  */
+@Slf4j
 public class MessagesUtil {
 
-	private static Logger logger = LogManager.getLogger(MessagesUtil.class);
 	
 	private static MessagesUtil instance;
 
@@ -61,7 +60,7 @@ public class MessagesUtil {
 		try {
 			message = this.bundle.getString(key); 
 		} catch (MissingResourceException mre) {
-			logger.error(mre);
+			log.error(mre.getMessage(), mre);
 		}
 		return message;
 	}
@@ -76,7 +75,7 @@ public class MessagesUtil {
 		try {
 			message = this.systemPropsBundle.getString(key); 
 		} catch (MissingResourceException mre) {
-			logger.error(mre);
+			log.error(mre.getMessage(), mre);
 		}
 		return message;
 	}

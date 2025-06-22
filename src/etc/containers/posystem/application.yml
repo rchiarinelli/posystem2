@@ -1,0 +1,52 @@
+server:
+  servlet:
+    context-path: /api
+
+spring:
+  main:
+    banner-mode: "off"
+
+  application:
+    name: posystem-services
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/po
+          jwk-set-uri: http://localhost:8081/realms/po/protocol/openid-connect/certs
+
+  datasource:
+      name: posystem-services-ds
+      url: jdbc:mysql://localhost:3306/posystem_db
+      username: sas_app
+      password: abcd4321
+      driver-class-name: com.mysql.cj.jdbc.Driver        
+  jpa:
+      show-sql: true
+      defer-datasource-initialization: true
+      hibernate:
+          ddl-auto: update
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+#### application and security settings
+
+application:
+    language: pt-BR
+
+
+cors:
+    mapping: /**
+    allowed-origins-patterns: http://**, https://**
+    allowed-methods: GET, POST, PUT, DELETE, OPTIONS
+    allowed-headers: "*"
+
+security:
+    api:
+        non-protected-apis: /actuator/**, /swagger-ui/**, /v3/api-docs/**
+        protected-apis: /**
