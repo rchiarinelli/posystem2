@@ -1,4 +1,5 @@
 server:
+  port: 8082
   servlet:
     context-path: /api
 
@@ -17,16 +18,19 @@ spring:
           jwk-set-uri: http://localhost:8081/realms/po/protocol/openid-connect/certs
 
   datasource:
-      name: posystem-services-ds
-      url: jdbc:mysql://localhost:3306/posystem_db
-      username: sas_app
-      password: abcd4321
-      driver-class-name: com.mysql.cj.jdbc.Driver        
+    name: posystem-services-ds
+    url: jdbc:mysql://localhost:3306/sas_db
+    username: sas_app
+    password: abcd4321
+    driver-class-name: com.mysql.cj.jdbc.Driver        
   jpa:
-      show-sql: true
-      defer-datasource-initialization: true
+    show-sql: true
+    defer-datasource-initialization: false
+    hibernate:
+      ddl-auto: update
+    properties:
       hibernate:
-          ddl-auto: update
+          dialect: org.hibernate.dialect.MySQLDialect
 
 logging:
   level:
