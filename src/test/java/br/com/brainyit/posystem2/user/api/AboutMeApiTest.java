@@ -10,7 +10,6 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 
 import br.com.brainyit.api.BaseApiTest;
 
-
 public class AboutMeApiTest extends BaseApiTest {
 
     private static final String JWT_TOKEN = "token";
@@ -21,9 +20,10 @@ public class AboutMeApiTest extends BaseApiTest {
 
     @Test
     void test_aboutMeGet_authenticated_baseInfoReturned() throws Exception {
-        mockMvc.perform(get("/{subscriber}/about-me", SUBSCRIBER_UUID)
-                .with(SecurityMockMvcRequestPostProcessors.jwt().
-                    jwt(Jwt.withTokenValue(JWT_TOKEN).header("Authorization", "Bearer ").claim("preferred_username", USER_NAME).build())))
+        mockMvc.perform(get("/about-me")
+                .with(SecurityMockMvcRequestPostProcessors.jwt()
+                        .jwt(Jwt.withTokenValue(JWT_TOKEN).header("Authorization", "Bearer ")
+                                .claim("preferred_username", USER_NAME).build())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value("Jane"))
                 .andExpect(jsonPath("$.lastName").value("Smith"))
@@ -37,7 +37,7 @@ public class AboutMeApiTest extends BaseApiTest {
 
     @Test
     void test_aboutMeGet_unauthenticated_returnsUnauthorized() throws Exception {
-        mockMvc.perform(get("/{subscriber}/about-me", SUBSCRIBER_UUID))
+        mockMvc.perform(get("/about-me"))
                 .andExpect(status().isUnauthorized());
     }
 }
