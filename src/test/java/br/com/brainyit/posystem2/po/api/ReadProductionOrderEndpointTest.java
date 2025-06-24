@@ -17,11 +17,11 @@ import br.com.brainyit.util.TestUtils;
 @Transactional
 class ReadProductionOrderEndpointTest extends BaseApiTest {
  
-        final Long validSubscriberId = 1L;
+        final String validSubscriberId = "123e4567-e89b-12d3-a456-426614174000";
 
-        final Long invalidSubscriberId = 999L;
+        final String invalidSubscriberId = "123e4567-e89b-12d3-a456-426614174003";
 
-        final Long subscriberIdWithoutData = 2L;
+        final String subscriberIdWithoutData = "123e4567-e89b-12d3-a456-426614174001";
 
         @Test
         void test_getProductionOrders_whenNoProductionOrdersExist_returnsEmptyList() throws Exception {
@@ -63,13 +63,13 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
                                         "qtd": 1
                                 }""";
 
-                mockMvc.perform(post("/1/orders/" + orderCode + "/place-production-order")
+                mockMvc.perform(post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 // Act
-                ResultActions results = mockMvc.perform(get("/1/production-orders")
+                ResultActions results = mockMvc.perform(get("/123e4567-e89b-12d3-a456-426614174000/production-orders")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
@@ -82,7 +82,7 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
         @Test
         void test_getProductionOrdersByStatus_whenInvalidStatus_returnsBadRequest() throws Exception {
                 // Act
-                ResultActions results = mockMvc.perform(get("/1/production-orders?status=INVALID_STATUS")
+                ResultActions results = mockMvc.perform(get("/123e4567-e89b-12d3-a456-426614174000/production-orders?status=INVALID_STATUS")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
@@ -101,7 +101,7 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
                                         "quantity": 1
                                 }""";
 
-                ResultActions orderResult = mockMvc.perform(post("/1/orders")
+                ResultActions orderResult = mockMvc.perform(post("/123e4567-e89b-12d3-a456-426614174000/orders")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(orderRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
@@ -117,14 +117,14 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
                                         "qtd": 1
                                 }""";
 
-                mockMvc.perform(post("/1/orders/" + orderCode + "/place-production-order")
+                mockMvc.perform(post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
 
                 // Act
-                ResultActions results = mockMvc.perform(get("/1/production-orders?status=PLANNING")
+                ResultActions results = mockMvc.perform(get("/123e4567-e89b-12d3-a456-426614174000/production-orders?status=PLANNING")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
@@ -138,7 +138,7 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
         @Test
         void test_getProductionOrdersByStatus_whenNoOrdersInStatus_returnsEmptyList() throws Exception {
                 // Act
-                ResultActions results = mockMvc.perform(get("/1/production-orders?status=DONE")
+                ResultActions results = mockMvc.perform(get("/123e4567-e89b-12d3-a456-426614174000/production-orders?status=DONE")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 

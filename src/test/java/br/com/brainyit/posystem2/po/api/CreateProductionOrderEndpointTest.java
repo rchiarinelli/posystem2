@@ -28,7 +28,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                     "quantity": 1
                                 }""";
 
-                ResultActions orderResult = mockMvc.perform(post("/1/orders")
+                ResultActions orderResult = mockMvc.perform(post("/123e4567-e89b-12d3-a456-426614174000/orders")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(orderRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
@@ -45,7 +45,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
 
                 // Act
-                MockHttpServletRequestBuilder request = post("/1/orders/" + orderCode + "/place-production-order")
+                MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt());
@@ -72,7 +72,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
 
                 // Act
-                MockHttpServletRequestBuilder request = post("/1/orders/INVALID_ORDER/place-production-order")
+                MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders/INVALID_ORDER/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt());
@@ -95,7 +95,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                     "quantity": 1
                                 }""";
 
-                ResultActions orderResult = mockMvc.perform(post("/1/orders")
+                ResultActions orderResult = mockMvc.perform(post("/123e4567-e89b-12d3-a456-426614174000/orders")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(orderRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
@@ -112,7 +112,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
 
                 // Act
-                MockHttpServletRequestBuilder request = post("/1/orders/" + orderCode + "/place-production-order")
+                MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt());
@@ -134,7 +134,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                     "quantity": 1
                                 }""";
 
-                ResultActions orderResult = mockMvc.perform(post("/1/orders")
+                ResultActions orderResult = mockMvc.perform(post("/123e4567-e89b-12d3-a456-426614174000/orders")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(orderRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
@@ -151,13 +151,13 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
 
                 // Create first production order to change order status
-                mockMvc.perform(post("/1/orders/" + orderCode + "/place-production-order")
+                mockMvc.perform(post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 // Act - Try to create another production order
-                MockHttpServletRequestBuilder request = post("/1/orders/" + orderCode + "/place-production-order")
+                MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt());

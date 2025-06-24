@@ -25,14 +25,14 @@ public class OrderApiDelegateImpl implements OrderApiDelegate {
     private final ProductionOrderService productionOrderService;
 
     @Override
-    public ResponseEntity<OrderRestModel> subscriberOrdersOrderCodeGet(Long subscriber, String orderCode)
+    public ResponseEntity<OrderRestModel> subscriberOrdersOrderCodeGet(String subscriber, String orderCode)
             throws Exception {
         return ResponseEntity
                 .ok(OrderMapper.builder().build().toRestBean(orderService.getOrderByCode(subscriber, orderCode)));
     }
 
     @Override
-    public ResponseEntity<List<OrderRestModel>> subscriberOrdersGet(Long subscriberId) throws Exception {
+    public ResponseEntity<List<OrderRestModel>> subscriberOrdersGet(String subscriberId) throws Exception {
         return ResponseEntity.ok(orderService.getOrdersBySubscriberId(
                 subscriberId).stream().map(OrderMapper.builder().build()::toRestBean).toList());
     }
@@ -41,7 +41,7 @@ public class OrderApiDelegateImpl implements OrderApiDelegate {
     public ResponseEntity<ProductionOrderRestModel> subscriberOrdersOrderCodePlaceProductionOrderPost(String subscriber,
             String orderCode, ProcutionOrderRequestBody requestBody) throws Exception {
         return ResponseEntity.ok(ProductionOrderMapper.builder().build()
-                .toRestBean(productionOrderService.createProductionOrder(Long.valueOf(subscriber), orderCode,
+                .toRestBean(productionOrderService.createProductionOrder(subscriber, orderCode,
                         requestBody.getQtd().intValue(),
                         requestBody.getEstimatedTime(), requestBody.getDescription())));
     }
@@ -50,7 +50,7 @@ public class OrderApiDelegateImpl implements OrderApiDelegate {
     public ResponseEntity<OrderRestModel> subscriberOrdersPost(String subscriber,
             CreateOrderRequestBody requestBody) throws Exception {
         return ResponseEntity.ok(OrderMapper.builder().build().toRestBean(
-                orderService.placeOrder(Long.parseLong(subscriber), requestBody.getCustomerDocument(),
+                orderService.placeOrder(subscriber, requestBody.getCustomerDocument(),
                         requestBody.getCustomerName(), requestBody.getOrderDescription(), requestBody.getQuantity())));
     }
 

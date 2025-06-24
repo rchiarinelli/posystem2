@@ -1,5 +1,5 @@
-insert into t_subscriber(id_subscriber, subscriber_city,subscriber_complement,subscriber_doc,subscriber_email,subscriber_name,subscriber_number,subscriber_street,subscriber_zip_code)values (1,'NY','West Side','99999','johnsmith@brainyit.com.br','BrainyIT','4321','Main street','999999');
-insert into t_subscriber(id_subscriber, subscriber_city,subscriber_complement,subscriber_doc,subscriber_email,subscriber_name,subscriber_number,subscriber_street,subscriber_zip_code)values (2,'LA','Cupertino','99999','janesmith@brainyit.com.br','Jane Smith','4321','NNNNOONNOOO','999999');
+insert into t_subscriber(id, uuid, name, email) values (1,'123e4567-e89b-12d3-a456-426614174000','BrainyIT','johnsmith@brainyit.com.br');
+insert into t_subscriber(id, uuid, name, email) values (2,'123e4567-e89b-12d3-a456-426614174001','Jane Smith','janesmith@brainyit.com.br');
 
 insert into t_resource(resource_name) values ('Res1');
 insert into t_resource(resource_name) values ('Res2');
@@ -9,9 +9,8 @@ insert into t_resource(resource_name) values ('Res5');
 insert into t_resource(resource_name) values ('Res6');
 insert into t_resource(resource_name) values ('Res7');
 
-insert into t_user (user_login,user_email,user_password,id_subscriber) values ('rchiarinelli','rchiarinelli@gmail.com','12345',1);
-insert into t_user (user_login,user_email,user_password,id_subscriber) values ('mhnagaoka','mhnagaoka@gmail.com','12345',1);
-insert into t_user (user_login,user_email,user_password,id_subscriber) values ('rbogre','rbogre@gmail.com','12345',1);
+insert into t_user (id, uuid, first_name, last_name, email, user_name, created_at, updated_at, subscriber_id) values (1,'123e4567-e89b-12d3-a456-426614174000','John','Smith','johnsmith@brainyit.com.br','johnsmith@brainyit.com.br',now(),now(),1);
+insert into t_user (id, uuid, first_name, last_name, email, user_name, created_at, updated_at, subscriber_id) values (2,'123e4567-e89b-12d3-a456-426614174001','Jane','Smith','janesmith@brainyit.com.br','janesmith@brainyit.com.br',now(),now(),1);
 
 insert into t_permission (user_login,operation_name,id_resource) values ('rchiarinelli','READ',1);
 insert into t_permission (user_login,operation_name,id_resource) values ('mhnagaoka','READ',1);

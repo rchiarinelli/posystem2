@@ -4,27 +4,31 @@
 package br.com.brainyit.posystem2.domain;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author leafar
  *
  */
-@Entity
-@Table(name="t_user")
+
+ @Data
+ @Builder
+ @AllArgsConstructor
+ @NoArgsConstructor
+ @Entity(name = "t_user")
 public class User implements Serializable {
 	
 	/**
@@ -32,138 +36,53 @@ public class User implements Serializable {
 	 */
 	private static final long serialVersionUID = -1822333369324134675L;
 
+	// @Id
+	// @Column(name="user_login",nullable=false)
+	// private String login;
+	
+	// @Column(name="user_password",nullable=false)
+	// private String password;
+	
+	// @Column(name="user_email",nullable=false)
+	// private String email;
+	
+	// @ManyToOne(fetch=FetchType.EAGER,targetEntity=Subscriber.class)
+	// @JoinColumn(name="id_subscriber",nullable=false)
+	// @Fetch(FetchMode.JOIN)
+	// private Subscriber subscriber;
+	
+	// @OneToMany(cascade={CascadeType.ALL},targetEntity=Permission.class,fetch=FetchType.LAZY)
+	// @JoinColumn(name="user_login")
+	// @Fetch(FetchMode.JOIN)
+	// private Set<Permission> permissions;
+
 	@Id
-	@Column(name="user_login",nullable=false)
-	private String login;
-	
-	@Column(name="user_password",nullable=false)
-	private String password;
-	
-	@Column(name="user_email",nullable=false)
-	private String email;
-	
-	@ManyToOne(fetch=FetchType.EAGER,targetEntity=Subscriber.class)
-	@JoinColumn(name="id_subscriber",nullable=false)
-	@Fetch(FetchMode.JOIN)
-	private Subscriber subscriber;
-	
-	@OneToMany(cascade={CascadeType.ALL},targetEntity=Permission.class,fetch=FetchType.LAZY)
-	@JoinColumn(name="user_login")
-	@Fetch(FetchMode.JOIN)
-	private Set<Permission> permissions;
-	
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((login == null) ? 0 : login.hashCode());
-		result = prime * result
-				+ ((password == null) ? 0 : password.hashCode());
-		return result;
-	}
+    @Builder.Default
+    @Column(nullable = false, length = 60, name = "uuid")
+    private String uuid = UUID.randomUUID().toString();
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (email == null) {
-			if (other.email != null)
-				return false;
-		} else if (!email.equals(other.email))
-			return false;
-		if (login == null) {
-			if (other.login != null)
-				return false;
-		} else if (!login.equals(other.login))
-			return false;
-		if (password == null) {
-			if (other.password != null)
-				return false;
-		} else if (!password.equals(other.password))
-			return false;
-		return true;
-	}
+    @Column(nullable = true, length = 50, name = "first_name")
+    private String firstName;
 
-	/**
-	 * @return the login
-	 */
-	public String getLogin() {
-		return login;
-	}
+    @Column(nullable = true, length = 50, name = "last_name")
+    private String lastName;
 
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
-	}
+    @Column(nullable = false, length = 50, name = "email")
+    private String email;
 
-	/**
-	 * @return the email
-	 */
-	public String getEmail() {
-		return email;
-	}
+    @Column(nullable = false, length = 50, name = "user_name")
+    private String userName;
 
-	/**
-	 * @return the subscriber
-	 */
-	public Subscriber getSubscriber() {
-		return subscriber;
-	}
+    @Column(nullable = false, length = 50, name = "created_at")
+    private LocalDateTime createdAt;
 
-	/**
-	 * @return the permissions
-	 */
-	public Set<Permission> getPermissions() {
-		return permissions;
-	}
+    @Column(nullable = false, length = 50, name = "updated_at")
+    private LocalDateTime updatedAt;
 
-	/**
-	 * @param login the login to set
-	 */
-	public void setLogin(String login) {
-		this.login = login;
-	}
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Subscriber subscriber;
 
-	/**
-	 * @param password the password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	/**
-	 * @param email the email to set
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	/**
-	 * @param subscriber the subscriber to set
-	 */
-	public void setSubscriber(Subscriber subscriber) {
-		this.subscriber = subscriber;
-	}
-
-	/**
-	 * @param permissions the permissions to set
-	 */
-	public void setPermissions(Set<Permission> permissions) {
-		this.permissions = permissions;
-	}
 }

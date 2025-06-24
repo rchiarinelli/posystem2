@@ -8,11 +8,8 @@ import org.springframework.stereotype.Component;
 
 import br.com.brainyit.posystem2.customer.repository.CompanyRepository;
 import br.com.brainyit.posystem2.customer.repository.IndividualRepository;
-import br.com.brainyit.posystem2.domain.Company;
-import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.OrderStatus;
-import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.order.repository.OrderRepository;
 import br.com.brainyit.posystem2.repository.SubscriberRepository;
@@ -32,18 +29,18 @@ public class OrderService {
 
     private final SubscriberRepository subscriberRepository;
 
-    public Order placeOrder(final Long subscriberId, final String customerDocument, final String customerName, final String orderDescription, final Double orderQuantity) {
+    public Order placeOrder(final String subscriberId, final String customerDocument, final String customerName, final String orderDescription, final Double orderQuantity) {
 
-        final Subscriber subscriber = subscriberRepository.findById(subscriberId).orElseThrow(() -> new BusinessException("Subscriber not found"));
+        final var subscriber = subscriberRepository.findByUuid(subscriberId).orElseThrow(() -> new BusinessException("Subscriber not found"));
 
-        final Individual individual = individualRepository.findBySubscriberIdAndCpfAndName(subscriberId, customerDocument, customerName);
+        final var individual = individualRepository.findBySubscriberIdAndCpfAndName(subscriber.getId(), customerDocument, customerName);
 
-        final Company company = companyRepository.findBySubscriberIdAndCnpjCgcAndName(subscriberId, customerDocument, customerName);
+        final var company = companyRepository.findBySubscriberIdAndCnpjCgcAndName(subscriber.getId(), customerDocument, customerName);
         
         if (individual == null && company == null) {
             throw new BusinessException("Customer not found");
         }
-        final Order order = Order.builder()
+        final var order = Order.builder()
                 .customer(individual == null ? company : individual)
                 .description(orderDescription)
                 .quantity(orderQuantity)
@@ -55,18 +52,20 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order getOrderByCode(final Long subscriberId, final String orderCode) {
+    public Order getOrderByCode(final String subscriberId, final String orderCode) {
         if (orderCode == null || orderCode.isEmpty()) {
             throw new BusinessException("Order code is required");
         }
-        return orderRepository.findBySubscriberIdAndOrderCode(subscriberId, orderCode).orElseThrow(() -> new BusinessException("Order not found"));
+        final var subscriber = subscriberRepository.findByUuid(subscriberId).orElseThrow(() -> new BusinessException("Subscriber not found"));
+        return orderRepository.findBySubscriberIdAndOrderCode(subscriber.getId(), orderCode).orElseThrow(() -> new BusinessException("Order not found"));
     }
 
-    public List<Order> getOrdersBySubscriberId(final Long subscriberId) {
+    public List<Order> getOrdersBySubscriberId(final String subscriberId) {
         if (subscriberId == null) {
             throw new BusinessException("Subscriber ID is required");
         }
-        return orderRepository.findBySubscriberId(subscriberId);
+        final var subscriber = subscriberRepository.findByUuid(subscriberId).orElseThrow(() -> new BusinessException("Subscriber not found"));
+        return orderRepository.findBySubscriberId(subscriber.getId());
     }   
 
 }
