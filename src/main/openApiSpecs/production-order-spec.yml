@@ -11,7 +11,7 @@ parameters:
     in: path
     required: true
     schema:
-      type: int64
+      type: string
     description: Subscriber identifier
 
 paths:
@@ -27,8 +27,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: status
           in: query
           required: false
@@ -58,8 +57,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: poNumber
           in: path
           required: true
@@ -85,8 +83,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: poNumber
           in: path
           required: true
@@ -119,8 +116,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: poNumber
           in: path
           required: true
@@ -159,8 +155,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: poNumber
           in: path
           required: true

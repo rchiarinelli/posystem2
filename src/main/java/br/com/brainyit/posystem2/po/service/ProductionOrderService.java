@@ -32,7 +32,7 @@ public class ProductionOrderService {
     private final SubscriberRepository subscriberRepository;
 
     @Transactional
-    public ProductionOrder createProductionOrder(Long subscriberId, String orderCode, int quantity,
+    public ProductionOrder createProductionOrder(String subscriberId, String orderCode, int quantity,
             double estimatedTime, String description) {
 
         if (quantity <= 0) {
@@ -45,7 +45,7 @@ public class ProductionOrderService {
 
         final Subscriber subscriber = getSubscriber(subscriberId);
 
-        final Order order = orderRepository.findBySubscriberIdAndOrderCode(subscriberId, orderCode)
+        final Order order = orderRepository.findBySubscriberIdAndOrderCode(subscriber.getId(), orderCode)
                 .orElseThrow(() -> new BusinessException("Order not found"));
 
         if (order.getStatus() != OrderStatus.PENDING) {
@@ -67,33 +67,33 @@ public class ProductionOrderService {
                 .build());
     }
 
-    public List<ProductionOrder> retrieveProductionOrders(final Long subscriberId, final POStatus... statuses) {
+    public List<ProductionOrder> retrieveProductionOrders(final String subscriberId, final POStatus... statuses) {
         return productionOrderRepository.findBySubscriberIdAndInStatuses(getSubscriber(subscriberId).getId(), statuses);
     }
 
-    public ProductionOrder retrieveProductionOrderByPoNumber(final Long subscriberId, final String poNumber) {
+    public ProductionOrder retrieveProductionOrderByPoNumber(final String subscriberId, final String poNumber) {
         return productionOrderRepository.findBySubscriberIdAndPoNumber(getSubscriber(subscriberId).getId(), poNumber)
                 .orElseThrow(() -> new BusinessException("Production Order not found"));
     }
 
-    private Subscriber getSubscriber(final Long subscriberId) {
-        return subscriberRepository.findById(subscriberId)
+    private Subscriber getSubscriber(final String subscriberId) {
+        return subscriberRepository.findByUuid(subscriberId)
                 .orElseThrow(() -> new BusinessException("Subscriber not found"));
     }
 
     @Transactional
-    public ProductionOrder proceedToNextPhase(final Long subscriberId, final String poNumber) {
+    public ProductionOrder proceedToNextPhase(final String subscriberId, final String poNumber) {
         return productionOrderRepository
                 .save(retrieveProductionOrderByPoNumber(subscriberId, poNumber).moveToNextPhase());
     }
 
     @Transactional
-    public ProductionOrder cancelProductionOrder(final Long subscriberId, final String poNumber, final String cancelReason) {
+    public ProductionOrder cancelProductionOrder(final String subscriberId, final String poNumber, final String cancelReason) {
         return productionOrderRepository.save(retrieveProductionOrderByPoNumber(subscriberId, poNumber).cancel(cancelReason));
     }
 
     @Transactional
-    public ProductionOrder updateProductionOrder(final Long subscriberId, final String poNumber,
+    public ProductionOrder updateProductionOrder(final String subscriberId, final String poNumber,
             final ProductionOrder updatedPO) {
         
                 final ProductionOrder productionOrder = retrieveProductionOrderByPoNumber(subscriberId, poNumber);

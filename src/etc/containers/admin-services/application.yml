@@ -1,0 +1,65 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+
+spring:
+    application:
+        name: base-sas-local
+
+    datasource:
+        name: sas_platform-ds
+        url: jdbc:mysql://localhost:3306/sas_db
+        username: sas_app
+        password: abcd4321
+        driver-class-name: com.mysql.cj.jdbc.Driver        
+    jpa:
+        show-sql: true
+        defer-datasource-initialization: true
+        hibernate:
+            ddl-auto: update
+    sql:
+        init:
+            mode: always
+            platform: mysql
+
+
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: http://localhost:8081/realms/po
+                    jwk-set-uri: http://localhost:8081/realms/po/protocol/openid-connect/certs
+
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+
+application:
+    language: pt-BR
+    registration-token:
+        size: 30
+        expiration-time: 60
+
+
+#### security settings
+
+cors:
+    mapping: /**
+    allowed-origins-patterns: http://**, https://**
+    allowed-methods: GET, POST, PUT, DELETE, OPTIONS
+    allowed-headers: "*"
+
+security:
+    api:
+        non-protected-apis: /subscriptions, /admin/self-setup, /admin/user-self-setup, /swagger-ui/**, /v3/api-docs/**
+        protected-apis: /**
+
+
+

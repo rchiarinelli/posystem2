@@ -35,7 +35,7 @@ public class ProductionOrderApiDelegateImpl implements ProductionOrderApiDelegat
 
                 final ProductionOrderMapper mapper = ProductionOrderMapper.builder().build();
                 return ResponseEntity
-                                .ok(productionOrderService.retrieveProductionOrders(Long.valueOf(subscriber), statuses)
+                                .ok(productionOrderService.retrieveProductionOrders(subscriber, statuses)
                                                 .stream()
                                                 .map(mapper::toRestBean).collect(Collectors.toList()));
 
@@ -49,7 +49,7 @@ public class ProductionOrderApiDelegateImpl implements ProductionOrderApiDelegat
                         return ResponseEntity.badRequest().build();
                 }
                 return ResponseEntity.ok(ProductionOrderMapper.builder().build()
-                                .toRestBean(productionOrderService.cancelProductionOrder(Long.valueOf(subscriber),
+                                .toRestBean(productionOrderService.cancelProductionOrder(subscriber,
                                                 poNumber,
                                                 requestBody.getDescription())));
         }
@@ -60,7 +60,7 @@ public class ProductionOrderApiDelegateImpl implements ProductionOrderApiDelegat
                 return ResponseEntity.ok(ProductionOrderMapper.builder().build()
                                 .toRestBean(
                                                 productionOrderService.retrieveProductionOrderByPoNumber(
-                                                                Long.valueOf(subscriber), poNumber)));
+                                                                subscriber, poNumber)));
 
         }
 
@@ -68,7 +68,7 @@ public class ProductionOrderApiDelegateImpl implements ProductionOrderApiDelegat
         public ResponseEntity<ProductionOrderRestModel> subscriberProductionOrdersPoNumberProceedPut(String subscriber,
                         String poNumber) throws Exception {
                 return ResponseEntity.ok(ProductionOrderMapper.builder().build()
-                                .toRestBean(productionOrderService.proceedToNextPhase(Long.valueOf(subscriber),
+                                .toRestBean(productionOrderService.proceedToNextPhase(subscriber,
                                                 poNumber)));
 
         }
@@ -86,7 +86,7 @@ public class ProductionOrderApiDelegateImpl implements ProductionOrderApiDelegat
                 productionOrder.setEstimatedDueDate(requestBody.getEstimatedDueDate());
 
                 return ResponseEntity.ok(ProductionOrderMapper.builder().build()
-                                .toRestBean(productionOrderService.updateProductionOrder(Long.valueOf(subscriber),
+                                .toRestBean(productionOrderService.updateProductionOrder(subscriber,
                                                 poNumber,
                                                 productionOrder)));
         }

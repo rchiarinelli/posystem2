@@ -22,9 +22,9 @@ import br.com.brainyit.util.TestUtils;
 @Transactional
 class UpdateProductionOrderEndpointTest extends BaseApiTest {
 
-        final Long validSubscriberId = 1L;
+        final String validSubscriberId = "123e4567-e89b-12d3-a456-426614174000";
 
-        final Long invalidSubscriberId = 999L;
+        final String invalidSubscriberId = "123e4567-e89b-12d3-a456-426614174003";
 
         @Test
         void test_updateProductionOrder_success() throws Exception {

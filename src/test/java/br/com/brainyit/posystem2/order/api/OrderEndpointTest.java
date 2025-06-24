@@ -30,7 +30,7 @@ class OrderEndpointTest extends BaseApiTest {
                 }""";
 
         // Act
-        final MockHttpServletRequestBuilder request = post("/1/orders")
+        final MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
@@ -53,7 +53,7 @@ class OrderEndpointTest extends BaseApiTest {
                 }""";
 
         // Act
-        final MockHttpServletRequestBuilder request = post("/1/orders")
+        final MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
@@ -76,7 +76,7 @@ class OrderEndpointTest extends BaseApiTest {
                 }""";
 
         // Act
-        final MockHttpServletRequestBuilder request = post("/1/orders")
+        final MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
@@ -99,7 +99,7 @@ class OrderEndpointTest extends BaseApiTest {
                 }""";
 
         // Act
-        final MockHttpServletRequestBuilder request = post("/1/orders")
+        final MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
@@ -123,7 +123,7 @@ class OrderEndpointTest extends BaseApiTest {
                 }""";
 
         // Act
-        final MockHttpServletRequestBuilder request = post("/1/orders")
+        final MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(requestBody);
@@ -146,7 +146,7 @@ class OrderEndpointTest extends BaseApiTest {
                     "quantity": 1
                 }""";
 
-        MockHttpServletRequestBuilder createRequest = post("/1/orders")
+        MockHttpServletRequestBuilder createRequest = post("/123e4567-e89b-12d3-a456-426614174000/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .content(createOrderRequest);
@@ -157,7 +157,7 @@ class OrderEndpointTest extends BaseApiTest {
         String orderCode = (String) responseMap.get("orderCode");
 
         // Act - Get the created order
-        MockHttpServletRequestBuilder getRequest = get("/{subscriberId}/orders/{orderCode}", "1", orderCode)
+        MockHttpServletRequestBuilder getRequest = get("/{subscriberId}/orders/{orderCode}", "123e4567-e89b-12d3-a456-426614174000", orderCode)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt());
 
@@ -175,7 +175,7 @@ class OrderEndpointTest extends BaseApiTest {
     @Test
     void test_getOrder_whenOrderNotFound_returnsInternalServerError() throws Exception {
         // Act
-        MockHttpServletRequestBuilder request = get("/1/orders/non-existent-order")
+        MockHttpServletRequestBuilder request = get("/123e4567-e89b-12d3-a456-426614174000/orders/non-existent-order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt());
 
@@ -189,7 +189,7 @@ class OrderEndpointTest extends BaseApiTest {
     @Test
     void test_getOrder_whenEmptyOrderCode_returnsInternalServerError() throws Exception {
         // Act
-        MockHttpServletRequestBuilder request = get("/1/orders/")
+        MockHttpServletRequestBuilder request = get("/123e4567-e89b-12d3-a456-426614174000/orders/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt());
 
@@ -212,7 +212,7 @@ class OrderEndpointTest extends BaseApiTest {
                 }""";
 
         for (int i = 0; i < 3; i++) {
-            MockHttpServletRequestBuilder createRequest = post("/1/orders")
+            MockHttpServletRequestBuilder createRequest = post("/123e4567-e89b-12d3-a456-426614174000/orders")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.jwt())
                     .content(requestBody);
@@ -220,7 +220,7 @@ class OrderEndpointTest extends BaseApiTest {
         }
 
         // Act
-        MockHttpServletRequestBuilder request = get("/1/orders")
+        MockHttpServletRequestBuilder request = get("/123e4567-e89b-12d3-a456-426614174000/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt());
 
@@ -235,7 +235,7 @@ class OrderEndpointTest extends BaseApiTest {
     @Test
     void test_getOrdersBySubscriberId_whenNoOrders_returnsEmptyArray() throws Exception {
         // Act
-        MockHttpServletRequestBuilder request = get("/2/orders")
+        MockHttpServletRequestBuilder request = get("/123e4567-e89b-12d3-a456-426614174001/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.jwt());
 

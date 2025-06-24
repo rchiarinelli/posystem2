@@ -56,6 +56,16 @@ services:
     networks:
       - local-env-network
 
+  admin-services:
+    image: ghcr.io/rchiarinelli/base-sas-backend:latest
+    network_mode: host
+    depends_on:
+      - db
+      - auth-server
+    restart: always
+    volumes:
+      - ./src/etc/containers/admin-services/application.yml:/opt/config/application.yml
+
   posystem-services:
     image: ghcr.io/rchiarinelli/posystem2:local
     network_mode: host
