@@ -1,6 +1,5 @@
 openapi: 3.0.0
 
-
 info:
   title: User API
   version: 1.0.0
@@ -10,50 +9,34 @@ tags:
     description: User endpoints
     x-interface-name: UserApi
 
-parameters:
-  subscriberParam:
-    name: subscriber
-    in: path
-    required: true
-    schema:
-      type: string
-    description: Subscriber identifier
-
 paths:
-  /{subscriber}/about-me:
+  /about-me:
     get:
       tags:
         - UserApi
       summary: Get information about the current user
       x-interface-name: UserApi
-      parameters:
-        - $ref: '#/parameters/subscriberParam'
-        - name: subscriber
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
-        '200':
+        "200":
           description: User information
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AboutMeModel'
-        '400':
+                $ref: "#/components/schemas/AboutMeModel"
+        "400":
           description: Invalid ID format
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: "#/components/schemas/Message"
 
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
-         
+                $ref: "#/components/schemas/Message"
+
 components:
   schemas:
     Message:
@@ -66,7 +49,7 @@ components:
       type: object
       properties:
         subscriber:
-          $ref: '#/components/schemas/SubscriberModel'
+          $ref: "#/components/schemas/SubscriberModel"
         uuid:
           type: string
         firstName:
