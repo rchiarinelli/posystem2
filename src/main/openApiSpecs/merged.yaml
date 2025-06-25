@@ -15,6 +15,8 @@ paths:
     $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}~1proceed"
   /{subscriber}/production-orders/{poNumber}:
     $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}"
+  /about-me:
+    $ref: "./user-api-spec.yml#/paths/~1about-me"
   /{subscriber}/customers/companies:
     $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1companies"
   /{subscriber}/orders/{orderCode}/place-production-order:
@@ -29,8 +31,6 @@ paths:
     $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1individuals"
   /{subscriber}/orders:
     $ref: "./order-spec.yml#/paths/~1{subscriber}~1orders"
-  /{subscriber}/about-me:
-    $ref: "./user-api-spec.yml#/paths/~1{subscriber}~1about-me"
 info:
   title: "merged spec"
   description: "merged spec"

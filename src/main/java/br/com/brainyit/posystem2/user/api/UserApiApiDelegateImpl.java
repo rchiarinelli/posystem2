@@ -22,7 +22,7 @@ public class UserApiApiDelegateImpl extends SecureApiDelegate implements UserApi
     }
 
     @Override
-    public ResponseEntity<AboutMeModel> subscriberAboutMeGet(String subscriber) throws Exception {
+    public ResponseEntity<AboutMeModel> aboutMeGet() throws Exception {
         var user = userRepository.findByUserName(getSecurityHandler().getUserName())
                 .orElseThrow(() -> new BusinessException("User not found"));
 
