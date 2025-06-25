@@ -21,7 +21,8 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
     private final CustomerFacade customerFacade;
 
     @Override
-    public ResponseEntity<CompanyRestModel> subscriberCustomersCompaniesCustomerIdPut(String subscriber, String customerId, CompanyRestModel companyRestModel) {
+    public ResponseEntity<CompanyRestModel> subscriberCustomersCompaniesCustomerIdPut(String subscriber,
+            String customerId, CompanyRestModel companyRestModel) {
         if (companyRestModel == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -33,7 +34,7 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
         try {
             final var companyMapper = CompanyMapper.builder().build();
             var company = companyMapper.mapToDomain(companyRestModel);
-            var updatedCompany = customerFacade.updateCompany(Long.parseLong(subscriber), company);
+            var updatedCompany = customerFacade.updateCompany(subscriber, company);
             return ResponseEntity.ok(companyMapper.mapFromDomain(updatedCompany));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -41,7 +42,8 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
     }
 
     @Override
-    public ResponseEntity<CompanyRestModel> subscriberCustomersCompaniesPost(String subscriber, CompanyRestModel companyRestModel) {
+    public ResponseEntity<CompanyRestModel> subscriberCustomersCompaniesPost(String subscriber,
+            CompanyRestModel companyRestModel) {
         if (companyRestModel == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -49,7 +51,7 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
         try {
             final var companyMapper = CompanyMapper.builder().build();
             final var company = companyMapper.mapToDomain(companyRestModel);
-            final var createdCompany = customerFacade.createCompany(Long.parseLong(subscriber), company);
+            final var createdCompany = customerFacade.createCompany(subscriber, company);
             return ResponseEntity.ok(companyMapper.mapFromDomain(createdCompany));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -58,7 +60,7 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
 
     @Override
     public ResponseEntity<List<CustomerRestModel>> subscriberCustomersGet(String subscriber) {
-        return ResponseEntity.ok(customerFacade.list(Long.parseLong(subscriber)));
+        return ResponseEntity.ok(customerFacade.list(subscriber));
     }
 
     @Override
@@ -68,7 +70,7 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
         }
 
         try {
-            var customer = customerFacade.get(Long.parseLong(subscriber), Integer.parseInt(id));
+            var customer = customerFacade.get(subscriber, Integer.parseInt(id));
             if (customer == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -77,7 +79,6 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
             return ResponseEntity.badRequest().build();
         }
     }
-
 
     @Override
     public ResponseEntity<IndividualRestModel> subscriberCustomersIndividualsCustomerIdPut(String subscriber,
@@ -89,7 +90,7 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
         try {
             final var individualMapper = IndividualMapper.builder().build();
             var individual = individualMapper.mapToDomain(individualRestModel);
-            return ResponseEntity.ok(customerFacade.updateIndividual(Long.parseLong(subscriber), individual));
+            return ResponseEntity.ok(customerFacade.updateIndividual(subscriber, individual));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -105,7 +106,7 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
         try {
             final var individualMapper = IndividualMapper.builder().build();
             final var individual = individualMapper.mapToDomain(individualRestModel);
-            return ResponseEntity.ok(customerFacade.createIndividual(Long.parseLong(subscriber), individual));
+            return ResponseEntity.ok(customerFacade.createIndividual(subscriber, individual));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

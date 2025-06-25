@@ -11,6 +11,7 @@ import br.com.brainyit.posystem2.customer.mapper.IndividualMapper;
 import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
 import br.com.brainyit.posystem2.domain.Company;
 import br.com.brainyit.posystem2.domain.Customer;
+import br.com.brainyit.posystem2.domain.CustomerStatus;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
@@ -34,22 +35,18 @@ public class CustomerFacade {
 
     private final SubscriberRepository subscriberRepository;
 
-    /* (non-Javadoc)
-     * @see br.com.brainyit.posystem2.facade.Facade#list()
-     */
-    public List<CustomerRestModel> list(final Long subscriberId) {
-        log.debug("Listing customers for subscriber {}", subscriberId);
-        return customerRepository.findBySubscriberId(subscriberId).stream().map(this::map).toList();
+    public List<CustomerRestModel> list(final String subscriberUuid) {
+        log.debug("Listing customers for subscriber {}", subscriberUuid);
+        return customerRepository.findBySubscriberUuid(subscriberUuid).stream().map(this::map).toList();
     }
 
-    /* (non-Javadoc)
-     * @see br.com.brainyit.posystem2.facade.Facade#get(java.lang.Object)inscrMunicipal
-     */
-    public CustomerRestModel get(final Long subscriberId, final Integer identity) {
-        log.debug("Getting customer for subscriber {} and identity {}", subscriberId, identity);
-        
-        final List<Customer> result = customerRepository.findCustomersBySubscriberIdAndCustomerId(subscriberId, identity);
-        return result.stream().map(this::map).findFirst().orElseThrow(() -> new BusinessException("Customer not found."));
+    public CustomerRestModel get(final String subscriberUuid, final Integer identity) {
+        log.debug("Getting customer for subscriber {} and identity {}", subscriberUuid, identity);
+
+        final List<Customer> result = customerRepository.findCustomersBySubscriberUuidAndCustomerId(subscriberUuid,
+                identity);
+        return result.stream().map(this::map).findFirst()
+                .orElseThrow(() -> new BusinessException("Customer not found."));
     }
 
     CustomerRestModel map(final Customer customer) {
@@ -61,22 +58,26 @@ public class CustomerFacade {
         return restBean;
     }
 
-    public IndividualRestModel createIndividual(final Long subscriberId, final Individual individual) {
-        log.debug("Creating individual customer for subscriber {}", subscriberId);
-        
+    public IndividualRestModel createIndividual(final String subscriberUuid, final Individual individual) {
+        log.debug("Creating individual customer for subscriber {}", subscriberUuid);
+
         if (individual == null) {
             throw new BusinessException("Individual cannot be null.");
         }
-        
+
         if (individual.getName() == null || individual.getName().trim().isEmpty()) {
             throw new BusinessException("Name is required.");
         }
 
-        individual.setSubscriber(Subscriber.builder().id(subscriberId).build());
+        final Subscriber subscriber = subscriberRepository.findByUuid(subscriberUuid)
+                .orElseThrow(() -> new BusinessException("Subscriber not found."));
+
+        individual.setSubscriber(subscriber);
+        individual.setStatus(CustomerStatus.ACTIVE);
         return IndividualMapper.builder().build().mapFromDomain(customerRepository.save(individual));
     }
 
-    public IndividualRestModel updateIndividual(final Long subscriberId, final Individual individual) {
+    public IndividualRestModel updateIndividual(final String subscriberId, final Individual individual) {
         log.debug("Updating individual");
 
         if (individual == null) {
@@ -87,7 +88,8 @@ public class CustomerFacade {
             throw new BusinessException("Name is required.");
         }
 
-        List<Customer> existingCustomers = customerRepository.findCustomersBySubscriberIdAndCustomerId(subscriberId, individual.getId());
+        List<Customer> existingCustomers = customerRepository.findCustomersBySubscriberUuidAndCustomerId(subscriberId,
+                individual.getId());
         if (existingCustomers.isEmpty()) {
             throw new BusinessException("Customer not found.");
         }
@@ -97,22 +99,24 @@ public class CustomerFacade {
         return IndividualMapper.builder().build().mapFromDomain(customerRepository.save(individual));
     }
 
-    public Company createCompany(final Long subscriberId, final Company company) {
-        log.debug("Creating company customer for subscriber {}", subscriberId);
-        
+    public Company createCompany(final String subscriberUuid, final Company company) {
+        log.debug("Creating company customer for subscriber {}", subscriberUuid);
+
         if (company == null) {
             throw new BusinessException("Company cannot be null.");
         }
-        
+
         if (company.getName() == null || company.getName().trim().isEmpty()) {
             throw new BusinessException("Name is required.");
         }
 
-        company.setSubscriber(subscriberRepository.findById(subscriberId).orElseThrow(() -> new BusinessException("Subscriber not found.")));
+        company.setSubscriber(subscriberRepository.findByUuid(subscriberUuid)
+                .orElseThrow(() -> new BusinessException("Subscriber not found.")));
+        company.setStatus(CustomerStatus.ACTIVE);
         return customerRepository.save(company);
     }
 
-    public Company updateCompany(final Long subscriberId, final Company company) {
+    public Company updateCompany(final String subscriberId, final Company company) {
         log.debug("Updating company");
 
         if (company == null) {
@@ -123,7 +127,8 @@ public class CustomerFacade {
             throw new BusinessException("Name is required.");
         }
 
-        final List<Customer> existingCustomers = customerRepository.findCustomersBySubscriberIdAndCustomerId(subscriberId, company.getId());
+        final List<Customer> existingCustomers = customerRepository
+                .findCustomersBySubscriberUuidAndCustomerId(subscriberId, company.getId());
         if (existingCustomers.isEmpty()) {
             throw new BusinessException("Company not found.");
         }
@@ -132,6 +137,5 @@ public class CustomerFacade {
 
         return customerRepository.save(company);
     }
-
 
 }

@@ -42,9 +42,9 @@ class CustomerFacadeTest {
     private SubscriberRepository subscriberRepository;
 
     private Customer mockCustomer;
-    
-    private static final Long SUBSCRIBER_ID = 1L;
-    
+
+    private static final String SUBSCRIBER_UUID = "123e4567-e89b-12d3-a456-426614174000";
+
     private static final Integer CUSTOMER_ID = 5;
 
     @BeforeEach
@@ -54,6 +54,7 @@ class CustomerFacadeTest {
             public String getDetails() {
                 return "Test Details";
             }
+
             @Override
             public CustomerStatus getStatus() {
                 return CustomerStatus.ACTIVE;
@@ -64,11 +65,11 @@ class CustomerFacadeTest {
     @Test
     void test_list_whenCustomersExist_returnsCustomerList() {
         // Arrange
-        when(customerRepository.findBySubscriberId(SUBSCRIBER_ID))
+        when(customerRepository.findBySubscriberUuid(SUBSCRIBER_UUID))
                 .thenReturn(List.of(mockCustomer));
 
         // Act
-        List<? extends CustomerRestModel> result = customerFacade.list(SUBSCRIBER_ID);
+        List<? extends CustomerRestModel> result = customerFacade.list(SUBSCRIBER_UUID);
 
         // Assert
         assertThat(result, is(not(empty())));
@@ -83,11 +84,11 @@ class CustomerFacadeTest {
     @Test
     void test_list_whenNoCustomersExist_returnsEmptyList() {
         // Arrange
-        when(customerRepository.findBySubscriberId(SUBSCRIBER_ID))
+        when(customerRepository.findBySubscriberUuid(SUBSCRIBER_UUID))
                 .thenReturn(List.of());
 
         // Act
-        List<? extends CustomerRestModel> result = customerFacade.list(SUBSCRIBER_ID);
+        List<? extends CustomerRestModel> result = customerFacade.list(SUBSCRIBER_UUID);
 
         // Assert
         assertThat(result, is(empty()));
@@ -96,11 +97,11 @@ class CustomerFacadeTest {
     @Test
     void test_get_whenCustomerExists_returnsCustomer() {
         // Arrange
-        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(SUBSCRIBER_ID, CUSTOMER_ID))
+        when(customerRepository.findCustomersBySubscriberUuidAndCustomerId(SUBSCRIBER_UUID, CUSTOMER_ID))
                 .thenReturn(List.of(mockCustomer));
 
         // Act
-        CustomerRestModel result = customerFacade.get(SUBSCRIBER_ID, CUSTOMER_ID);
+        CustomerRestModel result = customerFacade.get(SUBSCRIBER_UUID, CUSTOMER_ID);
 
         // Assert
         assertThat(result, is(notNullValue()));
@@ -113,12 +114,12 @@ class CustomerFacadeTest {
     @Test
     void test_get_whenCustomerDoesNotExist_throwsBusinessException() {
         // Arrange
-        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(any(), any()))
+        when(customerRepository.findCustomersBySubscriberUuidAndCustomerId(any(), any()))
                 .thenReturn(List.of());
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.get(SUBSCRIBER_ID, CUSTOMER_ID));
+                () -> customerFacade.get(SUBSCRIBER_UUID, CUSTOMER_ID));
         assertThat(exception.getMessage(), is("Customer not found."));
     }
 
@@ -144,8 +145,7 @@ class CustomerFacadeTest {
         customer.setStatus(CustomerStatus.ACTIVE);
         customer.setCpf("1234567890");
         customer.setRg("1234567890");
-        customer.setSubscriber(Subscriber.builder().id(SUBSCRIBER_ID).build());
-
+        customer.setSubscriber(Subscriber.builder().uuid(SUBSCRIBER_UUID).build());
 
         Individual savedCustomer = new Individual();
         savedCustomer.setName("John Doe");
@@ -154,12 +154,14 @@ class CustomerFacadeTest {
         savedCustomer.setStatus(CustomerStatus.ACTIVE);
         savedCustomer.setCpf("1234567890");
         savedCustomer.setRg("1234567890");
-        savedCustomer.setSubscriber(Subscriber.builder().id(SUBSCRIBER_ID).build());
+        savedCustomer.setSubscriber(Subscriber.builder().uuid(SUBSCRIBER_UUID).build());
 
         when(customerRepository.save(customer)).thenReturn(savedCustomer);
+        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID))
+                .thenReturn(Optional.of(Subscriber.builder().uuid(SUBSCRIBER_UUID).build()));
 
         // Act
-        CustomerRestModel result = customerFacade.createIndividual(SUBSCRIBER_ID, customer);
+        CustomerRestModel result = customerFacade.createIndividual(SUBSCRIBER_UUID, customer);
 
         // Assert
         assertThat(result, is(notNullValue()));
@@ -173,7 +175,7 @@ class CustomerFacadeTest {
     void test_createIndividual_whenNullInput_throwsBusinessException() {
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.createIndividual(SUBSCRIBER_ID, null));
+                () -> customerFacade.createIndividual(SUBSCRIBER_UUID, null));
         assertThat(exception.getMessage(), is("Individual cannot be null."));
     }
 
@@ -185,7 +187,7 @@ class CustomerFacadeTest {
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.createIndividual(SUBSCRIBER_ID, individual));
+                () -> customerFacade.createIndividual(SUBSCRIBER_UUID, individual));
         assertThat(exception.getMessage(), is("Name is required."));
     }
 
@@ -199,7 +201,7 @@ class CustomerFacadeTest {
         existingCustomer.setStatus(CustomerStatus.ACTIVE);
         existingCustomer.setCpf("1234567890");
         existingCustomer.setRg("1234567890");
-        existingCustomer.setSubscriber(Subscriber.builder().id(SUBSCRIBER_ID).build());
+        existingCustomer.setSubscriber(Subscriber.builder().uuid(SUBSCRIBER_UUID).build());
 
         Individual updatedCustomer = new Individual();
         updatedCustomer.setId(CUSTOMER_ID);
@@ -208,19 +210,19 @@ class CustomerFacadeTest {
         updatedCustomer.setStatus(CustomerStatus.INACTIVE);
         updatedCustomer.setCpf("9876543210");
         updatedCustomer.setRg("9876543210");
-        updatedCustomer.setSubscriber(Subscriber.builder().id(SUBSCRIBER_ID).build());
+        updatedCustomer.setSubscriber(Subscriber.builder().uuid(SUBSCRIBER_UUID).build());
 
-        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(SUBSCRIBER_ID, CUSTOMER_ID))
-            .thenReturn(List.of(existingCustomer));
+        when(customerRepository.findCustomersBySubscriberUuidAndCustomerId(SUBSCRIBER_UUID, CUSTOMER_ID))
+                .thenReturn(List.of(existingCustomer));
         when(customerRepository.save(updatedCustomer)).thenReturn(updatedCustomer);
 
         // Act
-        CustomerRestModel result = customerFacade.updateIndividual(SUBSCRIBER_ID, updatedCustomer);
+        CustomerRestModel result = customerFacade.updateIndividual(SUBSCRIBER_UUID, updatedCustomer);
 
         // Assert
         assertThat(result, is(notNullValue()));
         assertThat(result.getName(), is("John Smith"));
-        assertThat(result.getDetails(), is("Updated details")); 
+        assertThat(result.getDetails(), is("Updated details"));
         assertThat(result.getStatus(), is(CustomerStatus.INACTIVE.toString()));
     }
 
@@ -230,13 +232,13 @@ class CustomerFacadeTest {
         Individual updatedCustomer = new Individual();
         updatedCustomer.setId(CUSTOMER_ID);
         updatedCustomer.setName("John Smith");
-        
-        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(SUBSCRIBER_ID, CUSTOMER_ID))
-            .thenReturn(List.of());
+
+        when(customerRepository.findCustomersBySubscriberUuidAndCustomerId(SUBSCRIBER_UUID, CUSTOMER_ID))
+                .thenReturn(List.of());
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.updateIndividual(SUBSCRIBER_ID, updatedCustomer));
+                () -> customerFacade.updateIndividual(SUBSCRIBER_UUID, updatedCustomer));
         assertThat(exception.getMessage(), is("Customer not found."));
     }
 
@@ -244,7 +246,7 @@ class CustomerFacadeTest {
     void test_updateIndividual_whenNullInput_throwsBusinessException() {
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.updateIndividual(SUBSCRIBER_ID, null));
+                () -> customerFacade.updateIndividual(SUBSCRIBER_UUID, null));
         assertThat(exception.getMessage(), is("Individual cannot be null."));
     }
 
@@ -256,14 +258,14 @@ class CustomerFacadeTest {
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.updateIndividual(SUBSCRIBER_ID, individual));
+                () -> customerFacade.updateIndividual(SUBSCRIBER_UUID, individual));
         assertThat(exception.getMessage(), is("Name is required."));
     }
 
     @Test
     void test_createCompany_whenValidInput_returnsCompany() {
 
-        Subscriber subscriber = Subscriber.builder().id(SUBSCRIBER_ID).build();
+        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
 
         // Arrange
         Company company = new Company();
@@ -273,7 +275,7 @@ class CustomerFacadeTest {
         company.setCnpjCgc("12.345.678/0001-90");
         company.setInscrEstadual("123456789");
         company.setInscrMunicipal("987654321");
-        
+
         Company savedCompany = new Company();
         savedCompany.setId(CUSTOMER_ID);
         savedCompany.setName("ACME Corporation");
@@ -283,12 +285,12 @@ class CustomerFacadeTest {
         savedCompany.setInscrEstadual("123456789");
         savedCompany.setInscrMunicipal("987654321");
         savedCompany.setSubscriber(subscriber);
-        
-        when(subscriberRepository.findById(SUBSCRIBER_ID)).thenReturn(Optional.of(subscriber));
+
+        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
         when(customerRepository.save(company)).thenReturn(savedCompany);
 
         // Act
-        Company result = customerFacade.createCompany(SUBSCRIBER_ID, company);
+        Company result = customerFacade.createCompany(SUBSCRIBER_UUID, company);
 
         // Assert
         assertThat(result, is(notNullValue()));
@@ -306,7 +308,7 @@ class CustomerFacadeTest {
     void test_createCompany_whenNullInput_throwsBusinessException() {
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.createCompany(SUBSCRIBER_ID, null));
+                () -> customerFacade.createCompany(SUBSCRIBER_UUID, null));
         assertThat(exception.getMessage(), is("Company cannot be null."));
     }
 
@@ -318,16 +320,16 @@ class CustomerFacadeTest {
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.createCompany(SUBSCRIBER_ID, company));
+                () -> customerFacade.createCompany(SUBSCRIBER_UUID, company));
         assertThat(exception.getMessage(), is("Name is required."));
     }
-
 
     @Test
     void test_createCompany_whenSubscriberNotFound_throwsBusinessException() {
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.createCompany(SUBSCRIBER_ID, Company.builder().name("ACME Corporation").build()));
+                () -> customerFacade.createCompany(SUBSCRIBER_UUID,
+                        Company.builder().name("ACME Corporation").build()));
         assertThat(exception.getMessage(), is("Subscriber not found."));
     }
 
@@ -344,7 +346,7 @@ class CustomerFacadeTest {
         company.setInscrMunicipal("987654321");
 
         Subscriber subscriber = Subscriber.builder()
-                .id(SUBSCRIBER_ID)
+                .uuid(SUBSCRIBER_UUID)
                 .build();
 
         Company savedCompany = new Company();
@@ -357,12 +359,12 @@ class CustomerFacadeTest {
         savedCompany.setInscrMunicipal("987654321");
         savedCompany.setSubscriber(subscriber);
 
-        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(SUBSCRIBER_ID, CUSTOMER_ID))
+        when(customerRepository.findCustomersBySubscriberUuidAndCustomerId(SUBSCRIBER_UUID, CUSTOMER_ID))
                 .thenReturn(List.of(Company.builder().build()));
         when(customerRepository.save(company)).thenReturn(savedCompany);
 
         // Act
-        Company result = customerFacade.updateCompany(SUBSCRIBER_ID, company);
+        Company result = customerFacade.updateCompany(SUBSCRIBER_UUID, company);
 
         // Assert
         assertThat(result, is(notNullValue()));
@@ -383,12 +385,12 @@ class CustomerFacadeTest {
         company.setId(CUSTOMER_ID);
         company.setName("ACME Corporation");
 
-        when(customerRepository.findCustomersBySubscriberIdAndCustomerId(SUBSCRIBER_ID, CUSTOMER_ID))
+        when(customerRepository.findCustomersBySubscriberUuidAndCustomerId(SUBSCRIBER_UUID, CUSTOMER_ID))
                 .thenReturn(List.of());
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.updateCompany(SUBSCRIBER_ID, company));
+                () -> customerFacade.updateCompany(SUBSCRIBER_UUID, company));
         assertThat(exception.getMessage(), is("Company not found."));
     }
 
@@ -396,7 +398,7 @@ class CustomerFacadeTest {
     void test_updateCompany_whenNullInput_throwsBusinessException() {
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.updateCompany(SUBSCRIBER_ID, null));
+                () -> customerFacade.updateCompany(SUBSCRIBER_UUID, null));
         assertThat(exception.getMessage(), is("Company cannot be null."));
     }
 
@@ -409,7 +411,7 @@ class CustomerFacadeTest {
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> customerFacade.updateCompany(SUBSCRIBER_ID, company));
+                () -> customerFacade.updateCompany(SUBSCRIBER_UUID, company));
         assertThat(exception.getMessage(), is("Name is required."));
     }
 

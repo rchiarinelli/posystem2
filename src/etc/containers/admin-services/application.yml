@@ -21,7 +21,7 @@ spring:
             ddl-auto: update
     sql:
         init:
-            mode: always
+            mode: never
             platform: mysql
 
 
