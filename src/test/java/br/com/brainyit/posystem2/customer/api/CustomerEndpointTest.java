@@ -17,213 +17,211 @@ import br.com.brainyit.util.TestUtils;
 
 class CustomerEndpointTest extends BaseApiTest {
 
-        @Test
-        void test_getAllEmployees_employeesRetrievedAndResponsePopulated() throws Exception {
-                final MockHttpServletRequestBuilder request = get("/1/customers")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .with(SecurityMockMvcRequestPostProcessors.jwt());
-                final ResultActions results = mockMvc.perform(request);
-                results.andExpect(status().isOk());
-        }
+    private final static String SUBSCRIBER_UUID = "123e4567-e89b-12d3-a456-426614174000";
 
-        @Test
-        void test_getIndividual_retrieveCustomerById_customerRetrievedAndResponsePopulated() throws Exception {
-                final MockHttpServletRequestBuilder request = get("/1/customers/5")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .with(SecurityMockMvcRequestPostProcessors.jwt());
-                final ResultActions results = mockMvc.perform(request);
-                results.andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").value(5))
-                                .andExpect(jsonPath("$.name").value("Michael Davis"))
-                                .andExpect(jsonPath("$.details").value("Premium customer"))
-                                .andExpect(jsonPath("$.status").value("INACTIVE"));
-        }
+    @Test
+    void test_getAllEmployees_employeesRetrievedAndResponsePopulated() throws Exception {
+        final MockHttpServletRequestBuilder request = get("/{subscriber}/customers", SUBSCRIBER_UUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
+        final ResultActions results = mockMvc.perform(request);
+        results.andExpect(status().isOk());
+    }
 
-        @Test
-        void test_createIndividual_whenValidInput_createsAndReturnsCustomer() throws Exception {
-                // Arrange
-                String requestBody = """
-                                {
-                                    "name": "John Doe",
-                                    "details": "New customer",
-                                    "status": "ACTIVE",
-                                    "cpf": "123.456.789-00",
-                                    "rg": "12.345.678-9",
-                                    "customerType":"IndividualRestModel"
-                                }""";
+    @Test
+    void test_getIndividual_retrieveCustomerById_customerRetrievedAndResponsePopulated() throws Exception {
+        final MockHttpServletRequestBuilder request = get("/{subscriber}/customers/5", SUBSCRIBER_UUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
+        final ResultActions results = mockMvc.perform(request);
+        results.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(5))
+                .andExpect(jsonPath("$.name").value("Michael Davis"))
+                .andExpect(jsonPath("$.details").value("Premium customer"))
+                .andExpect(jsonPath("$.status").value("INACTIVE"));
+    }
 
-                // Act
-                final MockHttpServletRequestBuilder request = post("/1/customers/individuals")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(requestBody)
-                                .with(SecurityMockMvcRequestPostProcessors.jwt());
+    @Test
+    void test_createIndividual_whenValidInput_createsAndReturnsCustomer() throws Exception {
+        // Arrange
+        String requestBody = """
+                {
+                    "name": "John Doe",
+                    "details": "New customer",
+                    "status": "ACTIVE",
+                    "cpf": "123.456.789-00",
+                    "rg": "12.345.678-9",
+                    "customerType":"IndividualRestModel"
+                }""";
 
-                final ResultActions results = mockMvc.perform(request);
+        // Act
+        final MockHttpServletRequestBuilder request = post("/{subscriber}/customers/individuals", SUBSCRIBER_UUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
-                // Assert
-                results.andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").exists())
-                                .andExpect(jsonPath("$.name").value("John Doe"))
-                                .andExpect(jsonPath("$.details").value("New customer"))
-                                .andExpect(jsonPath("$.status").value("ACTIVE"));
-        }
+        final ResultActions results = mockMvc.perform(request);
 
-        @Test
-        void test_updateIndividual_whenValidInput_updatesAndReturnsCustomer() throws Exception {
+        // Assert
+        results.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value("John Doe"))
+                .andExpect(jsonPath("$.details").value("New customer"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
+    }
 
-                final String subscriber = "1";
+    @Test
+    void test_updateIndividual_whenValidInput_updatesAndReturnsCustomer() throws Exception {
 
-                // Arrange - First create an individual
-                String createRequestBody = """
-                                        {
-                                            "name": "John Doe",
-                                            "details": "New customer",
-                                            "status": "ACTIVE",
-                                            "cpf": "123.456.789-00",
-                                            "rg": "12.345.678-9",
-                                            "customerType":"IndividualRestModel"
-                                }""";
+        // Arrange - First create an individual
+        String createRequestBody = """
+                        {
+                            "name": "John Doe",
+                            "details": "New customer",
+                            "status": "ACTIVE",
+                            "cpf": "123.456.789-00",
+                            "rg": "12.345.678-9",
+                            "customerType":"IndividualRestModel"
+                }""";
 
-                MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/individuals", subscriber)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(createRequestBody)
-                                .with(SecurityMockMvcRequestPostProcessors.jwt());
+        MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/individuals", SUBSCRIBER_UUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createRequestBody)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
-                ResultActions createResult = mockMvc.perform(createRequest);
-                createResult.andExpect(status().isOk());
+        ResultActions createResult = mockMvc.perform(createRequest);
+        createResult.andExpect(status().isOk());
 
-                // Get the ID from the response for update
-                final String customerId = TestUtils
-                                .convertResponseToMap(createResult.andReturn().getResponse().getContentAsString())
-                                .get("id").toString();
+        // Get the ID from the response for update
+        final String customerId = TestUtils
+                .convertResponseToMap(createResult.andReturn().getResponse().getContentAsString())
+                .get("id").toString();
 
-                // Update request
-                String updateRequestBody = """
-                                {
-                                    "name": "John Smith",
-                                    "details": "Updated customer details",
-                                    "status": "INACTIVE",
-                                    "cpf": "987.654.321-00",
-                                    "rg": "98.765.432-1",
-                                    "customerType":"IndividualRestModel",
-                                    "id": """ + customerId + """
-                                }""";
+        // Update request
+        String updateRequestBody = """
+                {
+                    "name": "John Smith",
+                    "details": "Updated customer details",
+                    "status": "INACTIVE",
+                    "cpf": "987.654.321-00",
+                    "rg": "98.765.432-1",
+                    "customerType":"IndividualRestModel",
+                    "id": """ + customerId + """
+                }""";
 
-                // Act
-                MockHttpServletRequestBuilder updateRequest = put("/{subscriber}/customers/individuals/{customerId}",
-                                new Object[] { subscriber, customerId })
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(updateRequestBody)
-                                .with(SecurityMockMvcRequestPostProcessors.jwt());
+        // Act
+        MockHttpServletRequestBuilder updateRequest = put("/{subscriber}/customers/individuals/{customerId}",
+                new Object[] { SUBSCRIBER_UUID, customerId })
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateRequestBody)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
-                ResultActions updateResult = mockMvc.perform(updateRequest);
+        ResultActions updateResult = mockMvc.perform(updateRequest);
 
-                // Assert
-                updateResult.andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").value(customerId))
-                                .andExpect(jsonPath("$.name").value("John Smith"))
-                                .andExpect(jsonPath("$.details").value("Updated customer details"))
-                                .andExpect(jsonPath("$.status").value("INACTIVE"))
-                                .andExpect(jsonPath("$.cpf").value("987.654.321-00"))
-                                .andExpect(jsonPath("$.rg").value("98.765.432-1"));
-        }
+        // Assert
+        updateResult.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(customerId))
+                .andExpect(jsonPath("$.name").value("John Smith"))
+                .andExpect(jsonPath("$.details").value("Updated customer details"))
+                .andExpect(jsonPath("$.status").value("INACTIVE"))
+                .andExpect(jsonPath("$.cpf").value("987.654.321-00"))
+                .andExpect(jsonPath("$.rg").value("98.765.432-1"));
+    }
 
-        // POST /{subscriber}/customers/companies
+    // POST /{subscriber}/customers/companies
 
-        @Test
-        void test_createCompany_whenValidInput_returnsCreatedCompany() throws Exception {
-                // Arrange
-                String subscriber = "1";
-                String createRequestBody = """
-                                {
-                                    "name": "ACME Corporation",
-                                    "details": "Large company that makes everything",
-                                    "status": "ACTIVE",
-                                    "cnpj": "12.345.678/0001-90",
-                                    "inscricaoEstadual": "123456789",
-                                    "inscricaoMunicipal": "987654321",
-                                    "customerType":"CompanyRestModel"
-                                }""";
+    @Test
+    void test_createCompany_whenValidInput_returnsCreatedCompany() throws Exception {
+        // Arrange
+        String createRequestBody = """
+                {
+                    "name": "ACME Corporation",
+                    "details": "Large company that makes everything",
+                    "status": "ACTIVE",
+                    "cnpj": "12.345.678/0001-90",
+                    "inscricaoEstadual": "123456789",
+                    "inscricaoMunicipal": "987654321",
+                    "customerType":"CompanyRestModel"
+                }""";
 
-                MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/companies", subscriber)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(createRequestBody)
-                                .with(SecurityMockMvcRequestPostProcessors.jwt());
+        MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/companies", SUBSCRIBER_UUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createRequestBody)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
-                // Act & Assert
-                mockMvc.perform(createRequest)
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").exists())
-                                .andExpect(jsonPath("$.name").value("ACME Corporation"))
-                                .andExpect(jsonPath("$.details").value("Large company that makes everything"))
-                                .andExpect(jsonPath("$.status").value("ACTIVE"))
-                                .andExpect(jsonPath("$.cnpj").value("12.345.678/0001-90"))
-                                .andExpect(jsonPath("$.inscricaoEstadual").value("123456789"))
-                                .andExpect(jsonPath("$.inscricaoMunicipal").value("987654321"));
-        }
+        // Act & Assert
+        mockMvc.perform(createRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value("ACME Corporation"))
+                .andExpect(jsonPath("$.details").value("Large company that makes everything"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.cnpj").value("12.345.678/0001-90"))
+                .andExpect(jsonPath("$.inscricaoEstadual").value("123456789"))
+                .andExpect(jsonPath("$.inscricaoMunicipal").value("987654321"));
+    }
 
-        // PUT /{subscriber}/customers/organizations/{customerId}
+    // PUT /{subscriber}/customers/organizations/{customerId}
 
-        @Test
-        void test_updateCompany_whenValidInput_returnsUpdatedCompany() throws Exception {
-                // Arrange
-                String subscriber = "1";
+    @Test
+    void test_updateCompany_whenValidInput_returnsUpdatedCompany() throws Exception {
+        // Arrange
 
-                // First create a company
-                String createRequestBody = """
-                                {
-                                    "name": "ACME Corporation",
-                                    "details": "Large company",
-                                    "status": "ACTIVE",
-                                    "cnpj": "12.345.678/0001-90",
-                                    "ie": "123456789",
-                                    "im": "987654321",
-                                    "customerType":"CompanyRestModel"
-                                }""";
+        // First create a company
+        String createRequestBody = """
+                {
+                    "name": "ACME Corporation",
+                    "details": "Large company",
+                    "status": "ACTIVE",
+                    "cnpj": "12.345.678/0001-90",
+                    "ie": "123456789",
+                    "im": "987654321",
+                    "customerType":"CompanyRestModel"
+                }""";
 
-                MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/companies", subscriber)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(createRequestBody)
-                                .with(SecurityMockMvcRequestPostProcessors.jwt());
+        MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/companies", SUBSCRIBER_UUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createRequestBody)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
-                // Get the ID from create response
-                ResultActions createResult = mockMvc.perform(createRequest);
-                createResult.andExpect(status().isOk());
+        // Get the ID from create response
+        ResultActions createResult = mockMvc.perform(createRequest);
+        createResult.andExpect(status().isOk());
 
-                // Get the ID from the response for update
-                final String customerId = TestUtils
-                                .convertResponseToMap(createResult.andReturn().getResponse().getContentAsString())
-                                .get("id").toString();
+        // Get the ID from the response for update
+        final String customerId = TestUtils
+                .convertResponseToMap(createResult.andReturn().getResponse().getContentAsString())
+                .get("id").toString();
 
-                // Update the company
-                String updateRequestBody = """
-                                {
-                                    "id": "%s",
-                                    "name": "ACME Corporation Updated",
-                                    "details": "Updated company details",
-                                    "status": "INACTIVE",
-                                    "cnpj": "12.345.678/0001-90",
-                                    "inscricaoEstadual": "987654321",
-                                    "inscricaoMunicipal": "123456789",
-                                    "customerType":"CompanyRestModel"
-                                }""".formatted(customerId);
+        // Update the company
+        String updateRequestBody = """
+                {
+                    "id": "%s",
+                    "name": "ACME Corporation Updated",
+                    "details": "Updated company details",
+                    "status": "INACTIVE",
+                    "cnpj": "12.345.678/0001-90",
+                    "inscricaoEstadual": "987654321",
+                    "inscricaoMunicipal": "123456789",
+                    "customerType":"CompanyRestModel"
+                }""".formatted(customerId);
 
-                MockHttpServletRequestBuilder updateRequest = put("/{subscriber}/customers/companies/{customerId}",
-                                subscriber, customerId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(updateRequestBody)
-                                .with(SecurityMockMvcRequestPostProcessors.jwt());
+        MockHttpServletRequestBuilder updateRequest = put("/{subscriber}/customers/companies/{customerId}",
+                new Object[] { SUBSCRIBER_UUID, customerId })
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateRequestBody)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
 
-                // Act & Assert
-                mockMvc.perform(updateRequest)
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").value(customerId))
-                                .andExpect(jsonPath("$.name").value("ACME Corporation Updated"))
-                                .andExpect(jsonPath("$.details").value("Updated company details"))
-                                .andExpect(jsonPath("$.status").value("INACTIVE"))
-                                .andExpect(jsonPath("$.cnpj").value("12.345.678/0001-90"))
-                                .andExpect(jsonPath("$.inscricaoEstadual").value("987654321"))
-                                .andExpect(jsonPath("$.inscricaoMunicipal").value("123456789"));
-        }
+        // Act & Assert
+        mockMvc.perform(updateRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(customerId))
+                .andExpect(jsonPath("$.name").value("ACME Corporation Updated"))
+                .andExpect(jsonPath("$.details").value("Updated company details"))
+                .andExpect(jsonPath("$.status").value("INACTIVE"))
+                .andExpect(jsonPath("$.cnpj").value("12.345.678/0001-90"))
+                .andExpect(jsonPath("$.inscricaoEstadual").value("987654321"))
+                .andExpect(jsonPath("$.inscricaoMunicipal").value("123456789"));
+    }
 
 }
