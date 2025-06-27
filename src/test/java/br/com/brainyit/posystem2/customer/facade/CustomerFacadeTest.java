@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -413,6 +415,29 @@ class CustomerFacadeTest {
         BusinessException exception = assertThrows(BusinessException.class,
                 () -> customerFacade.updateCompany(SUBSCRIBER_UUID, company));
         assertThat(exception.getMessage(), is("Name is required."));
+    }
+
+    @Test
+    void test_deleteCustomer_customerNotFound_throwsBusinessException() {
+        // Act & Assert
+        when(customerRepository.findCustomersBySubscriberUuidAndCustomerId(SUBSCRIBER_UUID, CUSTOMER_ID))
+                .thenReturn(List.of());
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> customerFacade.deleteCustomer(SUBSCRIBER_UUID, CUSTOMER_ID));
+        assertThat(exception.getMessage(), is("Customer not found."));
+    }
+
+    @Test
+    void test_deleteCustomer_customerFound_deletesCustomer() {
+        // Arrange
+        when(customerRepository.findCustomersBySubscriberUuidAndCustomerId(SUBSCRIBER_UUID, CUSTOMER_ID))
+                .thenReturn(List.of(mockCustomer));
+
+        // Act
+        customerFacade.deleteCustomer(SUBSCRIBER_UUID, CUSTOMER_ID);
+
+        // Assert
+        verify(customerRepository, times(1)).delete(mockCustomer);
     }
 
 }

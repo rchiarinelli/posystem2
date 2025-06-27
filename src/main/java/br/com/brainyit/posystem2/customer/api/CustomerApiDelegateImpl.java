@@ -12,6 +12,7 @@ import br.com.brainyit.posystem2.customer.mapper.IndividualMapper;
 import br.com.brainyit.posystem2.model.CompanyRestModel;
 import br.com.brainyit.posystem2.model.CustomerRestModel;
 import br.com.brainyit.posystem2.model.IndividualRestModel;
+import br.com.brainyit.posystem2.model.Message;
 import lombok.AllArgsConstructor;
 
 @Component
@@ -21,7 +22,7 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
     private final CustomerFacade customerFacade;
 
     @Override
-    public ResponseEntity<CompanyRestModel> subscriberCustomersCompaniesCustomerIdPut(String subscriber,
+    public ResponseEntity<Message> subscriberCustomersCompaniesCustomerIdPut(String subscriber,
             String customerId, CompanyRestModel companyRestModel) {
         if (companyRestModel == null) {
             return ResponseEntity.badRequest().build();
@@ -34,8 +35,8 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
         try {
             final var companyMapper = CompanyMapper.builder().build();
             var company = companyMapper.mapToDomain(companyRestModel);
-            var updatedCompany = customerFacade.updateCompany(subscriber, company);
-            return ResponseEntity.ok(companyMapper.mapFromDomain(updatedCompany));
+            customerFacade.updateCompany(subscriber, company);
+            return ResponseEntity.ok(new Message().message("Company updated"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -110,6 +111,12 @@ public class CustomerApiDelegateImpl implements CustomerApiDelegate {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @Override
+    public ResponseEntity<Message> subscriberCustomersIdDelete(String subscriber, Integer id) throws Exception {
+        customerFacade.deleteCustomer(subscriber, id);
+        return ResponseEntity.ok(new Message().message("Customer deleted"));
     }
 
 }

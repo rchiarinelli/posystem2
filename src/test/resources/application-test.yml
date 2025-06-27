@@ -24,4 +24,25 @@ spring:
 
 
 
+#### application and security settings
+
+application:
+    language: pt-BR
+    order-code-prefix: PED-
+    order-code-length: 5
+
+
+cors:
+    mapping: /**
+    allowed-origins-patterns: http://**, https://**
+    allowed-methods: GET, POST, PUT, DELETE, OPTIONS
+    allowed-headers: "*"
+
+security:
+    api:
+        non-protected-apis: /actuator/**, /swagger-ui/**, /v3/api-docs/**
+        protected-apis: /**
+
+
+
 

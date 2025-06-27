@@ -1,6 +1,5 @@
 openapi: 3.0.0
 
-
 info:
   title: Customer API
   version: 1.0.0
@@ -27,7 +26,7 @@ paths:
       summary: Get customer by ID
       x-interface-name: CustomerApi
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -39,20 +38,50 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Customer found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomerRestModel'
-        '400':
+                $ref: "#/components/schemas/CustomerRestModel"
+        "400":
           description: Invalid ID format
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
-        '404':
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        "404":
           description: Customer not found
+    delete:
+      tags:
+        - Customer
+      summary: Delete customer by ID
+      x-interface-name: CustomerApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Customer deleted
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
 
   /{subscriber}/customers:
     get:
@@ -61,21 +90,21 @@ paths:
       summary: Get all customers
       x-interface-name: CustomerApi
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: List of customers
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CustomerRestModel'
+                  $ref: "#/components/schemas/CustomerRestModel"
 
   /{subscriber}/customers/individuals:
     post:
@@ -84,7 +113,7 @@ paths:
       summary: Create individual customer
       x-interface-name: CustomerApi
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -95,20 +124,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IndividualRestModel'
+              $ref: "#/components/schemas/IndividualRestModel"
       responses:
-        '200':
+        "200":
           description: Individual customer created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndividualRestModel'
-        '400':
+                $ref: "#/components/schemas/IndividualRestModel"
+        "400":
           description: Invalid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: "./common-spec.yml#/components/schemas/Message"
 
   /{subscriber}/customers/individuals/{customerId}:
     put:
@@ -117,7 +146,7 @@ paths:
       summary: Update individual customer
       x-interface-name: CustomerApi
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -133,20 +162,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IndividualRestModel'
+              $ref: "#/components/schemas/IndividualRestModel"
       responses:
-        '200':
+        "200":
           description: Individual customer updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndividualRestModel'
-        '400':
+                $ref: "#/components/schemas/IndividualRestModel"
+        "400":
           description: Invalid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: "./common-spec.yml#/components/schemas/Message"
 
   /{subscriber}/customers/companies:
     post:
@@ -155,7 +184,7 @@ paths:
       summary: Create company customer
       x-interface-name: CustomerApi
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -166,20 +195,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CompanyRestModel'
+              $ref: "#/components/schemas/CompanyRestModel"
       responses:
-        '200':
+        "200":
           description: Company created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompanyRestModel'
-        '400':
+                $ref: "#/components/schemas/CompanyRestModel"
+        "400":
           description: Invalid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: "./common-spec.yml#/components/schemas/Message"
 
   /{subscriber}/customers/companies/{customerId}:
     put:
@@ -188,7 +217,7 @@ paths:
       summary: Update company customer
       x-interface-name: CustomerApi
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -204,29 +233,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CompanyRestModel'
+              $ref: "#/components/schemas/CompanyRestModel"
       responses:
-        '200':
+        "200":
           description: Company updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompanyRestModel'
-        '400':
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        "400":
           description: Invalid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: "./common-spec.yml#/components/schemas/Message"
 
 components:
   schemas:
-    Message:
-      type: object
-      properties:
-        message:
-          type: string
-
     CustomerRestModel:
       type: object
       discriminator:
@@ -245,7 +268,7 @@ components:
 
     IndividualRestModel:
       allOf:
-        - $ref: '#/components/schemas/CustomerRestModel'
+        - $ref: "#/components/schemas/CustomerRestModel"
         - type: object
           properties:
             cpf:
@@ -255,7 +278,7 @@ components:
 
     CompanyRestModel:
       allOf:
-        - $ref: '#/components/schemas/CustomerRestModel'
+        - $ref: "#/components/schemas/CustomerRestModel"
         - type: object
           properties:
             cnpj:

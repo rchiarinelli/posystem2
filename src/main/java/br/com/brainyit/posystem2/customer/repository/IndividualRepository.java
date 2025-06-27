@@ -9,4 +9,6 @@ import br.com.brainyit.posystem2.domain.Individual;
 public interface IndividualRepository extends JpaRepository<Individual, Integer> {
 
     Individual findBySubscriberIdAndCpfAndName(final Long subscriberId, final String cpf, final String name);
+
+    Individual findByIdAndSubscriberId(final Integer id, final Long subscriberId);
 }

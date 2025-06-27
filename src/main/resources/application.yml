@@ -35,6 +35,8 @@ logging:
 
 application:
     language: pt-BR
+    order-code-prefix: PED-
+    order-code-length: 5
 
 
 cors:

@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.brainyit.posystem2.customer.repository.CompanyRepository;
@@ -35,241 +36,308 @@ import br.com.brainyit.util.TestUtils;
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
-    @InjectMocks
-    private OrderService orderService;
-    
-    @Mock
-    private OrderRepository orderRepository;
-    
-    @Mock
-    private IndividualRepository individualRepository;
-    
-    @Mock
-    private CompanyRepository companyRepository;
+        @InjectMocks
+        private OrderService orderService;
 
-    @Mock
-    private SubscriberRepository subscriberRepository;
-    
-    private static final String SUBSCRIBER_UUID = "123e4567-e89b-12d3-a456-426614174000";
-    
-    private static final String CUSTOMER_DOC = "12345678901";
-    
-    private static final String CUSTOMER_NAME = "John Doe";
-    
-    private static final String ORDER_DESC = "Test Order";
-    
-    private static final Double ORDER_QTY = 1.0;
-    
-    @Test
-    void test_placeOrder_withIndividual_success() {
-        // given
-        Individual customer = Individual.builder()
-                .cpf(CUSTOMER_DOC)
-                .name(CUSTOMER_NAME)
-                .build();
+        @Mock
+        private OrderRepository orderRepository;
 
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+        @Mock
+        private IndividualRepository individualRepository;
 
-        final Date openDate = new Date();
+        @Mock
+        private CompanyRepository companyRepository;
 
-        Order order = TestUtils.createOrder(customer, ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, openDate, UUID.randomUUID().toString());
-        order.setSubscriber(subscriber);
-                
-        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
-        when(individualRepository.findBySubscriberIdAndCpfAndName(subscriber.getId(), CUSTOMER_DOC, CUSTOMER_NAME))
-            .thenReturn(customer);
-            
-        when(orderRepository.save(any(Order.class))).thenReturn(order);
-            
-        // when
-        Order result = orderService.placeOrder(subscriber.getUuid(), CUSTOMER_DOC, CUSTOMER_NAME, ORDER_DESC, ORDER_QTY);
-        
-        // then
-        assertThat(result, is(notNullValue()));
-        assertThat(result.getStatus(), is(OrderStatus.PENDING));
-        assertThat(result.getOpenDate(), is(openDate));
-        assertThat(result.getDescription(), is(ORDER_DESC));
-        assertThat(result.getQuantity(), is(ORDER_QTY));
-        assertThat(result.getCustomer(), is(customer));
-        assertThat(result.getOrderCode(), is(notNullValue()));
-        assertThat(result.getSubscriber(), is(notNullValue()));
-    }
+        @Mock
+        private SubscriberRepository subscriberRepository;
 
-    @Test
-    void test_placeOrder_withCompany_success() {
-        Company customer = Company.builder()
-                .cnpjCgc(CUSTOMER_DOC)
-                .name(CUSTOMER_NAME)
-                .build();
+        private static final String SUBSCRIBER_UUID = "123e4567-e89b-12d3-a456-426614174000";
 
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+        private static final int CUSTOMER_ID = 1;
 
-        final Date openDate = new Date();
+        private static final String CUSTOMER_DOC = "12345678901";
 
-        Order order = TestUtils.createOrder(customer, ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, openDate, UUID.randomUUID().toString());
-        order.setSubscriber(subscriber);
+        private static final String CUSTOMER_NAME = "John Doe";
 
-        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
-        when(companyRepository.findBySubscriberIdAndCnpjCgcAndName(subscriber.getId(), CUSTOMER_DOC,CUSTOMER_NAME))
-            .thenReturn(customer);
+        private static final String ORDER_DESC = "Test Order";
 
-        when(orderRepository.save(any(Order.class))).thenReturn(order); 
+        private static final Double ORDER_QTY = 1.0;
 
-        // when
-        Order result = orderService.placeOrder(subscriber.getUuid(), CUSTOMER_DOC, CUSTOMER_NAME, ORDER_DESC, ORDER_QTY);
-        
-        // then
-        assertThat(result, is(notNullValue()));
-        assertThat(result.getStatus(), is(OrderStatus.PENDING));
-        assertThat(result.getOpenDate(), is(openDate));
-        assertThat(result.getDescription(), is(ORDER_DESC));
-        assertThat(result.getQuantity(), is(ORDER_QTY));
-        assertThat(result.getCustomer(), is(customer));
-        assertThat(result.getOrderCode(), is(notNullValue()));
-        assertThat(result.getSubscriber(), is(notNullValue()));
-    }
+        @Test
+        void test_placeOrder_withIndividual_success() {
+                // given
+                Individual customer = Individual.builder()
+                                .id(CUSTOMER_ID)
+                                .cpf(CUSTOMER_DOC)
+                                .name(CUSTOMER_NAME)
+                                .build();
 
-    @Test
-    void test_placeOrder_whenIndividualCustomerNotFound_throwsBusinessException() {
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
 
-        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                final Date openDate = new Date();
 
-        when(individualRepository.findBySubscriberIdAndCpfAndName(subscriber.getId(),  CUSTOMER_DOC, CUSTOMER_NAME))
-            .thenReturn(null);
-        assertThrows(BusinessException.class, () -> 
-            orderService.placeOrder(subscriber.getUuid(), CUSTOMER_DOC, CUSTOMER_NAME, ORDER_DESC, ORDER_QTY));
-    } 
+                Order order = TestUtils.createOrder(customer, ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, openDate,
+                                UUID.randomUUID().toString());
+                order.setSubscriber(subscriber);
 
-    @Test
-    void test_placeOrder_whenCompanyCustomerNotFound_throwsBusinessException() {
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
-        
-        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
-        
-        when(companyRepository.findBySubscriberIdAndCnpjCgcAndName(subscriber.getId(), CUSTOMER_DOC, CUSTOMER_NAME))
-            .thenReturn(null);
-        assertThrows(BusinessException.class, () -> 
-            orderService.placeOrder(subscriber.getUuid(), CUSTOMER_DOC, CUSTOMER_NAME, ORDER_DESC, ORDER_QTY));
-    } 
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                when(individualRepository.findByIdAndSubscriberId(customer.getId(), subscriber.getId()))
+                                .thenReturn(customer);
 
-    @Test
-    void test_getOrderByCode_success() {
-        // given
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+                when(orderRepository.save(any(Order.class))).thenReturn(order);
 
-        Individual customer = Individual.builder()
-                .cpf(CUSTOMER_DOC)
-                .name(CUSTOMER_NAME)
-                .build();
+                // when
+                Order result = orderService.placeOrder(subscriber.getUuid(), customer.getId(), ORDER_DESC,
+                                ORDER_QTY);
 
-        String orderCode = UUID.randomUUID().toString();
-        Order order = TestUtils.createOrder(customer, ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, new Date(), orderCode);
+                // then
+                assertThat(result, is(notNullValue()));
+                assertThat(result.getStatus(), is(OrderStatus.PENDING));
+                assertThat(result.getOpenDate(), is(openDate));
+                assertThat(result.getDescription(), is(ORDER_DESC));
+                assertThat(result.getQuantity(), is(ORDER_QTY));
+                assertThat(result.getCustomer(), is(customer));
+                assertThat(result.getOrderCode(), is(notNullValue()));
+                assertThat(result.getSubscriber(), is(notNullValue()));
+        }
 
-        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
-        when(orderRepository.findBySubscriberIdAndOrderCode(subscriber.getId(), orderCode)).thenReturn(Optional.of(order));
+        @Test
+        void test_placeOrder_withCompany_success() {
+                Company customer = Company.builder()
+                                .id(CUSTOMER_ID)
+                                .cnpjCgc(CUSTOMER_DOC)
+                                .name(CUSTOMER_NAME)
+                                .build();
 
-        // when
-        Order result = orderService.getOrderByCode(subscriber.getUuid(), orderCode);
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
 
-        // then
-        assertThat(result, is(notNullValue()));
-        assertThat(result.getCustomer(), is(customer));
-        assertThat(result.getDescription(), is(ORDER_DESC));
-        assertThat(result.getQuantity(), is(ORDER_QTY));
-        assertThat(result.getStatus(), is(OrderStatus.PENDING));
-        assertThat(result.getOrderCode(), is(orderCode));
-    }
+                final Date openDate = new Date();
 
-    @Test
-    void test_getOrderByCode_whenOrderNotFound_throwsBusinessException() {
-        // given
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+                Order order = TestUtils.createOrder(customer, ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, openDate,
+                                UUID.randomUUID().toString());
+                order.setSubscriber(subscriber);
 
-        String orderCode = UUID.randomUUID().toString();
-        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
-        when(orderRepository.findBySubscriberIdAndOrderCode(subscriber.getId(), orderCode)).thenReturn(Optional.empty());
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                when(companyRepository.findByIdAndSubscriberId(customer.getId(), subscriber.getId()))
+                                .thenReturn(customer);
 
-        // when/then
-        assertThrows(BusinessException.class, () -> 
-            orderService.getOrderByCode(subscriber.getUuid(), orderCode));
-    }
+                when(orderRepository.save(any(Order.class))).thenReturn(order);
 
+                // when
+                Order result = orderService.placeOrder(subscriber.getUuid(), customer.getId(), ORDER_DESC,
+                                ORDER_QTY);
 
-    @Test
-    void test_getOrderByCode_whenEmptyOrderCode_throwsBusinessException() {
-        // given
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+                // then
+                assertThat(result, is(notNullValue()));
+                assertThat(result.getStatus(), is(OrderStatus.PENDING));
+                assertThat(result.getOpenDate(), is(openDate));
+                assertThat(result.getDescription(), is(ORDER_DESC));
+                assertThat(result.getQuantity(), is(ORDER_QTY));
+                assertThat(result.getCustomer(), is(customer));
+                assertThat(result.getOrderCode(), is(notNullValue()));
+                assertThat(result.getSubscriber(), is(notNullValue()));
+        }
 
-        // when/then
-        assertThrows(BusinessException.class, () -> 
-            orderService.getOrderByCode(subscriber.getUuid(), ""));
-    }
+        @Test
+        void test_placeOrder_whenIndividualCustomerNotFound_throwsBusinessException() {
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
 
-    @Test
-    void test_getOrderByCode_whenSubscriberNotFound_throwsBusinessException() {
-        // given
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
 
-        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.empty());
-        assertThrows(BusinessException.class, () -> 
-            orderService.placeOrder(subscriber.getUuid(), CUSTOMER_DOC, CUSTOMER_NAME, ORDER_DESC, ORDER_QTY));
-    }
+                when(individualRepository.findByIdAndSubscriberId(CUSTOMER_ID, subscriber.getId()))
+                                .thenReturn(null);
+                assertThrows(BusinessException.class, () -> orderService.placeOrder(subscriber.getUuid(), CUSTOMER_ID,
+                                ORDER_DESC, ORDER_QTY));
+        }
 
-    @Test
-    void test_getOrdersBySubscriberId_success() {
-        // given
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+        @Test
+        void test_placeOrder_whenCompanyCustomerNotFound_throwsBusinessException() {
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
 
-        Individual customer = Individual.builder()
-                .cpf(CUSTOMER_DOC)
-                .name(CUSTOMER_NAME)
-                .build();
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
 
-        String orderCode = UUID.randomUUID().toString();
-        Order order = TestUtils.createOrder(customer, ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, new Date(), orderCode);
-        List<Order> orders = List.of(order);
+                when(companyRepository.findByIdAndSubscriberId(CUSTOMER_ID, subscriber.getId()))
+                                .thenReturn(null);
+                assertThrows(BusinessException.class, () -> orderService.placeOrder(subscriber.getUuid(), CUSTOMER_ID,
+                                ORDER_DESC, ORDER_QTY));
+        }
 
-        when(orderRepository.findBySubscriberId(subscriber.getId())).thenReturn(orders);
+        @Test
+        void test_getOrderByCode_success() {
+                // given
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
 
-        // when
-        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
-        List<Order> result = orderService.getOrdersBySubscriberId(subscriber.getUuid());
+                Individual customer = Individual.builder()
+                                .cpf(CUSTOMER_DOC)
+                                .name(CUSTOMER_NAME)
+                                .build();
 
-        // then
-        assertThat(result, Matchers.hasSize(1));
-        assertThat(result.get(0).getCustomer(), is(customer));
-        assertThat(result.get(0).getDescription(), is(ORDER_DESC));
-        assertThat(result.get(0).getQuantity(), is(ORDER_QTY));
-        assertThat(result.get(0).getStatus(), is(OrderStatus.PENDING));
-        assertThat(result.get(0).getOrderCode(), is(orderCode));
-    }
+                String orderCode = UUID.randomUUID().toString();
+                Order order = TestUtils.createOrder(customer, ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, new Date(),
+                                orderCode);
 
-    @Test
-    void test_getOrdersBySubscriberId_whenNoOrders_returnsEmptyList() {
-        // given
-        Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                when(orderRepository.findBySubscriberIdAndOrderCode(subscriber.getId(), orderCode))
+                                .thenReturn(Optional.of(order));
 
-        when(orderRepository.findBySubscriberId(subscriber.getId())).thenReturn(Collections.emptyList());
+                // when
+                Order result = orderService.getOrderByCode(subscriber.getUuid(), orderCode);
 
-        // when
-        when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
-        List<Order> result = orderService.getOrdersBySubscriberId(subscriber.getUuid());
+                // then
+                assertThat(result, is(notNullValue()));
+                assertThat(result.getCustomer(), is(customer));
+                assertThat(result.getDescription(), is(ORDER_DESC));
+                assertThat(result.getQuantity(), is(ORDER_QTY));
+                assertThat(result.getStatus(), is(OrderStatus.PENDING));
+                assertThat(result.getOrderCode(), is(orderCode));
+        }
 
-        // then
-        assertThat(result, Matchers.empty());
-    }
+        @Test
+        void test_getOrderByCode_whenOrderNotFound_throwsBusinessException() {
+                // given
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
 
-    @Test
-    void test_getOrdersBySubscriberId_whenSubscriberIdNull_throwsBusinessException() {
-        // when/then
-        assertThrows(BusinessException.class, () -> 
-            orderService.getOrdersBySubscriberId(null));
-    }
+                String orderCode = UUID.randomUUID().toString();
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                when(orderRepository.findBySubscriberIdAndOrderCode(subscriber.getId(), orderCode))
+                                .thenReturn(Optional.empty());
 
+                // when/then
+                assertThrows(BusinessException.class,
+                                () -> orderService.getOrderByCode(subscriber.getUuid(), orderCode));
+        }
+
+        @Test
+        void test_getOrderByCode_whenEmptyOrderCode_throwsBusinessException() {
+                // given
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+
+                // when/then
+                assertThrows(BusinessException.class, () -> orderService.getOrderByCode(subscriber.getUuid(), ""));
+        }
+
+        @Test
+        void test_getOrderByCode_whenSubscriberNotFound_throwsBusinessException() {
+                // given
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.empty());
+                assertThrows(BusinessException.class, () -> orderService.placeOrder(subscriber.getUuid(), CUSTOMER_ID,
+                                ORDER_DESC, ORDER_QTY));
+        }
+
+        @Test
+        void test_getOrdersBySubscriberId_success() {
+                // given
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+
+                Individual customer = Individual.builder()
+                                .cpf(CUSTOMER_DOC)
+                                .name(CUSTOMER_NAME)
+                                .build();
+
+                String orderCode = UUID.randomUUID().toString();
+                Order order = TestUtils.createOrder(customer, ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, new Date(),
+                                orderCode);
+                List<Order> orders = List.of(order);
+
+                when(orderRepository.findBySubscriberId(subscriber.getId())).thenReturn(orders);
+
+                // when
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                List<Order> result = orderService.getOrdersBySubscriberId(subscriber.getUuid());
+
+                // then
+                assertThat(result, Matchers.hasSize(1));
+                assertThat(result.get(0).getCustomer(), is(customer));
+                assertThat(result.get(0).getDescription(), is(ORDER_DESC));
+                assertThat(result.get(0).getQuantity(), is(ORDER_QTY));
+                assertThat(result.get(0).getStatus(), is(OrderStatus.PENDING));
+                assertThat(result.get(0).getOrderCode(), is(orderCode));
+        }
+
+        @Test
+        void test_getOrdersBySubscriberId_whenNoOrders_returnsEmptyList() {
+                // given
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+
+                when(orderRepository.findBySubscriberId(subscriber.getId())).thenReturn(Collections.emptyList());
+
+                // when
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                List<Order> result = orderService.getOrdersBySubscriberId(subscriber.getUuid());
+
+                // then
+                assertThat(result, Matchers.empty());
+        }
+
+        @Test
+        void test_getOrdersBySubscriberId_whenSubscriberIdNull_throwsBusinessException() {
+                // when/then
+                assertThrows(BusinessException.class, () -> orderService.getOrdersBySubscriberId(null));
+        }
+
+        @Test
+        void test_cancelOrder_orderAlreadyInExecution_throwsBusinessException() {
+                // given
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+
+                Order order = TestUtils.createOrder(null, ORDER_DESC, ORDER_QTY, OrderStatus.EXECUTING, new Date(),
+                                UUID.randomUUID().toString());
+                order.setSubscriber(subscriber);
+
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                when(orderRepository.findBySubscriberIdAndOrderCode(subscriber.getId(), order.getOrderCode()))
+                                .thenReturn(Optional.of(order));
+
+                // when/then
+                final BusinessException exception = assertThrows(BusinessException.class,
+                                () -> orderService.cancelOrder(subscriber.getUuid(), order.getOrderCode(), "test"));
+                assertThat(exception.getMessage(), is("Order is already in execution"));
+        }
+
+        @Test
+        void test_cancelOrder_success() {
+                // given
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+
+                Order order = TestUtils.createOrder(null, ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, new Date(),
+                                UUID.randomUUID().toString());
+                order.setSubscriber(subscriber);
+
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                when(orderRepository.findBySubscriberIdAndOrderCode(subscriber.getId(), order.getOrderCode()))
+                                .thenReturn(Optional.of(order));
+
+                when(orderRepository.save(any(Order.class))).thenReturn(order);
+
+                // when
+                Order result = orderService.cancelOrder(subscriber.getUuid(), order.getOrderCode(), "test");
+
+                // then
+                assertThat(result, is(notNullValue()));
+                assertThat(result.getStatus(), is(OrderStatus.CANCELLED));
+                assertThat(result.getCloseDate(), is(notNullValue()));
+                assertThat(result.getDescription(),
+                                is(ORDER_DESC + "\n\n ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> REASON: test"));
+        }
+
+        @Test
+        void test_cancelOrder_whenOrderAlreadyCancelled_throwsBusinessException() {
+                // given
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+
+                Order order = TestUtils.createOrder(null, ORDER_DESC, ORDER_QTY, OrderStatus.CANCELLED, new Date(),
+                                UUID.randomUUID().toString());
+                order.setSubscriber(subscriber);
+
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+                when(orderRepository.findBySubscriberIdAndOrderCode(subscriber.getId(), order.getOrderCode()))
+                                .thenReturn(Optional.of(order));
+
+                // when/then
+                final BusinessException exception = assertThrows(BusinessException.class,
+                                () -> orderService.cancelOrder(subscriber.getUuid(), order.getOrderCode(), "test"));
+                assertThat(exception.getMessage(), is("Order is already cancelled"));
+        }
 }
-
-
-
-
-
