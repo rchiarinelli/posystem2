@@ -1,0 +1,15 @@
+openapi: 3.0.0
+
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+        endpoint:
+          type: string
+          description: The endpoint that caused the error
+        transactionUuid:
+          type: string
+          description: The transaction UUID

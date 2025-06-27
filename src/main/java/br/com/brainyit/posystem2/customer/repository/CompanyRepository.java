@@ -10,4 +10,5 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
     Company findBySubscriberIdAndCnpjCgcAndName(final Long subscriberId, final String cnpjCgc, final String name);
 
+    Company findByIdAndSubscriberId(final Integer id, final Long subscriberId);
 }

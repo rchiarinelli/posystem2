@@ -21,6 +21,8 @@ paths:
     $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1companies"
   /{subscriber}/orders/{orderCode}/place-production-order:
     $ref: "./order-spec.yml#/paths/~1{subscriber}~1orders~1{orderCode}~1place-production-order"
+  /{subscriber}/orders/{orderCode}/cancel:
+    $ref: "./order-spec.yml#/paths/~1{subscriber}~1orders~1{orderCode}~1cancel"
   /{subscriber}/orders/{orderCode}:
     $ref: "./order-spec.yml#/paths/~1{subscriber}~1orders~1{orderCode}"
   /{subscriber}/customers:

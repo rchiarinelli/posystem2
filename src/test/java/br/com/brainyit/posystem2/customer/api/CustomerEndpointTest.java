@@ -1,5 +1,6 @@
 package br.com.brainyit.posystem2.customer.api;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -55,7 +56,8 @@ class CustomerEndpointTest extends BaseApiTest {
                 }""";
 
         // Act
-        final MockHttpServletRequestBuilder request = post("/{subscriber}/customers/individuals", SUBSCRIBER_UUID)
+        final MockHttpServletRequestBuilder request = post("/{subscriber}/customers/individuals",
+                SUBSCRIBER_UUID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .with(SecurityMockMvcRequestPostProcessors.jwt());
@@ -84,7 +86,8 @@ class CustomerEndpointTest extends BaseApiTest {
                             "customerType":"IndividualRestModel"
                 }""";
 
-        MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/individuals", SUBSCRIBER_UUID)
+        MockHttpServletRequestBuilder createRequest = post("/{subscriber}/customers/individuals",
+                SUBSCRIBER_UUID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createRequestBody)
                 .with(SecurityMockMvcRequestPostProcessors.jwt());
@@ -215,13 +218,48 @@ class CustomerEndpointTest extends BaseApiTest {
         // Act & Assert
         mockMvc.perform(updateRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(customerId))
-                .andExpect(jsonPath("$.name").value("ACME Corporation Updated"))
-                .andExpect(jsonPath("$.details").value("Updated company details"))
-                .andExpect(jsonPath("$.status").value("INACTIVE"))
-                .andExpect(jsonPath("$.cnpj").value("12.345.678/0001-90"))
-                .andExpect(jsonPath("$.inscricaoEstadual").value("987654321"))
-                .andExpect(jsonPath("$.inscricaoMunicipal").value("123456789"));
+                .andExpect(jsonPath("$.message").value("Company updated"));
+    }
+
+    @Test
+    void test_deleteCustomer_whenCustomerNotFound_returnsBadRequest() throws Exception {
+        // Act & Assert
+        mockMvc.perform(delete("/{subscriber}/customers/566", SUBSCRIBER_UUID)
+                .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("Customer not found."));
+    }
+
+    @Test
+    void test_deleteCustomer_whenCustomerFound_deletesCustomer() throws Exception {
+        String requestBody = """
+                {
+                    "name": "John Doe",
+                    "details": "New customer",
+                    "status": "ACTIVE",
+                    "cpf": "123.456.789-00",
+                    "rg": "12.345.678-9",
+                    "customerType":"IndividualRestModel"
+                }""";
+
+        // Act
+        final MockHttpServletRequestBuilder request = post("/{subscriber}/customers/individuals",
+                SUBSCRIBER_UUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .with(SecurityMockMvcRequestPostProcessors.jwt());
+
+        final ResultActions results = mockMvc.perform(request);
+        results.andExpect(status().isOk());
+        final String customerId = TestUtils
+                .convertResponseToMap(results.andReturn().getResponse().getContentAsString())
+                .get("id").toString();
+
+        // Act & Assert
+        mockMvc.perform(delete("/{subscriber}/customers/{customerId}", SUBSCRIBER_UUID, customerId)
+                .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Customer deleted"));
     }
 
 }

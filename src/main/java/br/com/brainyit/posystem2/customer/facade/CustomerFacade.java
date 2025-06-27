@@ -6,6 +6,7 @@ package br.com.brainyit.posystem2.customer.facade;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brainyit.posystem2.customer.mapper.IndividualMapper;
 import br.com.brainyit.posystem2.customer.repository.CustomerRepository;
@@ -58,6 +59,7 @@ public class CustomerFacade {
         return restBean;
     }
 
+    @Transactional
     public IndividualRestModel createIndividual(final String subscriberUuid, final Individual individual) {
         log.debug("Creating individual customer for subscriber {}", subscriberUuid);
 
@@ -77,6 +79,7 @@ public class CustomerFacade {
         return IndividualMapper.builder().build().mapFromDomain(customerRepository.save(individual));
     }
 
+    @Transactional
     public IndividualRestModel updateIndividual(final String subscriberId, final Individual individual) {
         log.debug("Updating individual");
 
@@ -99,6 +102,7 @@ public class CustomerFacade {
         return IndividualMapper.builder().build().mapFromDomain(customerRepository.save(individual));
     }
 
+    @Transactional
     public Company createCompany(final String subscriberUuid, final Company company) {
         log.debug("Creating company customer for subscriber {}", subscriberUuid);
 
@@ -116,6 +120,7 @@ public class CustomerFacade {
         return customerRepository.save(company);
     }
 
+    @Transactional
     public Company updateCompany(final String subscriberId, final Company company) {
         log.debug("Updating company");
 
@@ -136,6 +141,18 @@ public class CustomerFacade {
         company.setSubscriber(existingCustomers.get(0).getSubscriber());
 
         return customerRepository.save(company);
+    }
+
+    @Transactional
+    public void deleteCustomer(final String subscriberId, final Integer customerId) {
+        log.debug("Deleting customer");
+
+        final List<Customer> existingCustomers = customerRepository
+                .findCustomersBySubscriberUuidAndCustomerId(subscriberId, customerId);
+        if (existingCustomers.isEmpty()) {
+            throw new BusinessException("Customer not found.");
+        }
+        customerRepository.delete(existingCustomers.get(0));
     }
 
 }

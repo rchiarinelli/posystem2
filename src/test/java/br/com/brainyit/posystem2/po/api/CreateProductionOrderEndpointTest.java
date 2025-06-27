@@ -16,14 +16,13 @@ import br.com.brainyit.util.TestUtils;
 
 @Transactional
 class CreateProductionOrderEndpointTest extends BaseApiTest {
-        
+
         @Test
         void test_placeProductionOrder_success() throws Exception {
                 // Arrange - First create an order
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -45,7 +44,8 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
 
                 // Act
-                MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
+                MockHttpServletRequestBuilder request = post(
+                                "/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt());
@@ -72,7 +72,8 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
 
                 // Act
-                MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders/INVALID_ORDER/place-production-order")
+                MockHttpServletRequestBuilder request = post(
+                                "/123e4567-e89b-12d3-a456-426614174000/orders/INVALID_ORDER/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt());
@@ -81,7 +82,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
 
                 // Assert
                 results.andExpect(status().isInternalServerError())
-                                .andExpect(jsonPath("$").value("Order not found"));
+                                .andExpect(jsonPath("$.message").value("Order not found"));
         }
 
         @Test
@@ -89,8 +90,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                 // Arrange - First create an order
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -112,7 +112,8 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
 
                 // Act
-                MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
+                MockHttpServletRequestBuilder request = post(
+                                "/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt());
@@ -128,8 +129,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                 // Arrange - First create an order and a production order
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -151,13 +151,15 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
                                 }""";
 
                 // Create first production order to change order status
-                mockMvc.perform(post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
+                mockMvc.perform(post(
+                                "/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 // Act - Try to create another production order
-                MockHttpServletRequestBuilder request = post("/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
+                MockHttpServletRequestBuilder request = post(
+                                "/123e4567-e89b-12d3-a456-426614174000/orders/" + orderCode + "/place-production-order")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(poRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt());
@@ -166,7 +168,7 @@ class CreateProductionOrderEndpointTest extends BaseApiTest {
 
                 // Assert
                 results.andExpect(status().isInternalServerError())
-                                .andExpect(jsonPath("$").value(
+                                .andExpect(jsonPath("$.message").value(
                                                 "Order is not in the pending status, it is in the EXECUTING status"));
         }
 

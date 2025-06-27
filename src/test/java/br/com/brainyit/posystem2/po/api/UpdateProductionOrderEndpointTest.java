@@ -31,8 +31,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Arrange - First create an order and a production order
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -111,7 +110,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 results.andExpect(status().isInternalServerError())
-                                .andExpect(jsonPath("$").value("Subscriber not found"));
+                                .andExpect(jsonPath("$.message").value("Subscriber not found"));
         }
 
         @Test
@@ -133,7 +132,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 results.andExpect(status().isInternalServerError())
-                                .andExpect(jsonPath("$").value("Production Order not found"));
+                                .andExpect(jsonPath("$.message").value("Production Order not found"));
         }
 
         @Test
@@ -204,8 +203,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Arrange - First create an order and a production order
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -288,7 +286,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                 .content(cancelRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()))
                                 .andExpect(status().isInternalServerError())
-                                .andExpect(jsonPath("$").value("Subscriber not found"));
+                                .andExpect(jsonPath("$.message").value("Subscriber not found"));
         }
 
         @Test
@@ -312,7 +310,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                 .content(cancelRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()))
                                 .andExpect(status().isInternalServerError())
-                                .andExpect(jsonPath("$").value("Production Order not found"));
+                                .andExpect(jsonPath("$.message").value("Production Order not found"));
         }
 
         @Test
@@ -321,8 +319,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Create and complete a production order first
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -384,7 +381,8 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                 .content(cancelRequestBody)
                                 .with(SecurityMockMvcRequestPostProcessors.jwt()))
                                 .andExpect(status().isInternalServerError())
-                                .andExpect(jsonPath("$").value("Cannot cancel production order in DONE status"));
+                                .andExpect(jsonPath("$.message")
+                                                .value("Cannot cancel production order in DONE status"));
         }
 
         @Test
@@ -392,8 +390,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Arrange
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -445,8 +442,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Arrange - First create an order and a production order
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -490,8 +486,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Arrange - First create an order and a production order
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -543,8 +538,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Arrange - First create an order and a production order
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";
@@ -606,8 +600,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                 // Arrange - First create an order and a production order
                 String orderRequestBody = """
                                 {
-                                    "customerDocument": "345.678.901-22",
-                                    "customerName": "Robert Williams",
+                                    "customerId": 3,
                                     "orderDescription": "Test order 1",
                                     "quantity": 1
                                 }""";

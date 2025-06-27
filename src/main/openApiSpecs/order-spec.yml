@@ -22,7 +22,7 @@ paths:
       summary: Create a new order
       x-interface-name: OrderApi
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -33,14 +33,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOrderRequestBody'
+              $ref: "#/components/schemas/CreateOrderRequestBody"
       responses:
-        '200':
+        "200":
           description: Order successfully created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderRestModel'
+                $ref: "#/components/schemas/OrderRestModel"
 
     get:
       tags:
@@ -54,14 +54,14 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: List of orders
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrderRestModel'
+                  $ref: "#/components/schemas/OrderRestModel"
 
   /{subscriber}/orders/{orderCode}:
     get:
@@ -82,22 +82,21 @@ paths:
             type: string
           description: Order code
       responses:
-        '200':
+        "200":
           description: Order details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderRestModel'
+                $ref: "#/components/schemas/OrderRestModel"
 
-    
-  /{subscriber}/orders/{orderCode}/place-production-order:
-    post:
+  /{subscriber}/orders/{orderCode}/cancel:
+    put:
       tags:
         - Order
-      summary: Create a production order for an existing order
+      summary: Cancel an order
       x-interface-name: OrderApi
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -113,30 +112,63 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProcutionOrderRequestBody'
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Reason for canceling the order
+                  example: "Customer requested cancellation"
       responses:
-        '200':
+        "200":
+          description: Order successfully canceled
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+
+  /{subscriber}/orders/{orderCode}/place-production-order:
+    post:
+      tags:
+        - Order
+      summary: Create a production order for an existing order
+      x-interface-name: OrderApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: orderCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProcutionOrderRequestBody"
+      responses:
+        "200":
           description: Production order successfully created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductionOrderRestModel'
-
+                $ref: "#/components/schemas/ProductionOrderRestModel"
 
 components:
   schemas:
     CreateOrderRequestBody:
       type: object
       required:
-        - customerDocument
-        - customerName
-        - orderDescription
+        - customerId
         - quantity
+        - orderDescription
       properties:
-        customerDocument:
-          type: string
-        customerName:
-          type: string
+        customerId:
+          type: integer
         orderDescription:
           type: string
         quantity:
@@ -151,7 +183,7 @@ components:
         customerName:
           type: string
         orderDescription:
-          type: string        
+          type: string
         price:
           type: double
         quantity:
@@ -159,6 +191,12 @@ components:
         deliverDate:
           type: string
         status:
+          type: string
+        openDate:
+          type: string
+        closeDate:
+          type: string
+        orderStatus:
           type: string
 
     ProcutionOrderRequestBody:
@@ -182,4 +220,4 @@ components:
           type: string
 
     ProductionOrderRestModel:
-        $ref: './order-spec.yml#/components/schemas/ProductionOrderRestModel'
+      $ref: "./order-spec.yml#/components/schemas/ProductionOrderRestModel"
