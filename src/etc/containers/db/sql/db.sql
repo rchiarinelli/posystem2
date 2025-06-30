@@ -231,6 +231,7 @@ CREATE TABLE t_order (
   id_order bigint NOT NULL AUTO_INCREMENT,
   close_date datetime(6) DEFAULT NULL,
   deliver_date datetime(6) DEFAULT NULL,
+  planned_deliver_date datetime(6) DEFAULT NULL,
   order_description varchar(255) NOT NULL,
   open_date datetime(6) NOT NULL,
   order_code varchar(100) NOT NULL,

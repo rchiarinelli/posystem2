@@ -1,7 +1,8 @@
 package br.com.brainyit.posystem2.order.api;
 
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import br.com.brainyit.posystem2.model.ProductionOrderRestModel;
 import br.com.brainyit.posystem2.model.SubscriberOrdersOrderCodeCancelPutRequest;
 import br.com.brainyit.posystem2.order.mapper.OrderMapper;
 import br.com.brainyit.posystem2.order.service.OrderService;
+import br.com.brainyit.posystem2.order.service.PlaceOrderParams;
 import br.com.brainyit.posystem2.po.mapper.ProductionOrderMapper;
 import br.com.brainyit.posystem2.po.service.ProductionOrderService;
 import lombok.AllArgsConstructor;
@@ -55,8 +57,12 @@ public class OrderApiDelegateImpl implements OrderApiDelegate {
         public ResponseEntity<OrderRestModel> subscriberOrdersPost(String subscriber,
                         CreateOrderRequestBody requestBody) throws Exception {
                 return ResponseEntity.ok(OrderMapper.builder().build().toRestBean(
-                                orderService.placeOrder(subscriber, requestBody.getCustomerId(),
-                                                requestBody.getOrderDescription(), requestBody.getQuantity())));
+                                orderService.placeOrder(subscriber, new PlaceOrderParams(requestBody.getCustomerId(),
+                                                requestBody.getOrderDescription(), requestBody.getQuantity(),
+                                                Date
+                                                                .from(requestBody.getPlannedDeliverDate()
+                                                                                .atStartOfDay(ZoneId.systemDefault())
+                                                                                .toInstant())))));
         }
 
         @Override

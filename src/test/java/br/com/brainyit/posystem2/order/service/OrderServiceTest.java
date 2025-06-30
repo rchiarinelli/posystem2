@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.brainyit.posystem2.customer.repository.CompanyRepository;
@@ -31,10 +31,26 @@ import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.order.repository.OrderRepository;
 import br.com.brainyit.posystem2.repository.SubscriberRepository;
+import br.com.brainyit.posystem2.util.MessagesUtil;
 import br.com.brainyit.util.TestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
+
+        private final SimpleDateFormat sdf = new SimpleDateFormat(
+                        MessagesUtil.getInstance().getSystemProp("date_pattern"));
+
+        private static final String SUBSCRIBER_UUID = "123e4567-e89b-12d3-a456-426614174000";
+
+        private static final int CUSTOMER_ID = 1;
+
+        private static final String CUSTOMER_DOC = "12345678901";
+
+        private static final String CUSTOMER_NAME = "John Doe";
+
+        private static final String ORDER_DESC = "Test Order";
+
+        private static final Double ORDER_QTY = 1.0;
 
         @InjectMocks
         private OrderService orderService;
@@ -50,18 +66,6 @@ class OrderServiceTest {
 
         @Mock
         private SubscriberRepository subscriberRepository;
-
-        private static final String SUBSCRIBER_UUID = "123e4567-e89b-12d3-a456-426614174000";
-
-        private static final int CUSTOMER_ID = 1;
-
-        private static final String CUSTOMER_DOC = "12345678901";
-
-        private static final String CUSTOMER_NAME = "John Doe";
-
-        private static final String ORDER_DESC = "Test Order";
-
-        private static final Double ORDER_QTY = 1.0;
 
         @Test
         void test_placeOrder_withIndividual_success() {
@@ -84,16 +88,21 @@ class OrderServiceTest {
                 when(individualRepository.findByIdAndSubscriberId(customer.getId(), subscriber.getId()))
                                 .thenReturn(customer);
 
-                when(orderRepository.save(any(Order.class))).thenReturn(order);
+                when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+                final PlaceOrderParams requestParam = new PlaceOrderParams(customer.getId(), ORDER_DESC,
+                                ORDER_QTY, new Date());
 
                 // when
-                Order result = orderService.placeOrder(subscriber.getUuid(), customer.getId(), ORDER_DESC,
-                                ORDER_QTY);
+                Order result = orderService.placeOrder(subscriber.getUuid(), requestParam);
 
                 // then
                 assertThat(result, is(notNullValue()));
                 assertThat(result.getStatus(), is(OrderStatus.PENDING));
-                assertThat(result.getOpenDate(), is(openDate));
+
+                assertThat(sdf.format(result.getOpenDate()), is(sdf.format(openDate)));
+                assertThat(sdf.format(result.getPlannedDeliverDate()),
+                                is(sdf.format(requestParam.plannedDeliverDate())));
                 assertThat(result.getDescription(), is(ORDER_DESC));
                 assertThat(result.getQuantity(), is(ORDER_QTY));
                 assertThat(result.getCustomer(), is(customer));
@@ -121,21 +130,24 @@ class OrderServiceTest {
                 when(companyRepository.findByIdAndSubscriberId(customer.getId(), subscriber.getId()))
                                 .thenReturn(customer);
 
-                when(orderRepository.save(any(Order.class))).thenReturn(order);
+                when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
                 // when
-                Order result = orderService.placeOrder(subscriber.getUuid(), customer.getId(), ORDER_DESC,
-                                ORDER_QTY);
+                final PlaceOrderParams requestParam = new PlaceOrderParams(customer.getId(), ORDER_DESC,
+                                ORDER_QTY, new Date());
+                Order result = orderService.placeOrder(subscriber.getUuid(), requestParam);
 
                 // then
                 assertThat(result, is(notNullValue()));
                 assertThat(result.getStatus(), is(OrderStatus.PENDING));
-                assertThat(result.getOpenDate(), is(openDate));
+                assertThat(sdf.format(result.getOpenDate()), is(sdf.format(openDate)));
                 assertThat(result.getDescription(), is(ORDER_DESC));
                 assertThat(result.getQuantity(), is(ORDER_QTY));
                 assertThat(result.getCustomer(), is(customer));
                 assertThat(result.getOrderCode(), is(notNullValue()));
                 assertThat(result.getSubscriber(), is(notNullValue()));
+                assertThat(sdf.format(result.getPlannedDeliverDate()),
+                                is(sdf.format(requestParam.plannedDeliverDate())));
         }
 
         @Test
@@ -146,8 +158,10 @@ class OrderServiceTest {
 
                 when(individualRepository.findByIdAndSubscriberId(CUSTOMER_ID, subscriber.getId()))
                                 .thenReturn(null);
-                assertThrows(BusinessException.class, () -> orderService.placeOrder(subscriber.getUuid(), CUSTOMER_ID,
-                                ORDER_DESC, ORDER_QTY));
+                final PlaceOrderParams requestParam = new PlaceOrderParams(CUSTOMER_ID, ORDER_DESC, ORDER_QTY,
+                                new Date());
+                assertThrows(BusinessException.class,
+                                () -> orderService.placeOrder(subscriber.getUuid(), requestParam));
         }
 
         @Test
@@ -158,8 +172,10 @@ class OrderServiceTest {
 
                 when(companyRepository.findByIdAndSubscriberId(CUSTOMER_ID, subscriber.getId()))
                                 .thenReturn(null);
-                assertThrows(BusinessException.class, () -> orderService.placeOrder(subscriber.getUuid(), CUSTOMER_ID,
-                                ORDER_DESC, ORDER_QTY));
+                final PlaceOrderParams requestParam = new PlaceOrderParams(CUSTOMER_ID, ORDER_DESC, ORDER_QTY,
+                                new Date());
+                assertThrows(BusinessException.class,
+                                () -> orderService.placeOrder(subscriber.getUuid(), requestParam));
         }
 
         @Test
@@ -222,8 +238,10 @@ class OrderServiceTest {
                 Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
 
                 when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.empty());
-                assertThrows(BusinessException.class, () -> orderService.placeOrder(subscriber.getUuid(), CUSTOMER_ID,
-                                ORDER_DESC, ORDER_QTY));
+                final PlaceOrderParams requestParam = new PlaceOrderParams(CUSTOMER_ID, ORDER_DESC, ORDER_QTY,
+                                new Date());
+                assertThrows(BusinessException.class,
+                                () -> orderService.placeOrder(subscriber.getUuid(), requestParam));
         }
 
         @Test
@@ -339,5 +357,21 @@ class OrderServiceTest {
                 final BusinessException exception = assertThrows(BusinessException.class,
                                 () -> orderService.cancelOrder(subscriber.getUuid(), order.getOrderCode(), "test"));
                 assertThat(exception.getMessage(), is("Order is already cancelled"));
+        }
+
+        @Test
+        void test_placeOrder_whenPlannedDeliverDateIsInThePast_throwsBusinessException() {
+                Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+
+                when(companyRepository.findByIdAndSubscriberId(CUSTOMER_ID, subscriber.getId()))
+                                .thenReturn(Company.builder().id(CUSTOMER_ID).build());
+
+                final PlaceOrderParams requestParam = new PlaceOrderParams(CUSTOMER_ID, ORDER_DESC, ORDER_QTY,
+                                new Date(System.currentTimeMillis() - 1000));
+                final BusinessException exception = assertThrows(BusinessException.class,
+                                () -> orderService.placeOrder(subscriber.getUuid(), requestParam));
+                assertThat(exception.getMessage(), is("Planned deliver date cannot be in the past"));
         }
 }

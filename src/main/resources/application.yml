@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-    name: posystem2
+    name: posystem2-dev
 
   security:
     oauth2:
@@ -15,7 +15,7 @@ spring:
 
   datasource:
       name: posystem2-ds
-      url: jdbc:mysql://localhost:3306/posystem_db
+      url: jdbc:mysql://localhost:3306/sas_db
       username: sas_app
       password: abcd4321
       driver-class-name: com.mysql.cj.jdbc.Driver        
@@ -23,7 +23,7 @@ spring:
       show-sql: true
       defer-datasource-initialization: true
       hibernate:
-          ddl-auto: update
+          ddl-auto: validate
 
 logging:
   level:

@@ -1,5 +1,7 @@
 package br.com.brainyit.posystem2.order.mapper;
 
+import java.text.SimpleDateFormat;
+
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import br.com.brainyit.posystem2.domain.Order;
@@ -10,30 +12,35 @@ import lombok.Builder;
 @Builder
 public class OrderMapper {
 
-    private OrderMapper() {
-    }
+        private OrderMapper() {
+        }
 
-    public OrderRestModel toRestBean(Order order) {
-        final OrderRestModel orderRestModel = new OrderRestModel();
-        return orderRestModel
-                .orderCode(order.getOrderCode())
-                .customerName(order.getCustomer() != null ? order.getCustomer().getName() : null)
-                .orderDescription(order.getDescription())
-                .openDate(
-                        order.getOpenDate() != null
-                                ? DateFormatUtils.format(order.getOpenDate(),
-                                        MessagesUtil.getInstance().getSystemProp("date_pattern"))
-                                : null)
-                .price(order.getPrice())
-                .quantity(order.getQuantity())
-                .deliverDate(order.getDeliverDate() != null ? DateFormatUtils.format(order.getDeliverDate(),
-                        MessagesUtil.getInstance().getSystemProp("date_pattern")) : null)
-                .closeDate(
-                        order.getCloseDate() != null
-                                ? DateFormatUtils.format(order.getCloseDate(),
-                                        MessagesUtil.getInstance().getSystemProp("date_pattern"))
-                                : null)
-                .status(order.getStatus() != null ? order.getStatus().name() : null);
-    }
+        public OrderRestModel toRestBean(Order order) {
+                final SimpleDateFormat dateFormat = new SimpleDateFormat(
+                                MessagesUtil.getInstance().getSystemProp("date_pattern"));
+
+                final OrderRestModel orderRestModel = new OrderRestModel();
+                return orderRestModel
+                                .orderCode(order.getOrderCode())
+                                .customerName(order.getCustomer() != null ? order.getCustomer().getName() : null)
+                                .orderDescription(order.getDescription())
+                                .openDate(
+                                                order.getOpenDate() != null
+                                                                ? dateFormat.format(order.getOpenDate())
+                                                                : null)
+                                .price(order.getPrice())
+                                .quantity(order.getQuantity())
+                                .deliverDate(order.getDeliverDate() != null
+                                                ? dateFormat.format(order.getDeliverDate())
+                                                : null)
+                                .closeDate(
+                                                order.getCloseDate() != null
+                                                                ? dateFormat.format(order.getCloseDate())
+                                                                : null)
+                                .status(order.getStatus() != null ? order.getStatus().name() : null)
+                                .plannedDeliverDate(order.getPlannedDeliverDate() != null
+                                                ? dateFormat.format(order.getPlannedDeliverDate())
+                                                : null);
+        }
 
 }

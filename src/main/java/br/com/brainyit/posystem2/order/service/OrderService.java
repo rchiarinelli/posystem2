@@ -38,28 +38,33 @@ public class OrderService {
     private final SubscriberRepository subscriberRepository;
 
     @Transactional
-    public Order placeOrder(final String subscriberId, final int customerId, final String orderDescription,
-            final Double orderQuantity) {
+    public Order placeOrder(final String subscriberId, final PlaceOrderParams params) {
+
+        final var openDate = new Date();
 
         final var subscriber = subscriberRepository.findByUuid(subscriberId)
                 .orElseThrow(() -> new BusinessException("Subscriber not found"));
 
-        final var individual = individualRepository.findByIdAndSubscriberId(customerId, subscriber.getId());
+        final var individual = individualRepository.findByIdAndSubscriberId(params.customerId(), subscriber.getId());
 
-        final var company = companyRepository.findByIdAndSubscriberId(customerId, subscriber.getId());
+        final var company = companyRepository.findByIdAndSubscriberId(params.customerId(), subscriber.getId());
 
         if (individual == null && company == null) {
             throw new BusinessException("Customer not found");
         }
+        if (params.plannedDeliverDate().before(openDate)) {
+            throw new BusinessException("Planned deliver date cannot be in the past");
+        }
         final var order = Order.builder()
                 .customer(individual == null ? company : individual)
-                .description(orderDescription)
-                .quantity(orderQuantity)
+                .description(params.orderDescription())
+                .quantity(params.orderQuantity())
                 .status(OrderStatus.PENDING)
-                .openDate(new Date())
+                .openDate(openDate)
                 .orderCode(orderCodePrefix
                         + RandomStringUtils.secureStrong().nextAlphanumeric(orderCodeLength).toUpperCase())
                 .subscriber(subscriber)
+                .plannedDeliverDate(params.plannedDeliverDate())
                 .build();
         return orderRepository.save(order);
     }

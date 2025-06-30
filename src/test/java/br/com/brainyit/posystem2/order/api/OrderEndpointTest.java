@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,9 @@ import br.com.brainyit.util.TestUtils;
 @Transactional
 class OrderEndpointTest extends BaseApiTest {
 
-        final String SUBSCRIBER_UUID = "123e4567-e89b-12d3-a456-426614174000";
+        private static final String SUBSCRIBER_UUID = "123e4567-e89b-12d3-a456-426614174000";
+
+        private static final LocalDate PLANNED_DELIVER_DATE = LocalDate.now().plusYears(1);
 
         @Test
         void test_placeOrder_whenValidInput_returnsCreatedOrder() throws Exception {
@@ -30,7 +33,8 @@ class OrderEndpointTest extends BaseApiTest {
                                 {
                                     "customerId": 4,
                                     "orderDescription": "Sample order 1",
-                                    "quantity": 10
+                                    "quantity": 10,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 // Act
@@ -49,6 +53,7 @@ class OrderEndpointTest extends BaseApiTest {
                                 .andExpect(jsonPath("$.quantity").isNumber())
                                 .andExpect(jsonPath("$.status").isString())
                                 .andExpect(jsonPath("$.openDate").isString())
+                                .andExpect(jsonPath("$.plannedDeliverDate").isString())
                                 .andExpect(jsonPath("$.status").value("PENDING"));
         }
 
@@ -58,7 +63,8 @@ class OrderEndpointTest extends BaseApiTest {
                 String requestBody = """
                                 {
                                     "orderDescription": "Sample order 1",
-                                    "quantity": 10
+                                    "quantity": 10,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 // Act
@@ -80,7 +86,8 @@ class OrderEndpointTest extends BaseApiTest {
                                 {
                                     "customerId": 1500,
                                     "orderDescription": "Test order",
-                                    "quantity": 1
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 // Act
@@ -103,7 +110,8 @@ class OrderEndpointTest extends BaseApiTest {
                                 {
                                     "customerId": 1000,
                                     "orderDescription": "Test order",
-                                    "quantity": 1
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 // Act
@@ -126,7 +134,8 @@ class OrderEndpointTest extends BaseApiTest {
                                 {
                                     "customerId": 3,
                                     "orderDescription": "Test order",
-                                    "quantity": 1
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 MockHttpServletRequestBuilder createRequest = post("/" + SUBSCRIBER_UUID + "/orders")
@@ -193,7 +202,8 @@ class OrderEndpointTest extends BaseApiTest {
                                 {
                                     "customerId": 3,
                                     "orderDescription": "Test order 1",
-                                    "quantity": 1
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 for (int i = 0; i < 3; i++) {
@@ -240,7 +250,8 @@ class OrderEndpointTest extends BaseApiTest {
                                 {
                                     "customerId": 3,
                                     "orderDescription": "Test order 1",
-                                    "quantity": 1
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + PLANNED_DELIVER_DATE.toString() + """
                                 }""";
 
                 ResultActions orderResult = mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders")
@@ -257,7 +268,8 @@ class OrderEndpointTest extends BaseApiTest {
                                 {
                                     "estimatedTime": 10,
                                     "description": "Production order description",
-                                    "qtd": 1
+                                    "qtd": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders/{orderCode}/place-production-order", orderCode)
@@ -293,7 +305,8 @@ class OrderEndpointTest extends BaseApiTest {
                                 {
                                     "customerId": 3,
                                     "orderDescription": "Test order 1",
-                                    "quantity": 1
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 ResultActions orderResult = mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders")
@@ -334,7 +347,8 @@ class OrderEndpointTest extends BaseApiTest {
                                 {
                                     "customerId": 3,
                                     "orderDescription": "Test order 1",
-                                    "quantity": 1
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 ResultActions orderResult = mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders")
@@ -366,4 +380,28 @@ class OrderEndpointTest extends BaseApiTest {
                 secondCancelResult.andExpect(status().isInternalServerError());
         }
 
+        @Test
+        void test_cancelOrder_whenPlannedDeliverDateIsInThePast_returnsInternalServerError() throws Exception {
+
+                final var plannedDeliverDate = LocalDate.now().minusDays(1);
+
+                // Arrange - Create an order
+                String orderRequestBody = """
+                                {
+                                    "customerId": 3,
+                                    "orderDescription": "Test order 1",
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + plannedDeliverDate.toString()
+                                + "\"" + """
+                                                }""";
+
+                ResultActions orderResult = mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                // Assert
+                orderResult.andExpect(status().isInternalServerError())
+                                .andExpect(jsonPath("$.message").value("Planned deliver date cannot be in the past"));
+        }
 }

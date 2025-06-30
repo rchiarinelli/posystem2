@@ -166,6 +166,7 @@ components:
         - customerId
         - quantity
         - orderDescription
+        - plannedDeliverDate
       properties:
         customerId:
           type: integer
@@ -174,6 +175,11 @@ components:
         quantity:
           type: number
           format: double
+        plannedDeliverDate:
+          type: string
+          format: date
+          description: Planned deliver date
+          example: "2025-01-01"
 
     OrderRestModel:
       type: object
@@ -197,6 +203,8 @@ components:
         closeDate:
           type: string
         orderStatus:
+          type: string
+        plannedDeliverDate:
           type: string
 
     ProcutionOrderRequestBody:
