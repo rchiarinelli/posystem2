@@ -81,6 +81,9 @@ public class Order implements Serializable {
     @Column(name = "deliver_date", nullable = true)
     private Date deliverDate;
 
+    @Column(name = "planned_deliver_date", nullable = true)
+    private Date plannedDeliverDate;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_order")
     @Fetch(FetchMode.JOIN)

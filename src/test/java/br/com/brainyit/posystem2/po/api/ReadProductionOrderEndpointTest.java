@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -16,6 +18,8 @@ import br.com.brainyit.util.TestUtils;
 
 @Transactional
 class ReadProductionOrderEndpointTest extends BaseApiTest {
+
+        private static final LocalDate PLANNED_DELIVER_DATE = LocalDate.now().plusYears(1);
 
         final String validSubscriberId = "123e4567-e89b-12d3-a456-426614174000";
 
@@ -44,7 +48,8 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
                                 {
                                         "customerId": 5,
                                         "orderDescription": "Test order x",
-                                        "quantity": 1
+                                        "quantity": 1,
+                                        "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 ResultActions orderResult = mockMvc.perform(post("/{validSubscriberId}/orders", validSubscriberId)
@@ -99,7 +104,8 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
                                 {
                                         "customerId": 3,
                                         "orderDescription": "Test order 1",
-                                        "quantity": 1
+                                        "quantity": 1,
+                                        "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 ResultActions orderResult = mockMvc.perform(post("/123e4567-e89b-12d3-a456-426614174000/orders")
@@ -158,7 +164,8 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
                                 {
                                         "customerId": 3,
                                         "orderDescription": "Test order 1",
-                                        "quantity": 1
+                                        "quantity": 1,
+                                        "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
                                 }""";
 
                 ResultActions orderResult = mockMvc.perform(post("/{subscriberId}/orders", validSubscriberId)
