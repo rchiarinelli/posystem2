@@ -1,18 +1,20 @@
 package br.com.brainyit.posystem2.po.api;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import br.com.brainyit.posystem2.api.ProductionOrderApiDelegate;
+import br.com.brainyit.posystem2.domain.POPriority;
 import br.com.brainyit.posystem2.domain.POStatus;
 import br.com.brainyit.posystem2.model.ProductionOrderRestModel;
 import br.com.brainyit.posystem2.model.UpdateProductionOrderRequestBody;
 import br.com.brainyit.posystem2.po.ProductionOrder;
 import br.com.brainyit.posystem2.po.mapper.ProductionOrderMapper;
+import br.com.brainyit.posystem2.po.service.FilterProductionOrdersParams;
 import br.com.brainyit.posystem2.po.service.ProductionOrderService;
 import lombok.AllArgsConstructor;
 
@@ -24,20 +26,24 @@ public class ProductionOrderApiDelegateImpl implements ProductionOrderApiDelegat
 
         @Override
         public ResponseEntity<List<ProductionOrderRestModel>> subscriberProductionOrdersGet(String subscriber,
-                        String status)
-                        throws Exception {
+                        String poNumber, String customerName, List<String> status) throws Exception {
                 POStatus[] statuses = null;
-                if (StringUtils.isBlank(status)) {
+                if (status == null || status.isEmpty()) {
                         statuses = new POStatus[] { POStatus.EXECUTING, POStatus.PLANNING };
+                } else if (status.contains("ALL") || status.contains("all")) {
+                        statuses = POStatus.values();
                 } else {
-                        statuses = new POStatus[] { POStatus.valueOf(status) };
+                        statuses = status.stream()
+                                        .map(POStatus::valueOf)
+                                        .toArray(POStatus[]::new);
                 }
 
                 final ProductionOrderMapper mapper = ProductionOrderMapper.builder().build();
                 return ResponseEntity
-                                .ok(productionOrderService.retrieveProductionOrders(subscriber, statuses)
+                                .ok(productionOrderService.filterProductionOrders(subscriber,
+                                                new FilterProductionOrdersParams(poNumber, customerName, statuses))
                                                 .stream()
-                                                .map(mapper::toRestBean).collect(Collectors.toList()));
+                                                .map(mapper::toRestBean).toList());
 
         }
 
@@ -45,13 +51,13 @@ public class ProductionOrderApiDelegateImpl implements ProductionOrderApiDelegat
         public ResponseEntity<ProductionOrderRestModel> subscriberProductionOrdersPoNumberCancelPut(String subscriber,
                         String poNumber, UpdateProductionOrderRequestBody requestBody)
                         throws Exception {
-                if (StringUtils.isBlank(requestBody.getDescription())) {
+                if (StringUtils.isBlank(requestBody.getInstructions())) {
                         return ResponseEntity.badRequest().build();
                 }
                 return ResponseEntity.ok(ProductionOrderMapper.builder().build()
                                 .toRestBean(productionOrderService.cancelProductionOrder(subscriber,
                                                 poNumber,
-                                                requestBody.getDescription())));
+                                                requestBody.getInstructions())));
         }
 
         @Override
@@ -80,10 +86,11 @@ public class ProductionOrderApiDelegateImpl implements ProductionOrderApiDelegat
                 final ProductionOrder productionOrder = ProductionOrder.builder().build();
                 productionOrder.setQtd(requestBody.getQtd().intValue());
                 productionOrder.setEstimatedTime(requestBody.getEstimatedTime());
-                productionOrder.setDescription(requestBody.getDescription());
+                productionOrder.setInstructions(requestBody.getInstructions());
                 productionOrder.setStatus(POStatus.valueOf(requestBody.getStatus()));
-                productionOrder.setActualDeliveryDate(requestBody.getActualDeliveryDate());
-                productionOrder.setEstimatedDueDate(requestBody.getEstimatedDueDate());
+                productionOrder.setPlannedStartDate(requestBody.getPlannedStartDate());
+                productionOrder.setEstimatedCompletionDate(requestBody.getEstimatedCompletionDate());
+                productionOrder.setPriority(POPriority.valueOf(requestBody.getPriority().name()));
 
                 return ResponseEntity.ok(ProductionOrderMapper.builder().build()
                                 .toRestBean(productionOrderService.updateProductionOrder(subscriber,

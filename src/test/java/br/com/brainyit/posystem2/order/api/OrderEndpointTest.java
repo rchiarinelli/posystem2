@@ -7,8 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -404,4 +407,248 @@ class OrderEndpointTest extends BaseApiTest {
                 orderResult.andExpect(status().isInternalServerError())
                                 .andExpect(jsonPath("$.message").value("Planned deliver date cannot be in the past"));
         }
+
+        @Test
+        void test_getOrdersBySubscriberId_filterByStatus_dataReturned() throws Exception {
+                // Arrange - Create 3 orders
+                String orderRequestBody = """
+                                {
+                                    "customerId": 3,
+                                    "orderDescription": "Test order",
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
+                                }""";
+
+                // Create first order
+                ResultActions firstOrderResult = mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                Map<String, Object> firstOrderResponse = TestUtils
+                                .convertResponseToMap(firstOrderResult.andReturn().getResponse().getContentAsString());
+                String firstOrderCode = (String) firstOrderResponse.get("orderCode");
+
+                // Create second order
+                ResultActions secondOrderResult = mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                Map<String, Object> secondOrderResponse = TestUtils
+                                .convertResponseToMap(secondOrderResult.andReturn().getResponse().getContentAsString());
+                String secondOrderCode = (String) secondOrderResponse.get("orderCode");
+
+                // Create third order
+                mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(orderRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                // Cancel first order
+                mockMvc.perform(put("/" + SUBSCRIBER_UUID + "/orders/{orderCode}/cancel", firstOrderCode)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt())
+                                .content("{\"reason\": \"Test cancellation\"}"));
+
+                // Place production order for second order (changes status to EXECUTING)
+                String poRequestBody = """
+                                {
+                                    "estimatedTime": 10,
+                                    "instructions": "Production order description",
+                                    "qtd": 1,
+                                    "plannedStartDate": "2026-01-01",
+                                    "priority": "STANDARD"
+                                }""";
+
+                mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders/" + secondOrderCode + "/place-production-order")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(poRequestBody)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                // Act & Assert - Filter by CANCELLED status
+                ResultActions cancelledOrdersResult = mockMvc
+                                .perform(get("/" + SUBSCRIBER_UUID + "/orders?status=CANCELLED")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                cancelledOrdersResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(1)))
+                                .andExpect(jsonPath("$[0].status").value("CANCELLED"));
+
+                // Act & Assert - Filter by EXECUTING status
+                ResultActions executingOrdersResult = mockMvc
+                                .perform(get("/" + SUBSCRIBER_UUID + "/orders?status=EXECUTING")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                executingOrdersResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(1)))
+                                .andExpect(jsonPath("$[0].status").value("EXECUTING"));
+
+                // Act & Assert - Filter by PENDING status
+                ResultActions pendingOrdersResult = mockMvc
+                                .perform(get("/" + SUBSCRIBER_UUID + "/orders?status=PENDING")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                pendingOrdersResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(1)))
+                                .andExpect(jsonPath("$[0].status").value("PENDING"));
+
+                // Act & Assert - Filter by ALL status
+                ResultActions executingAndPendingOrdersResult = mockMvc
+                                .perform(get("/" + SUBSCRIBER_UUID + "/orders?status=EXECUTING,PENDING")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                executingAndPendingOrdersResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(2)));
+
+                // Act & Assert - No filter (should return all 3 orders)
+                ResultActions allOrdersResult = mockMvc.perform(get("/" + SUBSCRIBER_UUID + "/orders")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                allOrdersResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(3)));
+        }
+
+        @Test
+        void test_getOrdersBySubscriberId_filterByName_dataReturned() throws Exception {
+                // Arrange - Create 3 orders for Acme Corporation
+                String acmeOrderRequestBody = """
+                                {
+                                    "customerId": 6,
+                                    "orderDescription": "Test order for Acme",
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
+                                }""";
+
+                for (int i = 0; i < 3; i++) {
+                        MockHttpServletRequestBuilder createRequest = post(
+                                        "/" + SUBSCRIBER_UUID + "/orders")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .with(SecurityMockMvcRequestPostProcessors.jwt())
+                                        .content(acmeOrderRequestBody);
+                        mockMvc.perform(createRequest);
+                }
+
+                // Create 2 orders for Patricia Brown
+                String patriciaOrderRequestBody = """
+                                {
+                                    "customerId": 4,
+                                    "orderDescription": "Test order for Patricia",
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
+                                }""";
+
+                for (int i = 0; i < 2; i++) {
+                        MockHttpServletRequestBuilder createRequest = post(
+                                        "/" + SUBSCRIBER_UUID + "/orders")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .with(SecurityMockMvcRequestPostProcessors.jwt())
+                                        .content(patriciaOrderRequestBody);
+                        mockMvc.perform(createRequest);
+                }
+
+                // Act & Assert - Filter by "Patricia"
+                ResultActions patriciaOrdersResult = mockMvc
+                                .perform(get("/" + SUBSCRIBER_UUID + "/orders?name=Patricia")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                patriciaOrdersResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(2)))
+                                .andExpect(jsonPath("$[0].customerName").value("Patricia Brown"))
+                                .andExpect(jsonPath("$[1].customerName").value("Patricia Brown"));
+
+                // Act & Assert - Filter by "cme Corp"
+                ResultActions acmeOrdersResult = mockMvc
+                                .perform(get("/" + SUBSCRIBER_UUID + "/orders?name=cme Corp")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                acmeOrdersResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(3)))
+                                .andExpect(jsonPath("$[0].customerName").value("Acme Corporation"))
+                                .andExpect(jsonPath("$[1].customerName").value("Acme Corporation"))
+                                .andExpect(jsonPath("$[2].customerName").value("Acme Corporation"));
+
+                // Act & Assert - No filter (should return all 5 orders)
+                ResultActions allOrdersResult = mockMvc.perform(get("/" + SUBSCRIBER_UUID + "/orders")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                allOrdersResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(5)));
+        }
+
+        @Test
+        void test_getOrdersBySubscriberId_filterByOrderCode_dataReturned() throws Exception {
+                // Arrange - Create 4 orders
+                String orderRequestBody = """
+                                {
+                                    "customerId": 3,
+                                    "orderDescription": "Test order",
+                                    "quantity": 1,
+                                    "plannedDeliverDate": """ + "\"" + PLANNED_DELIVER_DATE.toString() + "\"" + """
+                                }""";
+
+                List<String> orderCodes = new ArrayList<>();
+
+                // Create 4 orders and collect their order codes
+                for (int i = 0; i < 4; i++) {
+                        ResultActions orderResult = mockMvc.perform(post("/" + SUBSCRIBER_UUID + "/orders")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(orderRequestBody)
+                                        .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                        String orderCode = (String) TestUtils
+                                        .convertResponseToMap(
+                                                        orderResult.andReturn().getResponse().getContentAsString())
+                                        .get("orderCode");
+                        orderCodes.add(orderCode);
+                }
+
+                // Act & Assert - Filter by second order code
+                ResultActions secondOrderResult = mockMvc
+                                .perform(get("/" + SUBSCRIBER_UUID + "/orders?orderCode=" + orderCodes.get(1))
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                secondOrderResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(1)))
+                                .andExpect(jsonPath("$[0].orderCode").value(orderCodes.get(1)));
+
+                // Act & Assert - Filter by last order code
+                ResultActions lastOrderResult = mockMvc
+                                .perform(get("/" + SUBSCRIBER_UUID + "/orders?orderCode=" + orderCodes.get(3))
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                lastOrderResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(1)))
+                                .andExpect(jsonPath("$[0].orderCode").value(orderCodes.get(3)));
+
+                // Act & Assert - No filter (should return all 4 orders)
+                ResultActions allOrdersResult = mockMvc.perform(get("/" + SUBSCRIBER_UUID + "/orders")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
+
+                allOrdersResult.andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").value(Matchers.hasSize(4)));
+        }
+
 }

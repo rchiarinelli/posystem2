@@ -42,7 +42,10 @@ logging:
 
 application:
     language: pt-BR
-
+    order-code-prefix: PED-
+    order-code-length: 5
+    production-order-code-prefix: PO-
+    production-order-work-day-hours: 8
 
 cors:
     mapping: /**

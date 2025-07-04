@@ -251,6 +251,7 @@
         "http://localhost:8081/login/oauth2/code/keycloak",
         "http://localhost:8081/*",
         "http://localhost:8080/*",
+        "http://localhost:9082/*",
         "http://localhost:4000/*"
       ],
       "webOrigins": [
@@ -273,7 +274,7 @@
         "backchannel.logout.session.required": "true",
         "standard.token.exchange.enabled": "false",
         "frontchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "http://localhost:4000",
+        "post.logout.redirect.uris": "http://localhost:4000/*",
         "display.on.consent.screen": "false",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false"
