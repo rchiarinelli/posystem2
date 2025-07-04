@@ -19,40 +19,54 @@ paths:
     get:
       tags:
         - ProductionOrder
-      x-interface-name: ProductionOrderApi  
+      x-interface-name: ProductionOrderApi
       summary: Get production orders by status
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
           schema:
             type: string
-        - name: status
+        - name: poNumber
           in: query
           required: false
           schema:
             type: string
-            enum: [EXECUTING, PLANNING]
+          description: Filter by production order number
+        - name: customerName
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by customer name
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [EXECUTING, PLANNING, CANCELLED, ALL]
           description: Filter by production order status
       responses:
-        '200':
+        "200":
           description: List of production orders
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ProductionOrderRestModel'
+                  $ref: "#/components/schemas/ProductionOrderRestModel"
 
   /{subscriber}/production-orders/{poNumber}:
     get:
       tags:
         - ProductionOrder
-      x-interface-name: ProductionOrderApi  
+      x-interface-name: ProductionOrderApi
       summary: Get production order by PO number
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -65,12 +79,12 @@ paths:
             type: string
           description: Production order number
       responses:
-        '200':
+        "200":
           description: Production order details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductionOrderRestModel'
+                $ref: "#/components/schemas/ProductionOrderRestModel"
 
     put:
       tags:
@@ -78,7 +92,7 @@ paths:
       x-interface-name: ProductionOrderApi
       summary: Update production order
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -95,23 +109,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateProductionOrderRequestBody'
+              $ref: "#/components/schemas/UpdateProductionOrderRequestBody"
       responses:
-        '200':
+        "200":
           description: Updated production order
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductionOrderRestModel'
+                $ref: "#/components/schemas/ProductionOrderRestModel"
 
   /{subscriber}/production-orders/{poNumber}/cancel:
     put:
       tags:
         - ProductionOrder
-      x-interface-name: ProductionOrderApi  
+      x-interface-name: ProductionOrderApi
       summary: Cancel production order
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -128,15 +142,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateProductionOrderRequestBody'
+              $ref: "#/components/schemas/UpdateProductionOrderRequestBody"
       responses:
-        '200':
+        "200":
           description: Cancelled production order
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductionOrderRestModel'
-        '400':
+                $ref: "#/components/schemas/ProductionOrderRestModel"
+        "400":
           description: Bad request - Description cannot be empty
           content:
             text/plain:
@@ -147,10 +161,10 @@ paths:
     put:
       tags:
         - ProductionOrder
-      x-interface-name: ProductionOrderApi  
+      x-interface-name: ProductionOrderApi
       summary: Proceed to next phase
       parameters:
-        - $ref: '#/parameters/subscriberParam'
+        - $ref: "#/parameters/subscriberParam"
         - name: subscriber
           in: path
           required: true
@@ -163,12 +177,12 @@ paths:
             type: string
           description: Production order number
       responses:
-        '200':
+        "200":
           description: Production order moved to next phase
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductionOrderRestModel'
+                $ref: "#/components/schemas/ProductionOrderRestModel"
 
 components:
   schemas:
@@ -177,14 +191,15 @@ components:
       required:
         - qtd
         - estimatedTime
-        - description
+        - instructions
         - status
-        - actualDeliveryDate
-        - estimatedDueDate
+        - estimatedCompletionDate
+        - plannedStartDate
+        - priority
       properties:
         qtd:
           type: number
-          format: double   
+          format: double
           minimum: 0
           exclusiveMinimum: true
           required: false
@@ -194,27 +209,30 @@ components:
           minimum: 0
           exclusiveMinimum: true
           required: false
-        description:
+        instructions:
           type: string
           required: true
         status:
           type: string
           required: false
-        actualDeliveryDate:
+        estimatedCompletionDate:
           type: string
           format: date
           required: false
-        estimatedDueDate:
+        priority:
+          type: string
+          enum: [LOW, STANDARD, HIGH, CRITICAL]
+          required: false
+        plannedStartDate:
           type: string
           format: date
-          required: false
 
     ProductionOrderRestModel:
       type: object
       properties:
         poNumber:
           type: string
-        description:
+        instructions:
           type: string
         status:
           type: string
@@ -222,11 +240,21 @@ components:
           type: double
         openDate:
           type: string
-        estimatedDueDate:
+          format: date
+        estimatedCompletionDate:
           type: string
+          format: date
         quantity:
           type: integer
-        actualDeliveryDate:
+        actualCompletionDate:
           type: string
+          format: date
         customerName:
+          type: string
+        priority:
+          type: string
+        plannedStartDate:
+          type: string
+          format: date
+        orderCode:
           type: string

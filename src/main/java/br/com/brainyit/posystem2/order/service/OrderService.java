@@ -2,16 +2,21 @@ package br.com.brainyit.posystem2.order.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Strings;
+
 import br.com.brainyit.posystem2.customer.repository.CompanyRepository;
 import br.com.brainyit.posystem2.customer.repository.IndividualRepository;
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.OrderStatus;
+import br.com.brainyit.posystem2.domain.QOrder;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.order.repository.OrderRepository;
 import br.com.brainyit.posystem2.repository.SubscriberRepository;
@@ -79,13 +84,28 @@ public class OrderService {
                 .orElseThrow(() -> new BusinessException("Order not found"));
     }
 
-    public List<Order> getOrdersBySubscriberId(final String subscriberId) {
+    public List<Order> getOrdersBySubscriberId(final String subscriberId, final FilterOrderParams params) {
         if (subscriberId == null) {
             throw new BusinessException("Subscriber ID is required");
         }
         final var subscriber = subscriberRepository.findByUuid(subscriberId)
                 .orElseThrow(() -> new BusinessException("Subscriber not found"));
-        return orderRepository.findBySubscriberId(subscriber.getId());
+
+        var predicate = QOrder.order.subscriber.uuid.eq(subscriber.getUuid());
+
+        if (!Strings.isNullOrEmpty(params.name())) {
+            predicate = predicate.and(QOrder.order.customer.name.containsIgnoreCase(params.name()));
+        }
+        if (!Strings.isNullOrEmpty(params.orderCode())) {
+            predicate = predicate.and(QOrder.order.orderCode.containsIgnoreCase(params.orderCode()));
+        }
+        if (params.status() != null && !params.status().isEmpty()) {
+            predicate = predicate.and(QOrder.order.status.in(params.status().stream().map(String::toUpperCase)
+                    .map(OrderStatus::valueOf).toList()));
+        }
+
+        return StreamSupport.stream(orderRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     @Transactional

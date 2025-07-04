@@ -3,7 +3,7 @@ package br.com.brainyit.posystem2.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -76,7 +76,7 @@ public class Order implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, targetEntity = ProductionOrder.class)
     @JoinColumn(name = "id_order")
     @Fetch(FetchMode.JOIN)
-    private Set<ProductionOrder> productionOrders;
+    private List<ProductionOrder> productionOrders;
 
     @Column(name = "deliver_date", nullable = true)
     private Date deliverDate;
@@ -87,7 +87,7 @@ public class Order implements Serializable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_order")
     @Fetch(FetchMode.JOIN)
-    private Set<Billing> billings;
+    private List<Billing> billings;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_subscriber")

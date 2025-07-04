@@ -1,6 +1,7 @@
 package br.com.brainyit.posystem2.order.api;
 
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import br.com.brainyit.posystem2.api.OrderApiDelegate;
+import br.com.brainyit.posystem2.domain.OrderStatus;
+import br.com.brainyit.posystem2.domain.POPriority;
 import br.com.brainyit.posystem2.model.CreateOrderRequestBody;
 import br.com.brainyit.posystem2.model.Message;
 import br.com.brainyit.posystem2.model.OrderRestModel;
@@ -15,9 +18,11 @@ import br.com.brainyit.posystem2.model.ProcutionOrderRequestBody;
 import br.com.brainyit.posystem2.model.ProductionOrderRestModel;
 import br.com.brainyit.posystem2.model.SubscriberOrdersOrderCodeCancelPutRequest;
 import br.com.brainyit.posystem2.order.mapper.OrderMapper;
+import br.com.brainyit.posystem2.order.service.FilterOrderParams;
 import br.com.brainyit.posystem2.order.service.OrderService;
 import br.com.brainyit.posystem2.order.service.PlaceOrderParams;
 import br.com.brainyit.posystem2.po.mapper.ProductionOrderMapper;
+import br.com.brainyit.posystem2.po.service.CreateProductionOrderParams;
 import br.com.brainyit.posystem2.po.service.ProductionOrderService;
 import lombok.AllArgsConstructor;
 
@@ -38,19 +43,33 @@ public class OrderApiDelegateImpl implements OrderApiDelegate {
         }
 
         @Override
-        public ResponseEntity<List<OrderRestModel>> subscriberOrdersGet(String subscriberId) throws Exception {
+        public ResponseEntity<List<OrderRestModel>> subscriberOrdersGet(String subscriber, String name,
+                        String orderCode, List<String> status) throws Exception {
+                List<String> statuses = null;
+                if (status == null || status.isEmpty() || status.contains("ALL") || status.contains("all")) {
+                        statuses = Arrays.stream(OrderStatus.values()).map(OrderStatus::name).toList();
+                } else {
+                        statuses = status.stream().map(String::toUpperCase).map(OrderStatus::valueOf)
+                                        .map(OrderStatus::name).toList();
+                }
                 return ResponseEntity.ok(orderService.getOrdersBySubscriberId(
-                                subscriberId).stream().map(OrderMapper.builder().build()::toRestBean).toList());
+                                subscriber, FilterOrderParams.of(name, orderCode, statuses)).stream()
+                                .map(OrderMapper.builder().build()::toRestBean).toList());
         }
 
         @Override
         public ResponseEntity<ProductionOrderRestModel> subscriberOrdersOrderCodePlaceProductionOrderPost(
                         String subscriber,
                         String orderCode, ProcutionOrderRequestBody requestBody) throws Exception {
+                final CreateProductionOrderParams params = new CreateProductionOrderParams(
+                                orderCode,
+                                requestBody.getInstructions(),
+                                requestBody.getQtd().doubleValue(),
+                                requestBody.getEstimatedTime(),
+                                requestBody.getPlannedStartDate(),
+                                POPriority.valueOf(requestBody.getPriority().name()));
                 return ResponseEntity.ok(ProductionOrderMapper.builder().build()
-                                .toRestBean(productionOrderService.createProductionOrder(subscriber, orderCode,
-                                                requestBody.getQtd().intValue(),
-                                                requestBody.getEstimatedTime(), requestBody.getDescription())));
+                                .toRestBean(productionOrderService.createProductionOrder(subscriber, params)));
         }
 
         @Override

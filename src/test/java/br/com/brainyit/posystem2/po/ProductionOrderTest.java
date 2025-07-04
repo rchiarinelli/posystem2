@@ -5,12 +5,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.POStatus;
 import br.com.brainyit.posystem2.exception.BusinessException;
 
@@ -21,7 +23,13 @@ class ProductionOrderTest {
 
     @BeforeEach
     void setUp() {
-        productionOrder = new ProductionOrder();
+        productionOrder = ProductionOrder.builder()
+                .id(1L)
+                .order(Order.builder()
+                        .id(1L)
+                        .build())
+                .instructions("Test PO")
+                .build();
     }
 
     @Test
@@ -38,6 +46,18 @@ class ProductionOrderTest {
 
     @Test
     void test_moveToNextPhase_fromExecuting_toDone() {
+
+        Order order = Order.builder()
+                .id(1L)
+                .productionOrders(List.of())
+                .build();
+
+        productionOrder = ProductionOrder.builder()
+                .id(1L)
+                .order(order)
+                .instructions("Test PO")
+                .build();
+
         // given
         productionOrder.setStatus(POStatus.EXECUTING);
 
@@ -54,9 +74,9 @@ class ProductionOrderTest {
         productionOrder.setStatus(POStatus.DONE);
 
         // when/then
-        BusinessException exception = assertThrows(BusinessException.class, 
-            () -> productionOrder.moveToNextPhase());
-        
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> productionOrder.moveToNextPhase());
+
         assertThat(exception.getMessage(), is("Cannot move production order from DONE status"));
     }
 
@@ -66,9 +86,9 @@ class ProductionOrderTest {
         productionOrder.setStatus(POStatus.CANCELLED);
 
         // when/then
-        BusinessException exception = assertThrows(BusinessException.class, 
-            () -> productionOrder.moveToNextPhase());
-        
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> productionOrder.moveToNextPhase());
+
         assertThat(exception.getMessage(), is("Cannot move production order from CANCELLED status"));
     }
 
@@ -76,28 +96,28 @@ class ProductionOrderTest {
     void test_cancel_fromPlanning() {
         // given
         productionOrder.setStatus(POStatus.PLANNING);
-        productionOrder.setDescription("Test PO");
+        productionOrder.setInstructions("Test PO");
         // when
         productionOrder.cancel("Canceled by a test.");
 
         // then
         assertThat(productionOrder.getStatus(), is(POStatus.CANCELLED));
-        assertThat(productionOrder.getDescription(), is("Test PO\nCanceled by a test."));
-        assertThat(productionOrder.getActualDeliveryDate(), is(LocalDate.now()));
+        assertThat(productionOrder.getInstructions(), is("Test PO\nCanceled by a test."));
+        assertThat(productionOrder.getActualCompletionDate(), is(LocalDate.now()));
     }
 
     @Test
     void test_cancel_fromExecuting() {
         // given
         productionOrder.setStatus(POStatus.EXECUTING);
-        productionOrder.setDescription("Test PO");
+        productionOrder.setInstructions("Test PO");
         // when
         productionOrder.cancel("Canceled by a test.");
 
         // then
         assertThat(productionOrder.getStatus(), is(POStatus.CANCELLED));
-        assertThat(productionOrder.getDescription(), is("Test PO\nCanceled by a test."));
-        assertThat(productionOrder.getActualDeliveryDate(), is(LocalDate.now()));
+        assertThat(productionOrder.getInstructions(), is("Test PO\nCanceled by a test."));
+        assertThat(productionOrder.getActualCompletionDate(), is(LocalDate.now()));
     }
 
     @Test
@@ -106,9 +126,9 @@ class ProductionOrderTest {
         productionOrder.setStatus(POStatus.DONE);
 
         // when/then
-        BusinessException exception = assertThrows(BusinessException.class, 
-            () -> productionOrder.cancel("Canceled by a test."));
-        
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> productionOrder.cancel("Canceled by a test."));
+
         assertThat(exception.getMessage(), is("Cannot cancel production order in DONE status"));
     }
 
@@ -118,12 +138,10 @@ class ProductionOrderTest {
         productionOrder.setStatus(POStatus.PLANNING);
 
         // when/then
-        BusinessException exception = assertThrows(BusinessException.class, 
-            () -> productionOrder.cancel(""));
-        
-        assertThat(exception.getMessage(), is("Description cannot be empty"));
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> productionOrder.cancel(""));
+
+        assertThat(exception.getMessage(), is("Instructions cannot be empty"));
     }
-    
+
 }
-
-

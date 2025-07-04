@@ -11,13 +11,13 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import br.com.brainyit.posystem2.domain.Order;
+import br.com.brainyit.posystem2.domain.OrderStatus;
+import br.com.brainyit.posystem2.domain.POPriority;
 import br.com.brainyit.posystem2.domain.POStatus;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -55,22 +55,31 @@ public class ProductionOrder implements Serializable {
 	@Column(name = "po_number", nullable = false, unique = true, length = 100)
 	private String poNumber;
 
-	@Column(name = "description", nullable = true, length = 255)
-	private String description;
+	@Column(name = "instructions", nullable = true, length = 255)
+	private String instructions;
 
 	@Builder.Default
 	@Column(name = "qtd_pieces", nullable = true)
 	private Integer qtd = 0;
 
-	@Column(name = "deliver_date", nullable = true)
-	private LocalDate estimatedDueDate;
+	@Column(name = "estimated_completion_date", nullable = true)
+	private LocalDate estimatedCompletionDate;
 
-	@Column(name = "actual_delivery_date", nullable = true)
-	private LocalDate actualDeliveryDate;
+	@Column(name = "actual_completion_date", nullable = true)
+	private LocalDate actualCompletionDate;
+
+	@Column(name = "planned_start_date", nullable = false)
+	private LocalDate plannedStartDate;
+
+	@Column(name = "actual_start_date", nullable = true)
+	private LocalDate actualStartDate;
 
 	@Column(name = "po_status", nullable = false)
-	@Enumerated(EnumType.ORDINAL)
 	private POStatus status;
+
+	@Builder.Default
+	@Column(name = "priority", nullable = false)
+	private POPriority priority = POPriority.STANDARD;
 
 	@Builder.Default
 	@Column(name = "estimated_time", nullable = false)
@@ -84,29 +93,35 @@ public class ProductionOrder implements Serializable {
 	@Fetch(FetchMode.JOIN)
 	private Subscriber subscriber;
 
-
 	public ProductionOrder moveToNextPhase() {
 		if (status == POStatus.PLANNING) {
 			status = POStatus.EXECUTING;
+			actualStartDate = LocalDate.now();
 		} else if (status == POStatus.EXECUTING) {
-			status = POStatus.DONE;	
+			if (order.getProductionOrders() != null && order.getProductionOrders().stream()
+					.noneMatch(po -> po.getId() != this.id && po.getStatus() == POStatus.EXECUTING)) {
+				order.setStatus(OrderStatus.DELIVERED);
+			}
+			status = POStatus.DONE;
+			actualCompletionDate = LocalDate.now();
 		} else if (status == POStatus.CANCELLED || status == POStatus.DONE) {
 			throw new BusinessException(String.format("Cannot move production order from %s status", status));
 		}
 		return this;
 	}
 
-	public ProductionOrder cancel(final String description) {
+	public ProductionOrder cancel(final String instructions) {
 		if (status == POStatus.PLANNING || status == POStatus.EXECUTING) {
 			status = POStatus.CANCELLED;
 		} else if (status == POStatus.DONE) {
 			throw new BusinessException("Cannot cancel production order in DONE status");
 		}
-		if (StringUtils.isBlank(description)) {
-			throw new BusinessException("Description cannot be empty");
+		if (StringUtils.isBlank(instructions)) {
+			throw new BusinessException("Instructions cannot be empty");
 		}
-		this.description += "\n" + description;
-		this.actualDeliveryDate = LocalDate.now();
+		this.instructions += "\n" + instructions;
+		this.actualCompletionDate = LocalDate.now();
+		this.status = POStatus.CANCELLED;
 		return this;
 	}
 }

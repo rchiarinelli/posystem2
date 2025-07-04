@@ -53,6 +53,28 @@ paths:
           required: true
           schema:
             type: string
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter orders by customer name (partial match)
+        - name: orderCode
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter orders by order code (exact match)
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                [PENDING, CLOSED, BILLED, CANCELLED, EXECUTING, DELIVERED, ALL]
+          description: Filter orders by status (e.g., PENDING, CLOSED, etc.)
       responses:
         "200":
           description: List of orders
@@ -212,7 +234,9 @@ components:
       required:
         - qtd
         - estimatedTime
-        - description
+        - instructions
+        - plannedStartDate
+        - priority
       properties:
         qtd:
           type: number
@@ -224,8 +248,20 @@ components:
           format: double
           minimum: 0
           exclusiveMinimum: true
-        description:
+          description: Estimated time in hours
+          example: 10
+        instructions:
           type: string
+        plannedStartDate:
+          type: string
+          format: date
+          description: Planned start date
+          example: "2025-01-01"
+        priority:
+          type: string
+          enum: [LOW, STANDARD, HIGH, CRITICAL]
+          description: Priority of the production order
+          example: "STANDARD"
 
     ProductionOrderRestModel:
       $ref: "./order-spec.yml#/components/schemas/ProductionOrderRestModel"

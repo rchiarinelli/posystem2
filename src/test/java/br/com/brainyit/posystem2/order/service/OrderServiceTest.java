@@ -8,18 +8,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.querydsl.core.types.Predicate;
 
 import br.com.brainyit.posystem2.customer.repository.CompanyRepository;
 import br.com.brainyit.posystem2.customer.repository.IndividualRepository;
@@ -90,8 +96,11 @@ class OrderServiceTest {
 
                 when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+                final Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+
                 final PlaceOrderParams requestParam = new PlaceOrderParams(customer.getId(), ORDER_DESC,
-                                ORDER_QTY, new Date());
+                                ORDER_QTY, calendar.getTime());
 
                 // when
                 Order result = orderService.placeOrder(subscriber.getUuid(), requestParam);
@@ -259,11 +268,11 @@ class OrderServiceTest {
                                 orderCode);
                 List<Order> orders = List.of(order);
 
-                when(orderRepository.findBySubscriberId(subscriber.getId())).thenReturn(orders);
+                when(orderRepository.findAll(any(Predicate.class))).thenReturn(orders);
 
                 // when
                 when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
-                List<Order> result = orderService.getOrdersBySubscriberId(subscriber.getUuid());
+                List<Order> result = orderService.getOrdersBySubscriberId(subscriber.getUuid(), FilterOrderParams.of());
 
                 // then
                 assertThat(result, Matchers.hasSize(1));
@@ -279,11 +288,11 @@ class OrderServiceTest {
                 // given
                 Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
 
-                when(orderRepository.findBySubscriberId(subscriber.getId())).thenReturn(Collections.emptyList());
+                when(orderRepository.findAll(any(Predicate.class))).thenReturn(Collections.emptyList());
 
                 // when
                 when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
-                List<Order> result = orderService.getOrdersBySubscriberId(subscriber.getUuid());
+                List<Order> result = orderService.getOrdersBySubscriberId(subscriber.getUuid(), FilterOrderParams.of());
 
                 // then
                 assertThat(result, Matchers.empty());
@@ -292,7 +301,8 @@ class OrderServiceTest {
         @Test
         void test_getOrdersBySubscriberId_whenSubscriberIdNull_throwsBusinessException() {
                 // when/then
-                assertThrows(BusinessException.class, () -> orderService.getOrdersBySubscriberId(null));
+                assertThrows(BusinessException.class,
+                                () -> orderService.getOrdersBySubscriberId(null, FilterOrderParams.of()));
         }
 
         @Test
@@ -373,5 +383,47 @@ class OrderServiceTest {
                 final BusinessException exception = assertThrows(BusinessException.class,
                                 () -> orderService.placeOrder(subscriber.getUuid(), requestParam));
                 assertThat(exception.getMessage(), is("Planned deliver date cannot be in the past"));
+        }
+
+        private static Stream<FilterOrderParams> filterParamsForGetOrdersBySubscriberId() {
+                return Stream.of(
+                                FilterOrderParams.of(null, null, null),
+                                FilterOrderParams.of(null, null, List.of(OrderStatus.PENDING.name())),
+                                FilterOrderParams.of(null, null, List.of(OrderStatus.EXECUTING.name())),
+                                FilterOrderParams.of(null, null, List.of(OrderStatus.CANCELLED.name())),
+                                FilterOrderParams.of(null, null, List.of(OrderStatus.DELIVERED.name())),
+                                FilterOrderParams.of(null, "12345678901", null),
+                                FilterOrderParams.of(null, "12345678901", List.of(OrderStatus.PENDING.name())),
+                                FilterOrderParams.of(null, "12345678901", List.of(OrderStatus.EXECUTING.name())),
+                                FilterOrderParams.of(null, "12345678901", List.of(OrderStatus.CANCELLED.name())),
+                                FilterOrderParams.of(null, "12345678901", List.of(OrderStatus.DELIVERED.name())),
+                                FilterOrderParams.of("John Doe", null, null),
+                                FilterOrderParams.of("John Doe", null, List.of(OrderStatus.PENDING.name())),
+                                FilterOrderParams.of("John Doe", null, List.of(OrderStatus.EXECUTING.name())),
+                                FilterOrderParams.of("John Doe", null, List.of(OrderStatus.CANCELLED.name())),
+                                FilterOrderParams.of("John Doe", null, List.of(OrderStatus.DELIVERED.name())),
+                                FilterOrderParams.of("John Doe", "12345678901", null),
+                                FilterOrderParams.of("John Doe", "12345678901", List.of(OrderStatus.PENDING.name())),
+                                FilterOrderParams.of("John Doe", "12345678901", List.of(OrderStatus.EXECUTING.name())),
+                                FilterOrderParams.of("John Doe", "12345678901", List.of(OrderStatus.CANCELLED.name())),
+                                FilterOrderParams.of("John Doe", "12345678901", List.of(OrderStatus.DELIVERED.name())));
+        }
+
+        @ParameterizedTest
+        @MethodSource("filterParamsForGetOrdersBySubscriberId")
+        void test_getOrdersBySubscriberId_filterByParams_dataReturned(final FilterOrderParams params) {
+                // given
+                final Subscriber subscriber = Subscriber.builder().uuid(SUBSCRIBER_UUID).build();
+
+                when(orderRepository.findAll(any(Predicate.class))).thenReturn(List.of(TestUtils.createOrder(null,
+                                ORDER_DESC, ORDER_QTY, OrderStatus.PENDING, new Date(), UUID.randomUUID().toString())));
+
+                when(subscriberRepository.findByUuid(SUBSCRIBER_UUID)).thenReturn(Optional.of(subscriber));
+
+                // when
+                List<Order> result = orderService.getOrdersBySubscriberId(subscriber.getUuid(), params);
+
+                // then
+                assertThat(result, Matchers.hasSize(1));
         }
 }

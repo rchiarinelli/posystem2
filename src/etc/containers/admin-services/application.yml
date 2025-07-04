@@ -41,6 +41,7 @@ logging:
 
 
 application:
+    client-base-url: http://localhost:4000
     language: pt-BR
     registration-token:
         size: 30

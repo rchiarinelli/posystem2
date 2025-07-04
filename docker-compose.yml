@@ -13,6 +13,10 @@ services:
       MYSQL_USER: sas_app
       MYSQL_PASSWORD: abcd4321
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    deploy:
+      resources:
+        limits:
+          memory: 1GB    
 
   auth-server:
     image: ghcr.io/rchiarinelli/base-auth-server:latest
@@ -55,6 +59,10 @@ services:
       - "5005:5005"
     networks:
       - local-env-network
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
 
   admin-services:
     image: ghcr.io/rchiarinelli/base-sas-backend:latest
@@ -65,6 +73,10 @@ services:
     restart: always
     volumes:
       - ./src/etc/containers/admin-services/application.yml:/opt/config/application.yml
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   posystem-services:
     image: ghcr.io/rchiarinelli/posystem2:latest
@@ -75,6 +87,10 @@ services:
     restart: always
     volumes:
       - ./src/etc/containers/posystem/application.yml:/opt/config/application.yml
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
 
 networks:

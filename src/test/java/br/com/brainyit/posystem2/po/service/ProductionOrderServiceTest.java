@@ -13,16 +13,22 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.querydsl.core.types.Predicate;
+
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.OrderStatus;
+import br.com.brainyit.posystem2.domain.POPriority;
 import br.com.brainyit.posystem2.domain.POStatus;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
@@ -74,13 +80,15 @@ class ProductionOrderServiceTest {
 
                 // when
                 ProductionOrder result = productionOrderService.createProductionOrder(
-                                "123e4567-e89b-12d3-a456-426614174000", "ORDER123", 10, 2.5, "Test PO");
+                                "123e4567-e89b-12d3-a456-426614174000",
+                                new CreateProductionOrderParams("ORDER123", "Test PO", 10.0, 2.5, LocalDate.now(),
+                                                POPriority.STANDARD));
 
                 // then
                 assertThat(result, is(notNullValue()));
                 assertThat(result.getQtd(), is(10));
                 assertThat(result.getEstimatedTime(), is(2.5));
-                assertThat(result.getDescription(), is("Test PO"));
+                assertThat(result.getInstructions(), is("Test PO"));
                 assertThat(result.getStatus(), is(POStatus.PLANNING));
                 assertThat(result.getOpenDate(), is(LocalDate.now()));
                 assertThat(result.getOrder().getStatus(), is(OrderStatus.EXECUTING));
@@ -99,8 +107,9 @@ class ProductionOrderServiceTest {
                 // when/then
                 BusinessException exception = assertThrows(BusinessException.class,
                                 () -> productionOrderService.createProductionOrder(
-                                                "123e4567-e89b-12d3-a456-426614174000", "ORDER123", 10, 2.5,
-                                                "Test PO"));
+                                                "123e4567-e89b-12d3-a456-426614174000",
+                                                new CreateProductionOrderParams("ORDER123", "Test PO", 10.0, 2.5,
+                                                                LocalDate.now(), POPriority.STANDARD)));
 
                 assertThat(exception.getMessage(), containsString("Subscriber not found"));
         }
@@ -115,8 +124,9 @@ class ProductionOrderServiceTest {
                 // when/then
                 BusinessException exception = assertThrows(BusinessException.class,
                                 () -> productionOrderService.createProductionOrder(
-                                                "123e4567-e89b-12d3-a456-426614174000", "ORDER123", 10, 2.5,
-                                                "Test PO"));
+                                                "123e4567-e89b-12d3-a456-426614174000",
+                                                new CreateProductionOrderParams("ORDER123", "Test PO", 10.0, 2.5,
+                                                                LocalDate.now(), POPriority.STANDARD)));
 
                 assertThat(exception.getMessage(), containsString("Order not found"));
         }
@@ -128,7 +138,9 @@ class ProductionOrderServiceTest {
                 // when/then
                 BusinessException exception = assertThrows(BusinessException.class,
                                 () -> productionOrderService.createProductionOrder(
-                                                "123e4567-e89b-12d3-a456-426614174000", "ORDER123", 0, 2.5, "Test PO"));
+                                                "123e4567-e89b-12d3-a456-426614174000",
+                                                new CreateProductionOrderParams("ORDER123", "Test PO", 0.0, 2.5,
+                                                                LocalDate.now(), POPriority.STANDARD)));
 
                 assertThat(exception.getMessage(), containsString("Quantity must be greater than zero"));
         }
@@ -140,91 +152,73 @@ class ProductionOrderServiceTest {
                 // when/then
                 BusinessException exception = assertThrows(BusinessException.class,
                                 () -> productionOrderService.createProductionOrder(
-                                                "123e4567-e89b-12d3-a456-426614174000", "ORDER123", 10, 0.0,
-                                                "Test PO"));
+                                                "123e4567-e89b-12d3-a456-426614174000",
+                                                new CreateProductionOrderParams("ORDER123", "Test PO", 10.0, 0.0,
+                                                                LocalDate.now(), POPriority.STANDARD)));
 
                 assertThat(exception.getMessage(), containsString("Estimated time must be greater than zero"));
         }
 
         @Test
-        void test_createProductionOrder_orderNotInPendingStatus() {
-                // given
-                order.setStatus(OrderStatus.EXECUTING);
-                when(subscriberRepository.findByUuid("123e4567-e89b-12d3-a456-426614174000"))
-                                .thenReturn(Optional.of(subscriber));
-                when(orderRepository.findBySubscriberIdAndOrderCode(1L, "ORDER123")).thenReturn(Optional.of(order));
-
-                // when/then
-                BusinessException exception = assertThrows(BusinessException.class,
-                                () -> productionOrderService.createProductionOrder(
-                                                "123e4567-e89b-12d3-a456-426614174000", "ORDER123", 10, 2.5,
-                                                "Test PO"));
-
-                assertThat(exception.getMessage(),
-                                containsString("Order is not in the pending status, it is in the EXECUTING status"));
-        }
-
-        @Test
-        void test_retrieveProductionOrders_whenNoProductionOrdersExist_returnsEmptyList() {
+        void test_filterProductionOrders_whenNoProductionOrdersExist_returnsEmptyList() {
                 // given
                 when(subscriberRepository.findByUuid("123e4567-e89b-12d3-a456-426614174000"))
                                 .thenReturn(Optional.of(subscriber));
-                when(productionOrderRepository.findBySubscriberIdAndInStatuses(1L, POStatus.EXECUTING,
-                                POStatus.PLANNING))
+                when(productionOrderRepository.findAll(any(Predicate.class)))
                                 .thenReturn(List.of());
 
                 // when
-                List<ProductionOrder> result = productionOrderService.retrieveProductionOrders(
-                                "123e4567-e89b-12d3-a456-426614174000", POStatus.EXECUTING,
-                                POStatus.PLANNING);
+                List<ProductionOrder> result = productionOrderService.filterProductionOrders(
+                                "123e4567-e89b-12d3-a456-426614174000",
+                                new FilterProductionOrdersParams(null, null, POStatus.EXECUTING, POStatus.PLANNING));
 
                 // then
                 assertThat(result, is(Collections.emptyList()));
         }
 
         @Test
-        void test_retrieveProductionOrders_whenSubscriberNotFound_throwsBusinessException() {
+        void test_filterProductionOrders_whenSubscriberNotFound_throwsBusinessException() {
                 // given
                 when(subscriberRepository.findByUuid("123e4567-e89b-12d3-a456-426614174000"))
                                 .thenReturn(Optional.empty());
 
                 // when/then
                 BusinessException exception = assertThrows(BusinessException.class,
-                                () -> productionOrderService.retrieveProductionOrders(
-                                                "123e4567-e89b-12d3-a456-426614174000", POStatus.EXECUTING,
-                                                POStatus.PLANNING));
+                                () -> productionOrderService.filterProductionOrders(
+                                                "123e4567-e89b-12d3-a456-426614174000",
+                                                new FilterProductionOrdersParams(null, null, POStatus.EXECUTING,
+                                                                POStatus.PLANNING)));
 
                 assertThat(exception.getMessage(), containsString("Subscriber not found"));
         }
 
         @Test
-        void test_retrieveProductionOrders_whenProductionOrdersExist_returnsOrders() {
+        void test_filterProductionOrders_whenProductionOrdersExist_returnsOrders() {
                 // given
                 ProductionOrder productionOrder = ProductionOrder.builder()
                                 .subscriber(subscriber)
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Test PO")
+                                .instructions("Test PO")
                                 .status(POStatus.PLANNING)
                                 .build();
 
                 when(subscriberRepository.findByUuid("123e4567-e89b-12d3-a456-426614174000"))
                                 .thenReturn(Optional.of(subscriber));
-                when(productionOrderRepository.findBySubscriberIdAndInStatuses(1L, POStatus.EXECUTING,
-                                POStatus.PLANNING))
+                when(productionOrderRepository.findAll(any(Predicate.class)))
                                 .thenReturn(List.of(productionOrder));
 
                 // when
-                List<ProductionOrder> result = productionOrderService.retrieveProductionOrders(
-                                "123e4567-e89b-12d3-a456-426614174000", POStatus.EXECUTING,
-                                POStatus.PLANNING);
+                List<ProductionOrder> result = productionOrderService.filterProductionOrders(
+                                "123e4567-e89b-12d3-a456-426614174000",
+                                new FilterProductionOrdersParams(null, null, POStatus.EXECUTING, POStatus.PLANNING));
 
                 // then
                 assertThat(result.size(), is(1));
                 assertThat(result.get(0).getQtd(), is(10));
                 assertThat(result.get(0).getEstimatedTime(), is(2.5));
-                assertThat(result.get(0).getDescription(), is("Test PO"));
+                assertThat(result.get(0).getInstructions(), is("Test PO"));
                 assertThat(result.get(0).getStatus(), is(POStatus.PLANNING));
         }
 
@@ -237,7 +231,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Test PO")
+                                .instructions("Test PO")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -255,7 +249,7 @@ class ProductionOrderServiceTest {
                 assertThat(result.getPoNumber(), is(poNumber));
                 assertThat(result.getQtd(), is(10));
                 assertThat(result.getEstimatedTime(), is(2.5));
-                assertThat(result.getDescription(), is("Test PO"));
+                assertThat(result.getInstructions(), is("Test PO"));
                 assertThat(result.getStatus(), is(POStatus.PLANNING));
         }
 
@@ -299,7 +293,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Test PO")
+                                .instructions("Test PO")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -329,9 +323,13 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Test PO")
+                                .instructions("Test PO")
                                 .status(POStatus.EXECUTING)
                                 .poNumber(poNumber)
+                                .order(Order.builder()
+                                                .id(1L)
+                                                .productionOrders(List.of())
+                                                .build())
                                 .build();
 
                 when(subscriberRepository.findByUuid("123e4567-e89b-12d3-a456-426614174000"))
@@ -390,7 +388,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Test PO")
+                                .instructions("Test PO")
                                 .status(POStatus.DONE)
                                 .poNumber(poNumber)
                                 .build();
@@ -417,7 +415,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Test PO")
+                                .instructions("Test PO")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -435,8 +433,8 @@ class ProductionOrderServiceTest {
 
                 // then
                 assertThat(result.getStatus(), is(POStatus.CANCELLED));
-                assertThat(result.getDescription(), is("Test PO\nCanceled by a test."));
-                assertThat(result.getActualDeliveryDate(), is(LocalDate.now()));
+                assertThat(result.getInstructions(), is("Test PO\nCanceled by a test."));
+                assertThat(result.getActualCompletionDate(), is(LocalDate.now()));
                 verify(productionOrderRepository).save(productionOrder);
         }
 
@@ -449,7 +447,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Test PO")
+                                .instructions("Test PO")
                                 .status(POStatus.EXECUTING)
                                 .poNumber(poNumber)
                                 .build();
@@ -467,8 +465,8 @@ class ProductionOrderServiceTest {
 
                 // then
                 assertThat(result.getStatus(), is(POStatus.CANCELLED));
-                assertThat(result.getDescription(), is("Test PO\nCanceled by a test."));
-                assertThat(result.getActualDeliveryDate(), is(LocalDate.now()));
+                assertThat(result.getInstructions(), is("Test PO\nCanceled by a test."));
+                assertThat(result.getActualCompletionDate(), is(LocalDate.now()));
                 verify(productionOrderRepository).save(productionOrder);
         }
 
@@ -512,7 +510,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Test PO")
+                                .instructions("Test PO")
                                 .status(POStatus.DONE)
                                 .poNumber(poNumber)
                                 .build();
@@ -539,7 +537,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Original description")
+                                .instructions("Original description")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -549,7 +547,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(20)
                                 .estimatedTime(5.0)
-                                .description("Updated description")
+                                .instructions("Updated description")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -567,7 +565,7 @@ class ProductionOrderServiceTest {
                 // then
                 assertThat(result.getQtd(), is(20));
                 assertThat(result.getEstimatedTime(), is(5.0));
-                assertThat(result.getDescription(), is("Updated description"));
+                assertThat(result.getInstructions(), is("Updated description"));
                 verify(productionOrderRepository).save(any(ProductionOrder.class));
         }
 
@@ -580,7 +578,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(20)
                                 .estimatedTime(5.0)
-                                .description("Updated description")
+                                .instructions("Updated description")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -604,7 +602,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(20)
                                 .estimatedTime(5.0)
-                                .description("Updated description")
+                                .instructions("Updated description")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -631,7 +629,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(-1) // Invalid quantity
                                 .estimatedTime(5.0)
-                                .description("Updated description")
+                                .instructions("Updated description")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -658,7 +656,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Original description")
+                                .instructions("Original description")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -668,7 +666,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(20)
                                 .estimatedTime(-1.0) // Invalid estimated time
-                                .description("Updated description")
+                                .instructions("Updated description")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -695,7 +693,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Original description")
+                                .instructions("Original description")
                                 .status(POStatus.DONE)
                                 .poNumber(poNumber)
                                 .build();
@@ -705,7 +703,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(20)
                                 .estimatedTime(5.0)
-                                .description("Updated description")
+                                .instructions("Updated description")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -732,7 +730,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(10)
                                 .estimatedTime(2.5)
-                                .description("Original description")
+                                .instructions("Original description")
                                 .status(POStatus.CANCELLED)
                                 .poNumber(poNumber)
                                 .build();
@@ -742,7 +740,7 @@ class ProductionOrderServiceTest {
                                 .order(order)
                                 .qtd(20)
                                 .estimatedTime(5.0)
-                                .description("Updated description")
+                                .instructions("Updated description")
                                 .status(POStatus.PLANNING)
                                 .poNumber(poNumber)
                                 .build();
@@ -759,6 +757,35 @@ class ProductionOrderServiceTest {
 
                 assertThat(exception.getMessage(),
                                 containsString("Cannot update production order in CANCELLED status"));
+        }
+
+        private static Stream<FilterProductionOrdersParams> filterProductionOrdersParams() {
+                return Stream.of(
+                                new FilterProductionOrdersParams(null, null, POStatus.EXECUTING, POStatus.PLANNING),
+                                new FilterProductionOrdersParams("PO-123", null, POStatus.EXECUTING, POStatus.PLANNING),
+                                new FilterProductionOrdersParams(null, "John Doe", POStatus.EXECUTING,
+                                                POStatus.PLANNING),
+                                new FilterProductionOrdersParams("PO-123", "John Doe", POStatus.EXECUTING,
+                                                POStatus.PLANNING));
+        }
+
+        @ParameterizedTest
+        @MethodSource("filterProductionOrdersParams")
+        void test_filterProductionOrders_whenPoNumberIsProvided_returnsOrders(
+                        final FilterProductionOrdersParams testParams) {
+                // given
+                when(subscriberRepository.findByUuid("123e4567-e89b-12d3-a456-426614174000"))
+                                .thenReturn(Optional.of(subscriber));
+                when(productionOrderRepository.findAll(any(Predicate.class)))
+                                .thenReturn(List.of(ProductionOrder.builder().poNumber("PO-123").build()));
+
+                // when
+                List<ProductionOrder> result = productionOrderService.filterProductionOrders(
+                                "123e4567-e89b-12d3-a456-426614174000", testParams);
+
+                // then
+                assertThat(result, is(notNullValue()));
+                assertThat(result.size(), is(1));
         }
 
 }
