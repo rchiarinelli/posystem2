@@ -22,6 +22,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -43,7 +44,8 @@ import lombok.NoArgsConstructor;
 public class ProductionOrder implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "production_order_seq")
+	@SequenceGenerator(name = "production_order_seq", sequenceName = "t_production_order_seq", allocationSize = 1)
 	@Column(name = "id_po")
 	private Long id;
 

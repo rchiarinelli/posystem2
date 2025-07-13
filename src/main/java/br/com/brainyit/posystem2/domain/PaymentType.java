@@ -9,16 +9,16 @@ package br.com.brainyit.posystem2.domain;
  */
 public enum PaymentType {
 
-	INSTALLMENTS("Parcelado"),NO_INTALLMENTS("A vista"),CREDIT_CARD("Cartão de crédito");
-	
+	INSTALLMENTS("Parcelado"), ONE_TIME("A vista");
+
 	private final String type;
-	
-	private PaymentType(String t){
+
+	private PaymentType(String t) {
 		this.type = t;
 	}
-	
-	public String getTypeValue(){
+
+	public String getTypeValue() {
 		return this.type;
 	}
-	
+
 }

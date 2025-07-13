@@ -19,6 +19,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
@@ -39,12 +40,9 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "t_customer")
 @Inheritance(strategy = InheritanceType.JOINED)
-@NamedQueries(
-        value = {
-            @NamedQuery(name = "getCustomersWithBillings"
-                    , query = "select distinct ord.customer from Order ord inner join ord.billings as billing where ord.subscriber.id=:subscriberId")
-        }        
-)
+@NamedQueries(value = {
+        @NamedQuery(name = "getCustomersWithBillings", query = "select distinct ord.customer from Order ord inner join ord.billings as billing where ord.subscriber.id=:subscriberId")
+})
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -58,7 +56,8 @@ public abstract class Customer implements Serializable, Domain {
     private static final long serialVersionUID = -6816166660674280801L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_seq")
+    @SequenceGenerator(name = "customer_seq", sequenceName = "t_customer_seq", allocationSize = 1)
     @Column(name = "id_customer")
     private Integer id;
 
@@ -72,12 +71,12 @@ public abstract class Customer implements Serializable, Domain {
     @Enumerated(EnumType.ORDINAL)
     private CustomerStatus status;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @JoinColumn(name = "id_customer", nullable = false)
     @Fetch(FetchMode.JOIN)
     private Set<CustomerAddress> addresses;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @JoinColumn(name = "id_customer", nullable = false)
     @Fetch(FetchMode.JOIN)
     private Set<CustomerContact> contacts;
@@ -86,7 +85,6 @@ public abstract class Customer implements Serializable, Domain {
     @JoinColumn(name = "id_subscriber", nullable = false)
     @Fetch(FetchMode.JOIN)
     private Subscriber subscriber;
-
 
     public Customer(Integer id, String name) {
         this.id = id;

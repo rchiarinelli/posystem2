@@ -9,16 +9,16 @@ package br.com.brainyit.posystem2.domain;
  */
 public enum InstallmentStatus {
 
-	PENDING("Pendente"),PAID("Pago");
-	
+	PENDING("Pendente"), PAID("Pago"), LATE("Atrasado"), CANCELLED("Cancelado");
+
 	private final String status;
-	
+
 	private InstallmentStatus(String s) {
 		this.status = s;
 	}
-	
+
 	public String getStatusValue() {
 		return this.status;
 	}
-	
+
 }

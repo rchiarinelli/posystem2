@@ -11,6 +11,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
@@ -18,46 +19,43 @@ import jakarta.persistence.ManyToOne;
  * @author leafar
  *
  */
-@Entity(name="t_customer_address")
+@Entity(name = "t_customer_address")
 public class CustomerAddress implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8552510435435455194L;
 
-
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id_address")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_address_seq")
+	@SequenceGenerator(name = "customer_address_seq", sequenceName = "t_customer_address_seq", allocationSize = 1)
+	@Column(name = "id_address")
 	private int id;
-	
-	
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="id_customer",insertable=false,updatable=false)
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_customer", insertable = false, updatable = false)
 	private Customer customer;
-	
-	@Column(name="street_name",length=60,nullable=true)
+
+	@Column(name = "street_name", length = 60, nullable = true)
 	private String street;
-	
-	@Column(name="number",nullable=true)
+
+	@Column(name = "number", nullable = true)
 	private Integer number;
-	
-	@Column(name="complement",length=45,nullable=true)
+
+	@Column(name = "complement", length = 45, nullable = true)
 	private String complement;
-	
-	@Column(name="city",length=45,nullable=true)
+
+	@Column(name = "city", length = 45, nullable = true)
 	private String city;
-	
-	@Column(name="state",length=3,nullable=true)
+
+	@Column(name = "state", length = 3, nullable = true)
 	private String state;
-	
-	@Column(name="zipcode",length=15,nullable=true)
+
+	@Column(name = "zipcode", length = 15, nullable = true)
 	private String zipCode;
-	
-	@Column(name="country",length=3,nullable=true)
+
+	@Column(name = "country", length = 3, nullable = true)
 	private String country;
-	
-	
 
 	/**
 	 * 
@@ -65,8 +63,6 @@ public class CustomerAddress implements Serializable {
 	public CustomerAddress() {
 		super();
 	}
-	
-	
 
 	/**
 	 * @param customer
@@ -91,8 +87,6 @@ public class CustomerAddress implements Serializable {
 		this.zipCode = zipCode;
 		this.country = country;
 	}
-
-
 
 	/**
 	 * @param id
@@ -120,22 +114,19 @@ public class CustomerAddress implements Serializable {
 		this.country = country;
 	}
 
-	
-
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if ((obj==null) || !(obj instanceof CustomerAddress)) {
+		if ((obj == null) || !(obj instanceof CustomerAddress)) {
 			return false;
 		}
 		CustomerAddress addr = (CustomerAddress) obj;
-		return (addr.getId()==null? false : this.id == addr.getId().intValue()); 
+		return (addr.getId() == null ? false : this.id == addr.getId().intValue());
 	}
-
-
 
 	/**
 	 * @return the id

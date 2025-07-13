@@ -40,7 +40,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OrderRestModel"
+                $ref: "./common-spec.yml#/components/schemas/OrderRestModel"
 
     get:
       tags:
@@ -83,7 +83,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/OrderRestModel"
+                  $ref: "./common-spec.yml#/components/schemas/OrderRestModel"
 
   /{subscriber}/orders/{orderCode}:
     get:
@@ -109,7 +109,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OrderRestModel"
+                $ref: "./common-spec.yml#/components/schemas/OrderRestModel"
 
   /{subscriber}/orders/{orderCode}/cancel:
     put:
@@ -264,4 +264,4 @@ components:
           example: "STANDARD"
 
     ProductionOrderRestModel:
-      $ref: "./order-spec.yml#/components/schemas/ProductionOrderRestModel"
+      $ref: "./production-order-spec.yml#/components/schemas/ProductionOrderRestModel"

@@ -24,6 +24,7 @@ ext {
 	jaxbRuntimeVersion = '4.0.4'
 	commonsLangVersion = '3.17.0'
 	queryDslVersion = '5.1.0'
+	postgresqlVersion = '42.7.7'
 }
 
 
@@ -109,7 +110,7 @@ dependencies {
 	testAnnotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 	testAnnotationProcessor "org.projectlombok:lombok"
 
-	runtimeOnly "com.mysql:mysql-connector-j"
+	runtimeOnly "org.postgresql:postgresql:$postgresqlVersion"
 	compileOnly "org.projectlombok:lombok"
 
 	testImplementation "com.h2database:h2:2.3.232"
@@ -120,11 +121,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation "org.testcontainers:junit-jupiter"
-	testImplementation "org.testcontainers:mysql"
+	testImplementation "org.testcontainers:testcontainers"
+	testImplementation "org.testcontainers:postgresql"
 
 	testImplementation "org.hamcrest:hamcrest:$hamcrestVersion"
-	testImplementation "org.testcontainers:testcontainers"
-	
+
 	constraints {
         implementation("io.swagger.core.v3:swagger-annotations:$swaggerVersion")
         implementation("io.swagger.core.v3:swagger-models:$swaggerVersion")
