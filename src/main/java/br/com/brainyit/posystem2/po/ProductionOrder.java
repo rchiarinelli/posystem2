@@ -7,8 +7,10 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.util.CollectionUtils;
 
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.OrderStatus;
@@ -22,9 +24,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -96,13 +98,15 @@ public class ProductionOrder implements Serializable {
 	private Subscriber subscriber;
 
 	public ProductionOrder moveToNextPhase() {
+		Hibernate.initialize(order.getProductionOrders());
 		if (status == POStatus.PLANNING) {
 			status = POStatus.EXECUTING;
 			actualStartDate = LocalDate.now();
 		} else if (status == POStatus.EXECUTING) {
-			if (order.getProductionOrders() != null && order.getProductionOrders().stream()
-					.noneMatch(po -> po.getId() != this.id && po.getStatus() == POStatus.EXECUTING)) {
-				order.setStatus(OrderStatus.DELIVERED);
+			if (!CollectionUtils.isEmpty(order.getProductionOrders()) &&
+					(order.getProductionOrders().size() == 1 || order.getProductionOrders().stream()
+							.noneMatch(po -> po.getId() != this.id && po.getStatus() == POStatus.EXECUTING))) {
+				order.setStatus(OrderStatus.PEDING_BILLING);
 			}
 			status = POStatus.DONE;
 			actualCompletionDate = LocalDate.now();

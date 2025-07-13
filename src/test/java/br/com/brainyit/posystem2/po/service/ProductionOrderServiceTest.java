@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -318,6 +319,12 @@ class ProductionOrderServiceTest {
         void test_proceedToNextPhase_whenOrderInExecuting_movesToDone() {
                 // given
                 String poNumber = "PO-123";
+
+                final Order order = Order.builder()
+                                .id(1L)
+                                .productionOrders(List.of())
+                                .build();
+
                 ProductionOrder productionOrder = ProductionOrder.builder()
                                 .subscriber(subscriber)
                                 .order(order)
@@ -326,11 +333,10 @@ class ProductionOrderServiceTest {
                                 .instructions("Test PO")
                                 .status(POStatus.EXECUTING)
                                 .poNumber(poNumber)
-                                .order(Order.builder()
-                                                .id(1L)
-                                                .productionOrders(List.of())
-                                                .build())
+                                .order(order)
                                 .build();
+
+                order.setProductionOrders(List.of(productionOrder));
 
                 when(subscriberRepository.findByUuid("123e4567-e89b-12d3-a456-426614174000"))
                                 .thenReturn(Optional.of(subscriber));
@@ -345,6 +351,10 @@ class ProductionOrderServiceTest {
 
                 // then
                 assertThat(result.getStatus(), is(POStatus.DONE));
+                assertThat(result.getActualCompletionDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                                is(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+                assertThat(result.getOrder().getStatus(), is(OrderStatus.PEDING_BILLING));
+
                 verify(productionOrderRepository).save(productionOrder);
         }
 

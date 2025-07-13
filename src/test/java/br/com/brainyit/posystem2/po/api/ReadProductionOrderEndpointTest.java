@@ -217,7 +217,7 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
                                 .andExpect(jsonPath("$.quantity").value(1))
                                 .andExpect(jsonPath("$.customerName").value("Robert Williams"))
                                 .andExpect(jsonPath("$.actualDeliveryDate").doesNotExist())
-                                .andExpect(jsonPath("$.orderCode").value(orderCode));
+                                .andExpect(jsonPath("$.order.orderCode").value(orderCode));
         }
 
         @Test
