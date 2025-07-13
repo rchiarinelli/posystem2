@@ -541,6 +541,7 @@ CREATE TABLE t_billing (
 	billing_calculated_value float8 NOT NULL,
 	billing_closed_at date NULL,
 	billing_created_at date NOT NULL,
+	billing_start_date date NOT NULL,
 	billing_final_value float8 NOT NULL,
 	billing_status int2 NOT NULL,
 	billing_uuid varchar(255) NOT NULL,
@@ -680,5 +681,353 @@ SELECT setval('t_registration_token_seq', 2);
 INSERT INTO t_user (id,created_at,email,first_name,hash_password,is_admin,last_name,status,updated_at,user_name,uuid,subscriber_id) VALUES (1, '2025-06-14 19:38:51.349','jane.doe@example.com',null,'$argon2id$v=19$m=65536,t=2,p=1$hmHfK5KNNSIezsTHwkQcLw==$YaXRjs5OKuTpqSuLCpQNqziudfBpjxu1pOeOyyO3zBA=',true,null,1, '2025-06-14 19:38:51.349','jane.doe@example.com','24a0d39f-eb38-431e-98c1-4a873117d24a',1);
 
 SELECT setval('t_user_seq', 2);
+
+
+-- Billing Configuration Data
+-- Insert billing configurations for different payment types and installment options
+
+-- ONE_TIME payment configuration
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 1,
+           'Pagamento à Vista',
+           'ONE_TIME',
+           null,
+           null,
+           null );
+
+-- INSTALLMENTS configurations (2-24 installments, monthly)
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 2,
+           'Parcelado em 2x',
+           'INSTALLMENTS',
+           2,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 3,
+           'Parcelado em 3x',
+           'INSTALLMENTS',
+           3,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 4,
+           'Parcelado em 4x',
+           'INSTALLMENTS',
+           4,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 5,
+           'Parcelado em 5x',
+           'INSTALLMENTS',
+           5,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 6,
+           'Parcelado em 6x',
+           'INSTALLMENTS',
+           6,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 7,
+           'Parcelado em 7x',
+           'INSTALLMENTS',
+           7,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 8,
+           'Parcelado em 8x',
+           'INSTALLMENTS',
+           8,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 9,
+           'Parcelado em 9x',
+           'INSTALLMENTS',
+           9,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 10,
+           'Parcelado em 10x',
+           'INSTALLMENTS',
+           10,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 11,
+           'Parcelado em 11x',
+           'INSTALLMENTS',
+           11,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 12,
+           'Parcelado em 12x',
+           'INSTALLMENTS',
+           12,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 13,
+           'Parcelado em 13x',
+           'INSTALLMENTS',
+           13,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 14,
+           'Parcelado em 14x',
+           'INSTALLMENTS',
+           14,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 15,
+           'Parcelado em 15x',
+           'INSTALLMENTS',
+           15,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 16,
+           'Parcelado em 16x',
+           'INSTALLMENTS',
+           16,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 17,
+           'Parcelado em 17x',
+           'INSTALLMENTS',
+           17,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 18,
+           'Parcelado em 18x',
+           'INSTALLMENTS',
+           18,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 19,
+           'Parcelado em 19x',
+           'INSTALLMENTS',
+           19,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 20,
+           'Parcelado em 20x',
+           'INSTALLMENTS',
+           20,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 21,
+           'Parcelado em 21x',
+           'INSTALLMENTS',
+           21,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 22,
+           'Parcelado em 22x',
+           'INSTALLMENTS',
+           22,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 23,
+           'Parcelado em 23x',
+           'INSTALLMENTS',
+           23,
+           1,
+           'MONTH' );
+
+insert into t_billing_config (
+   id_billing_config,
+   billing_config_name,
+   billing_config_payment_type,
+   billing_config_installments_quantity,
+   billing_config_installments_interval,
+   billing_config_installments_interval_unit
+) values ( 24,
+           'Parcelado em 24x',
+           'INSTALLMENTS',
+           24,
+           1,
+           'MONTH' );
+
+-- Update sequence to avoid conflicts
+select setval(
+   't_billing_config_seq',
+   24
+);
 
 

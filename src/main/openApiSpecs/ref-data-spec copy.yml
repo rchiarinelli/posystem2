@@ -1,0 +1,68 @@
+openapi: 3.0.0
+
+info:
+  title: Reference Data API
+  version: 1.0.0
+
+tags:
+  - name: RefData
+    description: Reference data endpoints
+    x-interface-name: RefDataApi
+
+parameters:
+  subscriberParam:
+    name: subscriber
+    in: path
+    required: true
+    schema:
+      type: string
+    description: Subscriber identifier
+
+paths:
+  /{subscriber}/billing-configs:
+    get:
+      tags:
+        - Billing Configuration
+      summary: Get billing configurations by subscriber
+      x-interface-name: RefDataApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: List of billing configurations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BillingConfigModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+
+components:
+  schemas:
+    BillingConfigModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        paymentType:
+          type: string
+        installmentsQuantity:
+          type: integer
+        installmentsInterval:
+          type: integer
+        installmentsIntervalUnit:
+          type: string

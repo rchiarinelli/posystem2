@@ -67,6 +67,9 @@ public class Billing implements Serializable {
 	@Column(name = "billing_closed_at", nullable = true)
 	private LocalDate closedAt;
 
+	@Column(name = "billing_start_date", nullable = false)
+	private LocalDate startDate;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_billing_config", nullable = false)
 	@Fetch(FetchMode.JOIN)

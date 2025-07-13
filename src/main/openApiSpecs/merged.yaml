@@ -13,12 +13,16 @@ paths:
     $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1individuals~1{customerId}"
   /{subscriber}/production-orders/{poNumber}/proceed:
     $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}~1proceed"
+  /{subscriber}/billing-configs:
+    $ref: "./ref-data-spec copy.yml#/paths/~1{subscriber}~1billing-configs"
   /{subscriber}/production-orders/{poNumber}:
     $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}"
   /about-me:
     $ref: "./user-api-spec.yml#/paths/~1about-me"
   /{subscriber}/customers/companies:
     $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1companies"
+  /{subscriber}/billings:
+    $ref: "./billing-spec.yml#/paths/~1{subscriber}~1billings"
   /{subscriber}/orders/{orderCode}/place-production-order:
     $ref: "./order-spec.yml#/paths/~1{subscriber}~1orders~1{orderCode}~1place-production-order"
   /{subscriber}/orders/{orderCode}/cancel:
