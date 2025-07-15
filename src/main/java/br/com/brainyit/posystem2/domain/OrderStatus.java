@@ -10,7 +10,7 @@ package br.com.brainyit.posystem2.domain;
 public enum OrderStatus {
 
 	PENDING("Pendente"), CLOSED("Fechado"), BILLED("Faturado"), CANCELLED("Cancelado"), EXECUTING("Executando"),
-	DELIVERED("Entregue"), PEDING_BILLING("Faturamento pendente");
+	DELIVERED("Entregue"), PENDING_BILLING("Faturamento pendente");
 
 	private final String status;
 

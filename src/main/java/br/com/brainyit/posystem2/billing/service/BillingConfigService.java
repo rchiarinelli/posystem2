@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BillingConfigService {
 
     private final BillingConfigRepository billingConfigRepository;
+
     private final SubscriberRepository subscriberRepository;
 
     @Transactional(readOnly = true)

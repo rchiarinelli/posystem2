@@ -1,12 +1,15 @@
 package br.com.brainyit.posystem2.billing.mapper;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +37,7 @@ class BillingMapperTest {
     private Billing billing;
     private Installment installment1;
     private Installment installment2;
-    private Set<Installment> installments;
+    private List<Installment> installments;
 
     @BeforeEach
     void setUp() {
@@ -69,7 +72,7 @@ class BillingMapperTest {
                 .id(1L)
                 .uuid("installment-uuid-1")
                 .dueValue(50.0)
-                .date(LocalDate.now().plusDays(30))
+                .dueDate(LocalDate.now().plusDays(30))
                 .createdAt(LocalDate.now())
                 .paidValue(null)
                 .paymentDate(null)
@@ -81,7 +84,7 @@ class BillingMapperTest {
                 .id(2L)
                 .uuid("installment-uuid-2")
                 .dueValue(50.0)
-                .date(LocalDate.now().plusDays(60))
+                .dueDate(LocalDate.now().plusDays(60))
                 .createdAt(LocalDate.now())
                 .paidValue(50.0)
                 .paymentDate(LocalDate.now().minusDays(1))
@@ -89,7 +92,7 @@ class BillingMapperTest {
                 .subscriber(subscriber)
                 .build();
 
-        installments = new HashSet<>(Arrays.asList(installment1, installment2));
+        installments = List.of(installment1, installment2);
 
         billing = Billing.builder()
                 .id(1L)
@@ -248,7 +251,7 @@ class BillingMapperTest {
                 .closedAt(LocalDate.now().minusDays(1))
                 .status(BillingStatus.CLOSED)
                 .subscriber(subscriber)
-                .installments(new HashSet<>())
+                .installments(new ArrayList<>())
                 .build();
 
         List<Billing> billings = Arrays.asList(billing, billing2);
@@ -279,7 +282,7 @@ class BillingMapperTest {
                 .id(3L)
                 .uuid("installment-uuid-3")
                 .dueValue(25.0)
-                .date(null)
+                .dueDate(null)
                 .createdAt(null)
                 .paidValue(null)
                 .paymentDate(null)
@@ -287,7 +290,7 @@ class BillingMapperTest {
                 .subscriber(subscriber)
                 .build();
 
-        billing.setInstallments(Collections.singleton(installmentWithNulls));
+        billing.setInstallments(Collections.singletonList(installmentWithNulls));
 
         // Act
         BillingModel result = billingMapper.toRestModel(billing);

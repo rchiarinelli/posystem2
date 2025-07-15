@@ -5,6 +5,7 @@ package br.com.brainyit.posystem2.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -17,9 +18,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,23 +50,27 @@ public class Installment implements Serializable {
 	@Column(name = "id_billing_installments")
 	private Long id;
 
+	@Builder.Default
 	@Column(name = "installment_uuid", nullable = false)
-	private String uuid;
+	private String uuid = UUID.randomUUID().toString();
 
+	@Builder.Default
 	@Column(name = "installment_value", nullable = false)
-	private Double dueValue;
+	private Double dueValue = 0.0;
 
 	@Column(name = "installment_due_date", nullable = false)
-	private LocalDate date;
+	private LocalDate dueDate;
 
 	@Column(name = "installment_payment_date", nullable = true)
 	private LocalDate paymentDate;
 
+	@Builder.Default
 	@Column(name = "installment_paid_value", nullable = true)
-	private Double paidValue;
+	private Double paidValue = 0.0;
 
+	@Builder.Default
 	@Column(name = "installment_created_at", nullable = false)
-	private LocalDate createdAt;
+	private LocalDate createdAt = LocalDate.now();
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_billing", insertable = false, updatable = false)

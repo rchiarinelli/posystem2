@@ -3,8 +3,12 @@ servers:
 - url: "http://localhost:8080"
 openapi: "3.0.0"
 paths:
+  /{subscriber}/billings/{billingUuid}/installments/{installmentUuid}:
+    $ref: "./billing-spec.yml#/paths/~1{subscriber}~1billings~1{billingUuid}~1installments~1{installmentUuid}"
   /{subscriber}/customers/{id}:
     $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1{id}"
+  /{subscriber}/billings/{billingUuid}:
+    $ref: "./billing-spec.yml#/paths/~1{subscriber}~1billings~1{billingUuid}"
   /{subscriber}/production-orders/{poNumber}/cancel:
     $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}~1cancel"
   /{subscriber}/production-orders:
@@ -15,6 +19,8 @@ paths:
     $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}~1proceed"
   /{subscriber}/billing-configs:
     $ref: "./ref-data-spec copy.yml#/paths/~1{subscriber}~1billing-configs"
+  /{subscriber}/billings/{billingUuid}/installments:
+    $ref: "./billing-spec.yml#/paths/~1{subscriber}~1billings~1{billingUuid}~1installments"
   /{subscriber}/production-orders/{poNumber}:
     $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}"
   /about-me:

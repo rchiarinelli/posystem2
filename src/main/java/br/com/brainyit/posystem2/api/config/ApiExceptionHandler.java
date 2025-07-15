@@ -12,7 +12,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.exception.ForbiddenOperationException;
+import br.com.brainyit.posystem2.exception.NotFoundException;
 import br.com.brainyit.posystem2.model.Message;
+import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -35,5 +37,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ForbiddenOperationException.class)
     public ResponseEntity<Object> handleException(final ForbiddenOperationException ex, final WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleException(final ConstraintViolationException ex, final WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Object> handleException(final NotFoundException ex, final WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 }

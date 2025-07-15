@@ -5,7 +5,8 @@ package br.com.brainyit.posystem2.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -19,10 +20,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,8 +48,9 @@ public class Billing implements Serializable {
 	@Column(name = "id_billing")
 	private Long id;
 
-	@Column(name = "billing_uuid", nullable = false)
-	private String uuid;
+	@Builder.Default
+	@Column(name = "billing_uuid", nullable = false, unique = true)
+	private String uuid = UUID.randomUUID().toString();
 
 	@ManyToOne(targetEntity = Order.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_order")
@@ -78,7 +80,7 @@ public class Billing implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
 	@JoinColumn(name = "id_billing", nullable = false)
 	@Fetch(FetchMode.JOIN)
-	private Set<Installment> installments;
+	private List<Installment> installments;
 
 	@Column(name = "billing_status", nullable = false)
 	@Enumerated(EnumType.ORDINAL)

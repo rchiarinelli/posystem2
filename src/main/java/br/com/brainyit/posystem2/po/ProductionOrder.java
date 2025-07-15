@@ -106,7 +106,7 @@ public class ProductionOrder implements Serializable {
 			if (!CollectionUtils.isEmpty(order.getProductionOrders()) &&
 					(order.getProductionOrders().size() == 1 || order.getProductionOrders().stream()
 							.noneMatch(po -> po.getId() != this.id && po.getStatus() == POStatus.EXECUTING))) {
-				order.setStatus(OrderStatus.PEDING_BILLING);
+				order.setStatus(OrderStatus.PENDING_BILLING);
 			}
 			status = POStatus.DONE;
 			actualCompletionDate = LocalDate.now();

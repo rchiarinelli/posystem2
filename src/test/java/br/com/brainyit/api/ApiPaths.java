@@ -22,8 +22,14 @@ public class ApiPaths {
 
     public static final String PLACE_PRODUCTION_ORDER_ENDPOINT_PATH = "/{subscriberId}/orders/{orderCode}/place-production-order";
 
+    public static final String BILLING_CONFIGS_ENDPOINT_PATH = "/{subscriberId}/billing-configs";
+
     public static final String BILLINGS_ENDPOINT_PATH = "/{subscriberId}/billings";
 
-    public static final String BILLING_CONFIGS_ENDPOINT_PATH = "/{subscriberId}/billing-configs";
+    public static final String BILLING_ENDPOINT_PATH = "/{subscriberId}/billings/{billingUuid}";
+
+    public static final String BILLING_INSTALLMENTS_ENDPOINT_PATH = "/{subscriberId}/billings/{billingUuid}/installments";
+
+    public static final String BILLING_INSTALLMENT_ENDPOINT_PATH = "/{subscriberId}/billings/{billingUuid}/installments/{installmentUuid}";
 
 }

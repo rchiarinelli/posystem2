@@ -62,8 +62,9 @@ public class Order implements Serializable {
     @Column(name = "order_description", nullable = false, length = 255)
     private String description;
 
-    @Column(name = "order_price", nullable = true)
-    private Double price;
+    @Builder.Default
+    @Column(name = "order_price", nullable = false)
+    private Double price = 0.0;
 
     @Column(name = "qtd_item", nullable = false)
     private Double quantity;

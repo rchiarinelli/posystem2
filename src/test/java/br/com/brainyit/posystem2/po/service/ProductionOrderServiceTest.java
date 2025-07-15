@@ -353,7 +353,7 @@ class ProductionOrderServiceTest {
                 assertThat(result.getStatus(), is(POStatus.DONE));
                 assertThat(result.getActualCompletionDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
                                 is(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
-                assertThat(result.getOrder().getStatus(), is(OrderStatus.PEDING_BILLING));
+                assertThat(result.getOrder().getStatus(), is(OrderStatus.PENDING_BILLING));
 
                 verify(productionOrderRepository).save(productionOrder);
         }

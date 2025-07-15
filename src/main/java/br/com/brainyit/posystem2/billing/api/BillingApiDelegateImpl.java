@@ -8,8 +8,12 @@ import org.springframework.stereotype.Component;
 import br.com.brainyit.posystem2.api.BillingApiDelegate;
 import br.com.brainyit.posystem2.billing.mapper.BillingMapper;
 import br.com.brainyit.posystem2.billing.service.BillingService;
-import br.com.brainyit.posystem2.domain.Billing;
+import br.com.brainyit.posystem2.billing.service.CreateBillingParams;
 import br.com.brainyit.posystem2.model.BillingModel;
+import br.com.brainyit.posystem2.model.CreateBillingRequestBody;
+import br.com.brainyit.posystem2.model.InstallmentModel;
+import br.com.brainyit.posystem2.model.UpdateBillingInstallmentRequestBody;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,23 +22,76 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BillingApiDelegateImpl implements BillingApiDelegate {
 
-    private final BillingService billingService;
+        private final BillingService billingService;
 
-    @Override
-    public ResponseEntity<List<BillingModel>> subscriberBillingsGet(String subscriber, String searchTerm,
-            List<String> status) throws Exception {
-        log.debug("Getting billings for subscriber: {}, searchTerm: {}, status: {}", subscriber, searchTerm, status);
+        @Override
+        public ResponseEntity<List<BillingModel>> subscriberBillingsGet(final String subscriber,
+                        final String searchTerm,
+                        final List<String> status) throws Exception {
+                log.debug("Getting billings for subscriber: {}, searchTerm: {}, status: {}", subscriber, searchTerm,
+                                status);
 
-        try {
-            List<Billing> billings = billingService.getBillings(subscriber, searchTerm, status);
+                final var billings = billingService.getBillings(subscriber, searchTerm, status);
 
-            BillingMapper mapper = BillingMapper.builder().build();
-            List<BillingModel> billingModels = mapper.toRestModelList(billings);
-
-            return ResponseEntity.ok(billingModels);
-        } catch (Exception e) {
-            log.error("Error getting billings for subscriber: {}", subscriber, e);
-            throw e;
+                return ResponseEntity.ok(BillingMapper.builder().build().toRestModelList(billings));
         }
-    }
+
+        @Override
+        public ResponseEntity<List<BillingModel>> subscriberBillingsPost(String subscriber,
+                        List<@Valid CreateBillingRequestBody> createBillingRequestBody) throws Exception {
+                log.debug("Creating billings for subscriber: {}, createBillingRequestBody: {}", subscriber,
+                                createBillingRequestBody);
+
+                final var createBillingParams = createBillingRequestBody.stream()
+                                .map(body -> new CreateBillingParams(
+                                                body.getOrderCode(),
+                                                body.getBillingConfigId(),
+                                                body.getStartDate(),
+                                                body.getFinalValue()))
+                                .toList();
+
+                final var billings = billingService.createBillings(subscriber, createBillingParams);
+
+                return ResponseEntity.ok(BillingMapper.builder().build().toRestModelList(billings));
+        }
+
+        @Override
+        public ResponseEntity<BillingModel> subscriberBillingsBillingUuidGet(String subscriber, String billingUuid)
+                        throws Exception {
+
+                return ResponseEntity.ok(BillingMapper.builder().build()
+                                .toRestModel(billingService.fetchBilling(subscriber, billingUuid)));
+        }
+
+        @Override
+        public ResponseEntity<List<InstallmentModel>> subscriberBillingsBillingUuidInstallmentsGet(String subscriber,
+                        String billingUuid) throws Exception {
+
+                final var billing = billingService.fetchBilling(subscriber, billingUuid);
+
+                return ResponseEntity.ok(billing.getInstallments().stream()
+                                .map(BillingMapper.builder().build()::toInstallmentModel)
+                                .toList());
+        }
+
+        @Override
+        public ResponseEntity<InstallmentModel> subscriberBillingsBillingUuidInstallmentsInstallmentUuidGet(
+                        String subscriber, String billingUuid, String installmentUuid) throws Exception {
+
+                final var installment = billingService.fetchInstallment(subscriber, billingUuid, installmentUuid);
+
+                return ResponseEntity.ok(BillingMapper.builder().build()
+                                .toInstallmentModel(installment));
+        }
+
+        @Override
+        public ResponseEntity<InstallmentModel> subscriberBillingsBillingUuidInstallmentsInstallmentUuidPut(
+                        String subscriber, String billingUuid, String installmentUuid,
+                        UpdateBillingInstallmentRequestBody updateBillingInstallmentRequestBody) throws Exception {
+                // TODO Auto-generated method stub
+                return BillingApiDelegate.super.subscriberBillingsBillingUuidInstallmentsInstallmentUuidPut(subscriber,
+                                billingUuid,
+                                installmentUuid, updateBillingInstallmentRequestBody);
+        }
+
 }

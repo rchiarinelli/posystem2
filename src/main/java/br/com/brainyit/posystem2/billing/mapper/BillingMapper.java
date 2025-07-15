@@ -49,7 +49,7 @@ public class BillingMapper {
         return model;
     }
 
-    private InstallmentModel toInstallmentModel(Installment installment) {
+    public InstallmentModel toInstallmentModel(Installment installment) {
         if (installment == null) {
             return null;
         }
@@ -57,7 +57,7 @@ public class BillingMapper {
         InstallmentModel model = new InstallmentModel();
         model.setUuid(installment.getUuid());
         model.setDueValue(installment.getDueValue());
-        model.setDueDate(installment.getDate() != null ? installment.getDate().toString() : null);
+        model.setDueDate(installment.getDueDate() != null ? installment.getDueDate().toString() : null);
         model.setCreatedAt(installment.getCreatedAt() != null ? installment.getCreatedAt().toString() : null);
         model.setPaymentDate(installment.getPaymentDate() != null ? installment.getPaymentDate().toString() : null);
         model.setPaidValue(installment.getPaidValue());

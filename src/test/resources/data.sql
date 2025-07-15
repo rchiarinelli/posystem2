@@ -7,6 +7,7 @@ insert into t_subscriber (
            '123e4567-e89b-12d3-a456-426614174000',
            'BrainyIT',
            'johnsmith@brainyit.com.br' );
+
 insert into t_subscriber (
    id,
    uuid,
@@ -16,6 +17,16 @@ insert into t_subscriber (
            '123e4567-e89b-12d3-a456-426614174001',
            'Jane Smith',
            'janesmith@brainyit.com.br' );
+
+insert into t_subscriber (
+   id,
+   uuid,
+   name,
+   email
+) values ( 3,
+           '123e4567-e89b-12d3-a456-426614174002',
+           'Peter Parker',
+           'peterparker@brainyit.com.br' );
 
 select setval(
    't_subscriber_seq',
@@ -277,20 +288,145 @@ insert into t_company (
 ) values ( 10,
            '56.789.012/0001-34' );
 
+
+insert into t_customer (
+   id_customer,
+   id_subscriber,
+   cust_name,
+   cust_details,
+   cust_status
+) values ( 11,
+           2,
+           'Another Customer',
+           'Another customer',
+           0 );
+insert into t_company (
+   id_customer,
+   cnpj_cgc
+) values ( 11,
+           '67.890.123/0001-45' );
+
+insert into t_customer (
+   id_customer,
+   id_subscriber,
+   cust_name,
+   cust_details,
+   cust_status
+) values ( 12,
+           2,
+           'Patricia Customer',
+           'Patricia customer',
+           0 );
+insert into t_company (
+   id_customer,
+   cnpj_cgc
+) values ( 12,
+           '78.901.234/0001-56' );
+
+insert into t_customer (
+   id_customer,
+   id_subscriber,
+   cust_name,
+   cust_details,
+   cust_status
+) values ( 13,
+           2,
+           'Mary Customer',
+           'Mary customer',
+           0 );
+insert into t_company (
+   id_customer,
+   cnpj_cgc
+) values ( 13,
+           '89.012.345/0001-67' );
+
+
+insert into t_customer (
+   id_customer,
+   id_subscriber,
+   cust_name,
+   cust_details,
+   cust_status
+) values ( 14,
+           2,
+           'John Customer',
+           'John customer',
+           0 );
+insert into t_company (
+   id_customer,
+   cnpj_cgc
+) values ( 14,
+           '90.123.456/0001-78' );
+
+
+insert into t_customer (
+   id_customer,
+   id_subscriber,
+   cust_name,
+   cust_details,
+   cust_status
+) values ( 15,
+           3,
+           'Mary Jane Watson',
+           'Mary Jane Watson',
+           0 );
+insert into t_company (
+   id_customer,
+   cnpj_cgc
+) values ( 15,
+           '90.123.456/0001-78' );
+
+insert into t_customer (
+   id_customer,
+   id_subscriber,
+   cust_name,
+   cust_details,
+   cust_status
+) values ( 16,
+           3,
+           'Harry Osborn',
+           'Harry Osborn',
+           0 );
+insert into t_company (
+   id_customer,
+   cnpj_cgc
+) values ( 16,
+           '90.123.456/0001-79' );
+
+insert into t_customer (
+   id_customer,
+   id_subscriber,
+   cust_name,
+   cust_details,
+   cust_status
+) values ( 17,
+           3,
+           'Gwen Stacy',
+           'Gwen Stacy',
+           0 );
+insert into t_company (
+   id_customer,
+   cnpj_cgc
+) values ( 17,
+           '90.123.456/0001-80' );
+
+
 select setval(
    't_customer_seq',
-   11
+   17
 );
 
 -- Billing configurations test data
 insert into t_billing_config (
    id_billing_config,
+   id_subscriber,
    billing_config_name,
    billing_config_payment_type,
    billing_config_installments_quantity,
    billing_config_installments_interval,
    billing_config_installments_interval_unit
 ) values ( 1,
+           1,
            'Pagamento à Vista',
            'ONE_TIME',
            1,
@@ -298,12 +434,14 @@ insert into t_billing_config (
            'MONTH' );
 insert into t_billing_config (
    id_billing_config,
+   id_subscriber,
    billing_config_name,
    billing_config_payment_type,
    billing_config_installments_quantity,
    billing_config_installments_interval,
    billing_config_installments_interval_unit
 ) values ( 2,
+           1,
            'Parcelado em 2x',
            'INSTALLMENTS',
            2,
@@ -311,12 +449,14 @@ insert into t_billing_config (
            'MONTH' );
 insert into t_billing_config (
    id_billing_config,
+   id_subscriber,
    billing_config_name,
    billing_config_payment_type,
    billing_config_installments_quantity,
    billing_config_installments_interval,
    billing_config_installments_interval_unit
 ) values ( 3,
+           1,
            'Parcelado em 3x',
            'INSTALLMENTS',
            3,
@@ -324,12 +464,14 @@ insert into t_billing_config (
            'MONTH' );
 insert into t_billing_config (
    id_billing_config,
+   id_subscriber,
    billing_config_name,
    billing_config_payment_type,
    billing_config_installments_quantity,
    billing_config_installments_interval,
    billing_config_installments_interval_unit
 ) values ( 4,
+           1,
            'Parcelado em 6x',
            'INSTALLMENTS',
            6,
@@ -337,12 +479,14 @@ insert into t_billing_config (
            'MONTH' );
 insert into t_billing_config (
    id_billing_config,
+   id_subscriber,
    billing_config_name,
    billing_config_payment_type,
    billing_config_installments_quantity,
    billing_config_installments_interval,
    billing_config_installments_interval_unit
 ) values ( 5,
+           1,
            'Parcelado em 12x',
            'INSTALLMENTS',
            12,
