@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,7 @@ import com.querydsl.core.types.Predicate;
 
 import br.com.brainyit.posystem2.billing.repository.BillingConfigRepository;
 import br.com.brainyit.posystem2.billing.repository.BillingRepository;
+import br.com.brainyit.posystem2.billing.repository.InstallmentRepository;
 import br.com.brainyit.posystem2.domain.Billing;
 import br.com.brainyit.posystem2.domain.BillingConfig;
 import br.com.brainyit.posystem2.domain.BillingStatus;
@@ -62,6 +64,9 @@ class BillingServiceTest {
 
         @Mock
         private BillingConfigRepository billingConfigRepository;
+
+        @Mock
+        private InstallmentRepository installmentRepository;
 
         @Mock
         private OrderService orderService;
@@ -143,12 +148,21 @@ class BillingServiceTest {
                                 .installments(List.of(Installment.builder()
                                                 .id(1L)
                                                 .uuid("installment-uuid-1")
-                                                .billing(billing3)
                                                 .dueValue(100.0)
                                                 .dueDate(LocalDate.now())
                                                 .status(InstallmentStatus.PENDING)
-                                                .build()))
+                                                .build(),
+                                                Installment.builder()
+                                                                .id(2L)
+                                                                .uuid("installment-uuid-2")
+                                                                .dueValue(100.0)
+                                                                .dueDate(LocalDate.now())
+                                                                .status(InstallmentStatus.PENDING)
+                                                                .build()))
                                 .build();
+
+                billing3.getInstallments().get(0).setBilling(billing3);
+                billing3.getInstallments().get(1).setBilling(billing3);
 
                 billings = Arrays.asList(billing1, billing2);
         }
@@ -481,6 +495,9 @@ class BillingServiceTest {
                                 is(startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
                 assertThat(result.get(0).getStatus(), is(BillingStatus.OPEN));
                 assertThat(result.get(0).getSubscriber(), is(subscriber));
+                assertThat(result.get(0).getLastInstallmentPaymentDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                                is(startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
+
                 assertThat(result.get(0).getInstallments().size(), is(1));
 
                 assertThat(result.get(0).getInstallments().get(0).getDueValue(), is(100.0));
@@ -541,6 +558,8 @@ class BillingServiceTest {
                 assertThat(result.get(0).getOrder(), is(order));
                 assertThat(result.get(0).getCalculatedValue(), is(100.0));
                 assertThat(result.get(0).getFinalValue(), is(100.0));
+                assertThat(result.get(0).getLastInstallmentPaymentDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                                is(startDate.plusMonths(1).format(DateTimeFormatter.ISO_LOCAL_DATE)));
 
                 assertThat(result.get(0).getInstallments().size(), is(2));
                 assertThat(result.get(0).getInstallments().get(0).getDueValue(), is(50.0));
@@ -623,5 +642,115 @@ class BillingServiceTest {
                 assertThat(result, is(billing3.getInstallments().get(0)));
                 verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-3");
                 verify(subscriberRepository).findByUuid(subscriberUuid);
+        }
+
+        @Test
+        void test_payInstallment_withInvalidInstallmentUuid_exceptionIsThrown() {
+                // Arrange
+                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
+                                .thenReturn(Optional.of(billing1));
+
+                // Act & Assert
+                NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+                        billingService.payInstallment(subscriberUuid, "billing-uuid-1", "invalid-installment-uuid",
+                                        100.0);
+                });
+
+                assertEquals("Installment not found", exception.getMessage());
+                verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
+                verify(subscriberRepository).findByUuid(subscriberUuid);
+        }
+
+        @Test
+        void test_payInstallment_tryToPayNotPendingInstallment_exceptionIsThrown() {
+                // Arrange
+                billing1.setInstallments(List.of(Installment.builder()
+                                .id(1L)
+                                .uuid("installment-uuid-1")
+                                .dueValue(100.0)
+                                .dueDate(LocalDate.now())
+                                .status(InstallmentStatus.PAID)
+                                .build()));
+                billing1.getInstallments().get(0).setBilling(billing1);
+
+                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
+                                .thenReturn(Optional.of(billing1));
+
+                // Act & Assert
+                BusinessException exception = assertThrows(BusinessException.class, () -> {
+                        billingService.payInstallment(subscriberUuid, "billing-uuid-1", "installment-uuid-1",
+                                        100.0);
+                });
+
+                assertEquals("Installment is not in pending status", exception.getMessage());
+                verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
+                verify(subscriberRepository).findByUuid(subscriberUuid);
+        }
+
+        @Test
+        void test_payInstallment_withValidInstallmentUuid_installmentIsReturned() {
+                // Arrange
+                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
+                                .thenReturn(Optional.of(billing3));
+                when(installmentRepository.save(any(Installment.class)))
+                                .thenAnswer(invocation -> invocation.getArgument(0));
+
+                // Act
+                Installment result = billingService.payInstallment(subscriberUuid, "billing-uuid-1",
+                                "installment-uuid-1", 100.0);
+
+                // Assert
+                assertThat(result.getPaidValue(), is(100.0));
+                assertThat(result.getStatus(), is(InstallmentStatus.PAID));
+                assertThat(result.getBilling(), is(billing3));
+                assertThat(result.getBilling().getTotalPaidValue(), is(100.0));
+
+                verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
+                verify(subscriberRepository).findByUuid(subscriberUuid);
+        }
+
+        @Test
+        void test_payInstallment_withValidInstallmentUuid_payAllInstallments_installmentIsReturnedAndBillingIsClosed() {
+                // Arrange
+                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
+                                .thenReturn(Optional.of(billing3));
+                when(installmentRepository.save(any(Installment.class)))
+                                .thenAnswer(invocation -> invocation.getArgument(0));
+
+                // Act
+                Installment result = billingService.payInstallment(subscriberUuid, "billing-uuid-1",
+                                "installment-uuid-1", 100.0);
+                Installment result2 = billingService.payInstallment(subscriberUuid, "billing-uuid-1",
+                                "installment-uuid-2", 100.0);
+
+                // Assert
+                assertThat(result.getPaidValue(), is(100.0));
+                assertThat(result.getStatus(), is(InstallmentStatus.PAID));
+                assertThat(result.getPaymentDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                                is(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+
+                assertThat(result.getBilling(), is(billing3));
+                assertThat(result.getBilling().getTotalPaidValue(), is(200.0));
+                assertThat(result.getBilling().getStatus(), is(BillingStatus.CLOSED));
+                assertThat(result.getBilling().getClosedAt().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                                is(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+
+                assertThat(result2.getPaidValue(), is(100.0));
+                assertThat(result2.getStatus(), is(InstallmentStatus.PAID));
+                assertThat(result2.getPaymentDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                                is(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+
+                assertThat(result2.getBilling(), is(billing3));
+                assertThat(result2.getBilling().getTotalPaidValue(), is(200.0));
+                assertThat(result2.getBilling().getStatus(), is(BillingStatus.CLOSED));
+                assertThat(result2.getBilling().getClosedAt().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                                is(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+
+                verify(billingRepository, atLeast(2)).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
+                verify(subscriberRepository, atLeast(2)).findByUuid(subscriberUuid);
         }
 }

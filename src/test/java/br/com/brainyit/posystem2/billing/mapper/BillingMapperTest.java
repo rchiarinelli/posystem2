@@ -130,6 +130,7 @@ class BillingMapperTest {
         assertEquals("OPEN", result.getStatus());
         assertEquals(100.0, result.getCalculatedValue());
         assertEquals(100.0, result.getFinalValue());
+        assertEquals(billing.getTotalPaidValue(), result.getTotalPaidValue());
 
         // Check installments
         assertNotNull(result.getInstallments());

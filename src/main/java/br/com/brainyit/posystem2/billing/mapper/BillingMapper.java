@@ -30,6 +30,7 @@ public class BillingMapper {
         model.setStatus(billing.getStatus() != null ? billing.getStatus().name() : null);
         model.setCalculatedValue(billing.getCalculatedValue());
         model.setFinalValue(billing.getFinalValue());
+        model.setTotalPaidValue(billing.getTotalPaidValue());
 
         // Convert installments
         if (billing.getInstallments() != null && !billing.getInstallments().isEmpty()) {

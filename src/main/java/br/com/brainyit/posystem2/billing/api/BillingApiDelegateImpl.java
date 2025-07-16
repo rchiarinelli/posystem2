@@ -88,10 +88,12 @@ public class BillingApiDelegateImpl implements BillingApiDelegate {
         public ResponseEntity<InstallmentModel> subscriberBillingsBillingUuidInstallmentsInstallmentUuidPut(
                         String subscriber, String billingUuid, String installmentUuid,
                         UpdateBillingInstallmentRequestBody updateBillingInstallmentRequestBody) throws Exception {
-                // TODO Auto-generated method stub
-                return BillingApiDelegate.super.subscriberBillingsBillingUuidInstallmentsInstallmentUuidPut(subscriber,
-                                billingUuid,
-                                installmentUuid, updateBillingInstallmentRequestBody);
+
+                final var installment = billingService.payInstallment(subscriber, billingUuid, installmentUuid,
+                                updateBillingInstallmentRequestBody.getPaidValue());
+
+                return ResponseEntity.ok(BillingMapper.builder().build()
+                                .toInstallmentModel(installment));
         }
 
 }

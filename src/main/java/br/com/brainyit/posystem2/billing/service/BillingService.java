@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -14,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 
 import br.com.brainyit.posystem2.billing.repository.BillingConfigRepository;
 import br.com.brainyit.posystem2.billing.repository.BillingRepository;
+import br.com.brainyit.posystem2.billing.repository.InstallmentRepository;
 import br.com.brainyit.posystem2.domain.Billing;
 import br.com.brainyit.posystem2.domain.BillingConfig;
 import br.com.brainyit.posystem2.domain.BillingStatus;
@@ -41,6 +41,8 @@ public class BillingService {
     private final SubscriberRepository subscriberRepository;
 
     private final BillingConfigRepository billingConfigRepository;
+
+    private final InstallmentRepository installmentRepository;
 
     private final OrderService orderService;
 
@@ -139,6 +141,9 @@ public class BillingService {
 
         billing.setInstallments(generateInstallments(billing, billingConfig));
 
+        billing.setLastInstallmentPaymentDate(
+                billing.getInstallments().get(billing.getInstallments().size() - 1).getDueDate());
+
         return billingRepository.save(billing);
     }
 
@@ -197,5 +202,23 @@ public class BillingService {
                 .filter(installment -> installment.getUuid().equals(installmentUuid))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Installment not found"));
+    }
+
+    @Transactional
+    public Installment payInstallment(final String subscriberUuid, final String billingUuid,
+            final String installmentUuid, final Double paidValue) {
+        var installment = fetchInstallment(subscriberUuid, billingUuid, installmentUuid);
+        if (installment.getStatus() != InstallmentStatus.PENDING) {
+            throw new BusinessException("Installment is not in pending status");
+        }
+        installment.setPaidValue(paidValue);
+        installment.setStatus(InstallmentStatus.PAID);
+        installment.setPaymentDate(LocalDate.now());
+        installment.getBilling().setTotalPaidValue(installment.getBilling().getTotalPaidValue() + paidValue);
+        if (installment.getBilling().getTotalPaidValue() >= installment.getBilling().getFinalValue()) {
+            installment.getBilling().setClosedAt(LocalDate.now());
+            installment.getBilling().setStatus(BillingStatus.CLOSED);
+        }
+        return installmentRepository.save(installment);
     }
 }

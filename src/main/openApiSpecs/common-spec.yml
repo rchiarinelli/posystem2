@@ -55,6 +55,8 @@ components:
           type: double
         finalValue:
           type: double
+        totalPaidValue:
+          type: double
         installments:
           type: array
           items:

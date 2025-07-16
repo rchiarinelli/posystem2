@@ -57,11 +57,17 @@ public class Billing implements Serializable {
 	@Fetch(FetchMode.JOIN)
 	private Order order;
 
+	@Builder.Default
 	@Column(name = "billing_calculated_value", nullable = false)
-	private Double calculatedValue;
+	private Double calculatedValue = 0.0;
 
+	@Builder.Default
 	@Column(name = "billing_final_value", nullable = false)
-	private Double finalValue;
+	private Double finalValue = 0.0;
+
+	@Builder.Default
+	@Column(name = "billing_total_paid_value", nullable = false)
+	private Double totalPaidValue = 0.0;
 
 	@Column(name = "billing_created_at", nullable = false)
 	private LocalDate createdAt;
@@ -71,6 +77,9 @@ public class Billing implements Serializable {
 
 	@Column(name = "billing_start_date", nullable = false)
 	private LocalDate startDate;
+
+	@Column(name = "billing_last_installment_payment_date", nullable = true)
+	private LocalDate lastInstallmentPaymentDate;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_billing_config", nullable = false)
