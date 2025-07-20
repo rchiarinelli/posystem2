@@ -25,6 +25,8 @@ public abstract class BaseBillingTest extends BaseApiTest {
 
         static final String SUBSCRIBER_3 = "123e4567-e89b-12d3-a456-426614174002";
 
+        static final String SUBSCRIBER_4 = "123e4567-e89b-12d3-a456-426614174003";
+
         static final LocalDate PLANNED_DELIVER_DATE = LocalDate.now().plusYears(1);
 
         static final LocalDate BILLING_START_DATE = LocalDate.now().plusDays(1);

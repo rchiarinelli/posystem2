@@ -25,7 +25,7 @@ class ReadProductionOrderEndpointTest extends BaseApiTest {
 
         private static final String SUBSCRIBER_TWO = "123e4567-e89b-12d3-a456-426614174001";
 
-        private static final String INVALID_SUBSCRIBER_ID = "123e4567-e89b-12d3-a456-426614174003";
+        private static final String INVALID_SUBSCRIBER_ID = "INVALID_SUBSCRIBER_ID";
 
         @Test
         void test_getProductionOrders_whenNoProductionOrdersExist_returnsEmptyList() throws Exception {

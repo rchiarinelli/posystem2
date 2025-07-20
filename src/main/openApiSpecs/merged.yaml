@@ -43,6 +43,8 @@ paths:
     $ref: "./customer-spec.yml#/paths/~1{subscriber}~1customers~1individuals"
   /{subscriber}/orders:
     $ref: "./order-spec.yml#/paths/~1{subscriber}~1orders"
+  /{subscriber}/installments:
+    $ref: "./billing-spec.yml#/paths/~1{subscriber}~1installments"
 info:
   title: "merged spec"
   description: "merged spec"

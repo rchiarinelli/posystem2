@@ -1,9 +1,11 @@
 package br.com.brainyit.posystem2.billing.service;
 
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -23,11 +25,12 @@ import br.com.brainyit.posystem2.domain.InstallmentStatus;
 import br.com.brainyit.posystem2.domain.OrderStatus;
 import br.com.brainyit.posystem2.domain.PaymentType;
 import br.com.brainyit.posystem2.domain.QBilling;
+import br.com.brainyit.posystem2.domain.QInstallment;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.exception.NotFoundException;
 import br.com.brainyit.posystem2.order.service.OrderService;
-import br.com.brainyit.posystem2.repository.SubscriberRepository;
+import br.com.brainyit.posystem2.subscriber.service.SubscriberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +41,7 @@ public class BillingService {
 
     private final BillingRepository billingRepository;
 
-    private final SubscriberRepository subscriberRepository;
+    private final SubscriberService subscriberService;
 
     private final BillingConfigRepository billingConfigRepository;
 
@@ -52,8 +55,7 @@ public class BillingService {
                 subscriberUuid, searchTerm, statusFilters);
 
         // Validate subscriber exists
-        subscriberRepository.findByUuid(subscriberUuid)
-                .orElseThrow(() -> new BusinessException("Subscriber not found"));
+        subscriberService.getSubscriber(subscriberUuid);
 
         // Parse and validate status filters
         List<BillingStatus> statuses = parseAndValidateStatuses(statusFilters);
@@ -105,8 +107,7 @@ public class BillingService {
         }
 
         // Validate subscriber exists
-        var subscriber = subscriberRepository.findByUuid(subscriberUuid)
-                .orElseThrow(() -> new BusinessException("Subscriber not found"));
+        var subscriber = subscriberService.getSubscriber(subscriberUuid);
 
         return createBillingParams.stream().map(param -> createBilling(subscriber, param))
                 .toList();
@@ -187,10 +188,8 @@ public class BillingService {
 
     @Transactional(readOnly = true)
     public Billing fetchBilling(final String subscriberUuid, final String billingUuid) {
-        var subscriber = subscriberRepository.findByUuid(subscriberUuid)
-                .orElseThrow(() -> new BusinessException("Subscriber not found"));
-
-        return billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), billingUuid)
+        return billingRepository
+                .findBySubscriberIdAndUuid(subscriberService.getSubscriber(subscriberUuid).getId(), billingUuid)
                 .orElseThrow(() -> new NotFoundException("Billing not found"));
     }
 
@@ -220,5 +219,36 @@ public class BillingService {
             installment.getBilling().setStatus(BillingStatus.CLOSED);
         }
         return installmentRepository.save(installment);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Installment> getInstallments(final String subscriberUuid,
+            final FilterInstallmentsParams filterInstallmentsParams) {
+        var subscriber = subscriberService.getSubscriber(subscriberUuid);
+
+        var installmentPredicate = QInstallment.installment.subscriber.uuid.eq(subscriber.getUuid());
+
+        var fromDate = LocalDate.now();
+        var toDate = LocalDate.now().plusWeeks(1);
+
+        var statuses = List.of(InstallmentStatus.PENDING);
+
+        if (filterInstallmentsParams.from() != null) {
+            fromDate = filterInstallmentsParams.from();
+        }
+
+        if (filterInstallmentsParams.to() != null) {
+            toDate = filterInstallmentsParams.to();
+        }
+
+        if (!CollectionUtils.isEmpty(filterInstallmentsParams.statuses())) {
+            statuses = filterInstallmentsParams.statuses();
+        }
+
+        installmentPredicate = installmentPredicate.and(QInstallment.installment.dueDate.goe(fromDate)
+                .and(QInstallment.installment.dueDate.loe(toDate))).and(QInstallment.installment.status.in(statuses));
+
+        return StreamSupport.stream(installmentRepository.findAll(installmentPredicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 }

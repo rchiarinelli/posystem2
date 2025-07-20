@@ -28,9 +28,19 @@ insert into t_subscriber (
            'Peter Parker',
            'peterparker@brainyit.com.br' );
 
+insert into t_subscriber (
+   id,
+   uuid,
+   name,
+   email
+) values ( 4,
+           '123e4567-e89b-12d3-a456-426614174003',
+           'Tony Stark',
+           'tonystark@brainyit.com.br' );
+
 select setval(
    't_subscriber_seq',
-   3
+   5
 );
 
 insert into t_resource (
@@ -410,11 +420,29 @@ insert into t_company (
 ) values ( 17,
            '90.123.456/0001-80' );
 
+insert into t_customer (
+   id_customer,
+   id_subscriber,
+   cust_name,
+   cust_details,
+   cust_status
+) values ( 18,
+           4,
+           'Pepper Potts',
+           'Pepper Potts',
+           0 );
+insert into t_company (
+   id_customer,
+   cnpj_cgc
+) values ( 18,
+           '90.123.456/0001-80' );
+
 
 select setval(
    't_customer_seq',
-   17
+   19
 );
+
 
 -- Billing configurations test data
 insert into t_billing_config (
@@ -492,3 +520,266 @@ insert into t_billing_config (
            12,
            1,
            'MONTH' );
+
+-- First, create a billing configuration for 7 monthly installments if it doesn't exist
+INSERT INTO t_billing_config (
+    id_billing_config,
+    id_subscriber,
+    billing_config_name,
+    billing_config_payment_type,
+    billing_config_installments_quantity,
+    billing_config_installments_interval,
+    billing_config_installments_interval_unit
+) VALUES (
+    25,  -- Next available ID after the existing 24 configs
+    4,   -- Subscriber ID for Tony Stark (customer 18's subscriber)
+    'Parcelado em 7x',
+    'INSTALLMENTS',
+    7,
+    1,
+    'MONTH'
+);
+
+-- Update sequence to avoid conflicts
+SELECT setval('t_billing_config_seq', 25);
+
+-- Create the order in BILLED status
+INSERT INTO t_order (
+    id_order,
+    id_customer,
+    id_subscriber,
+    order_description,
+    order_status,  -- 2 = BILLED (enum ordinal)
+    order_code,
+    order_price,
+    qtd_item,
+    open_date,
+    planned_deliver_date
+) VALUES (
+    2,  -- Next available order ID
+    18, -- Customer ID for Pepper Potts
+    4,  -- Subscriber ID for Tony Stark
+    'Custom Product Order - 7 Installments',
+    2,  -- BILLED status (ordinal value)
+    'ORD-2024-001',
+    3500.00,  -- Order value
+    1.0,      -- Quantity
+    CURRENT_DATE - INTERVAL '3 months',  -- Order opened 3 months ago
+    CURRENT_DATE - INTERVAL '1 month'    -- Planned delivery 1 month ago
+);
+
+-- Update order sequence
+SELECT setval('t_order_seq', 3);
+
+-- Create the billing record
+INSERT INTO t_billing (
+    id_billing,
+    billing_calculated_value,
+    billing_closed_at,
+    billing_created_at,
+    billing_start_date,
+    billing_last_installment_payment_date,
+    billing_final_value,
+    billing_total_paid_value,
+    billing_status,  -- 0 = OPEN (enum ordinal)
+    billing_uuid,
+    id_billing_config,
+    id_order,
+    id_subscriber
+) VALUES (
+    1,  -- Billing ID
+    3500.00,  -- Calculated value
+    NULL,     -- Not closed yet
+    CURRENT_DATE - INTERVAL '2 months',  -- Created 2 months ago
+    CURRENT_DATE - INTERVAL '2 months',  -- Start date 2 months ago
+    CURRENT_DATE + INTERVAL '5 months',  -- Last installment due in 5 months
+    3500.00,  -- Final value
+    0.00,     -- No payments yet
+    0,        -- OPEN status (ordinal value)
+    gen_random_uuid()::text,
+    25,       -- Billing config ID for 7x installments
+    2,        -- Order ID
+    4         -- Subscriber ID
+);
+
+-- Update billing sequence
+SELECT setval('t_billing_seq', 2);
+
+-- Create 7 monthly installments
+-- Installment 1 (2 months ago - overdue)
+INSERT INTO t_billing_installments (
+    id_billing_installments,
+    installment_created_at,
+    installment_due_date,
+    installment_value,
+    installment_paid_value,
+    installment_payment_date,
+    installment_status,  -- 0 = PENDING (enum ordinal)
+    installment_uuid,
+    id_billing,
+    id_subscriber
+) VALUES (
+    1,
+    CURRENT_DATE - INTERVAL '2 months',
+    CURRENT_DATE - INTERVAL '2 months',
+    500.00,  -- 3500 / 7 = 500 per installment
+    NULL,
+    NULL,
+    0,  -- PENDING status
+    gen_random_uuid()::text,
+    1,  -- Billing ID
+    4   -- Subscriber ID
+);
+
+-- Installment 2 (1 month ago - overdue)
+INSERT INTO t_billing_installments (
+    id_billing_installments,
+    installment_created_at,
+    installment_due_date,
+    installment_value,
+    installment_paid_value,
+    installment_payment_date,
+    installment_status,
+    installment_uuid,
+    id_billing,
+    id_subscriber
+) VALUES (
+    2,
+    CURRENT_DATE - INTERVAL '2 months',
+    CURRENT_DATE - INTERVAL '1 month',
+    500.00,
+    NULL,
+    NULL,
+    0,
+    gen_random_uuid()::text,
+    1,
+    4
+);
+
+-- Installment 3 (current month - due now)
+INSERT INTO t_billing_installments (
+    id_billing_installments,
+    installment_created_at,
+    installment_due_date,
+    installment_value,
+    installment_paid_value,
+    installment_payment_date,
+    installment_status,
+    installment_uuid,
+    id_billing,
+    id_subscriber
+) VALUES (
+    3,
+    CURRENT_DATE - INTERVAL '2 months',
+    CURRENT_DATE,
+    500.00,
+    NULL,
+    NULL,
+    0,
+    gen_random_uuid()::text,
+    1,
+    4
+);
+
+-- Installment 4 (next month)
+INSERT INTO t_billing_installments (
+    id_billing_installments,
+    installment_created_at,
+    installment_due_date,
+    installment_value,
+    installment_paid_value,
+    installment_payment_date,
+    installment_status,
+    installment_uuid,
+    id_billing,
+    id_subscriber
+) VALUES (
+    4,
+    CURRENT_DATE - INTERVAL '2 months',
+    CURRENT_DATE + INTERVAL '1 month',
+    500.00,
+    NULL,
+    NULL,
+    0,
+    gen_random_uuid()::text,
+    1,
+    4
+);
+
+-- Installment 5 (2 months from now)
+INSERT INTO t_billing_installments (
+    id_billing_installments,
+    installment_created_at,
+    installment_due_date,
+    installment_value,
+    installment_paid_value,
+    installment_payment_date,
+    installment_status,
+    installment_uuid,
+    id_billing,
+    id_subscriber
+) VALUES (
+    5,
+    CURRENT_DATE - INTERVAL '2 months',
+    CURRENT_DATE + INTERVAL '2 months',
+    500.00,
+    NULL,
+    NULL,
+    0,
+    gen_random_uuid()::text,
+    1,
+    4
+);
+
+-- Installment 6 (3 months from now)
+INSERT INTO t_billing_installments (
+    id_billing_installments,
+    installment_created_at,
+    installment_due_date,
+    installment_value,
+    installment_paid_value,
+    installment_payment_date,
+    installment_status,
+    installment_uuid,
+    id_billing,
+    id_subscriber
+) VALUES (
+    6,
+    CURRENT_DATE - INTERVAL '2 months',
+    CURRENT_DATE + INTERVAL '3 months',
+    500.00,
+    NULL,
+    NULL,
+    0,
+    gen_random_uuid()::text,
+    1,
+    4
+);
+
+-- Installment 7 (4 months from now)
+INSERT INTO t_billing_installments (
+    id_billing_installments,
+    installment_created_at,
+    installment_due_date,
+    installment_value,
+    installment_paid_value,
+    installment_payment_date,
+    installment_status,
+    installment_uuid,
+    id_billing,
+    id_subscriber
+) VALUES (
+    7,
+    CURRENT_DATE - INTERVAL '2 months',
+    CURRENT_DATE + INTERVAL '4 months',
+    500.00,
+    NULL,
+    NULL,
+    0,
+    gen_random_uuid()::text,
+    1,
+    4
+);
+
+-- Update installments sequence
+SELECT setval('t_billing_installments_seq', 8);

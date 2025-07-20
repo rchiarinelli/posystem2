@@ -48,7 +48,7 @@ import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.exception.NotFoundException;
 import br.com.brainyit.posystem2.order.service.OrderService;
-import br.com.brainyit.posystem2.repository.SubscriberRepository;
+import br.com.brainyit.posystem2.subscriber.service.SubscriberService;
 
 @ExtendWith(MockitoExtension.class)
 class BillingServiceTest {
@@ -60,7 +60,7 @@ class BillingServiceTest {
         private BillingRepository billingRepository;
 
         @Mock
-        private SubscriberRepository subscriberRepository;
+        private SubscriberService subscriberService;
 
         @Mock
         private BillingConfigRepository billingConfigRepository;
@@ -168,9 +168,9 @@ class BillingServiceTest {
         }
 
         @Test
-        void testGetBillings_WhenNoFilters_ShouldReturnAllBillings() {
+        void test_getBillings_WhenNoFilters_ShouldReturnAllBillings() {
                 // Arrange
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findAll(any(Predicate.class))).thenReturn(billings);
 
                 // Act
@@ -185,10 +185,10 @@ class BillingServiceTest {
         }
 
         @Test
-        void testGetBillings_WhenSearchTermProvided_ShouldReturnFilteredBillings() {
+        void test_getBillings_WhenSearchTermProvided_ShouldReturnFilteredBillings() {
                 // Arrange
                 String searchTerm = "Test Customer";
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findAll(any(Predicate.class)))
                                 .thenReturn(Collections.singletonList(billing1));
 
@@ -203,10 +203,10 @@ class BillingServiceTest {
         }
 
         @Test
-        void testGetBillings_WhenStatusFiltersProvided_ShouldReturnFilteredBillings() {
+        void test_getBillings_WhenStatusFiltersProvided_ShouldReturnFilteredBillings() {
                 // Arrange
                 List<String> statusFilters = Arrays.asList("OPEN", "CLOSED");
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findAll(any(Predicate.class))).thenReturn(billings);
 
                 // Act
@@ -219,11 +219,11 @@ class BillingServiceTest {
         }
 
         @Test
-        void testGetBillings_WhenBothFiltersProvided_ShouldReturnFilteredBillings() {
+        void test_getBillings_WhenBothFiltersProvided_ShouldReturnFilteredBillings() {
                 // Arrange
                 String searchTerm = "ORDER-001";
                 List<String> statusFilters = Arrays.asList("OPEN");
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findAll(any(Predicate.class)))
                                 .thenReturn(Collections.singletonList(billing1));
 
@@ -238,24 +238,10 @@ class BillingServiceTest {
         }
 
         @Test
-        void testGetBillings_WhenSubscriberNotFound_ShouldThrowBusinessException() {
-                // Arrange
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.empty());
-
-                // Act & Assert
-                BusinessException exception = assertThrows(BusinessException.class, () -> {
-                        billingService.getBillings(subscriberUuid, null, null);
-                });
-
-                assertEquals("Subscriber not found", exception.getMessage());
-                verify(billingRepository, never()).findAll(any(Predicate.class));
-        }
-
-        @Test
-        void testGetBillings_WhenInvalidStatus_ShouldThrowBusinessException() {
+        void test_getBillings_WhenInvalidStatus_ShouldThrowBusinessException() {
                 // Arrange
                 List<String> statusFilters = Arrays.asList("INVALID_STATUS");
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
 
                 // Act & Assert
                 BusinessException exception = assertThrows(BusinessException.class, () -> {
@@ -268,10 +254,10 @@ class BillingServiceTest {
         }
 
         @Test
-        void testGetBillings_WhenEmptySearchTerm_ShouldTreatAsNull() {
+        void test_getBillings_WhenEmptySearchTerm_ShouldTreatAsNull() {
                 // Arrange
                 String emptySearchTerm = "   ";
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findAll(any(Predicate.class))).thenReturn(billings);
 
                 // Act
@@ -284,10 +270,10 @@ class BillingServiceTest {
         }
 
         @Test
-        void testGetBillings_WhenEmptyStatusFilters_ShouldTreatAsNull() {
+        void test_getBillings_WhenEmptyStatusFilters_ShouldTreatAsNull() {
                 // Arrange
                 List<String> emptyStatusFilters = Collections.emptyList();
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findAll(any(Predicate.class))).thenReturn(billings);
 
                 // Act
@@ -300,10 +286,10 @@ class BillingServiceTest {
         }
 
         @Test
-        void testGetBillings_WhenStatusFiltersAreLowercase_ShouldWorkCorrectly() {
+        void test_getBillings_WhenStatusFiltersAreLowercase_ShouldWorkCorrectly() {
                 // Arrange
                 List<String> statusFilters = Arrays.asList("open", "closed");
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findAll(any(Predicate.class))).thenReturn(billings);
 
                 // Act
@@ -316,10 +302,10 @@ class BillingServiceTest {
         }
 
         @Test
-        void testGetBillings_WhenMixedCaseStatusFilters_ShouldWorkCorrectly() {
+        void test_getBillings_WhenMixedCaseStatusFilters_ShouldWorkCorrectly() {
                 // Arrange
                 List<String> statusFilters = Arrays.asList("Open", "cLOSED");
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findAll(any(Predicate.class))).thenReturn(billings);
 
                 // Act
@@ -358,7 +344,7 @@ class BillingServiceTest {
                                 LocalDate.now(),
                                 100.0);
 
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(orderService.getOrderByCode(subscriberUuid, order.getOrderCode()))
                                 .thenReturn(order);
 
@@ -388,7 +374,7 @@ class BillingServiceTest {
                                 .subscriber(subscriber)
                                 .build();
 
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(orderService.getOrderByCode(subscriberUuid, createBillingParams.orderCode()))
                                 .thenReturn(order);
                 when(billingConfigRepository.findById(createBillingParams.billingConfigId()))
@@ -430,7 +416,7 @@ class BillingServiceTest {
                                 .installmentIntervalUnit(InstallmentIntervalUnit.MONTH)
                                 .build();
 
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(orderService.getOrderByCode(subscriberUuid, createBillingParams.orderCode()))
                                 .thenReturn(order);
                 when(billingConfigRepository.findById(createBillingParams.billingConfigId()))
@@ -473,7 +459,7 @@ class BillingServiceTest {
                                 .paymentType(PaymentType.ONE_TIME)
                                 .build();
 
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(orderService.getOrderByCode(subscriberUuid, createBillingParams.orderCode()))
                                 .thenReturn(order);
                 when(billingConfigRepository.findById(createBillingParams.billingConfigId()))
@@ -540,7 +526,7 @@ class BillingServiceTest {
                                 .installmentIntervalUnit(InstallmentIntervalUnit.MONTH)
                                 .build();
 
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(orderService.getOrderByCode(subscriberUuid, createBillingParams.orderCode()))
                                 .thenReturn(order);
                 when(billingConfigRepository.findById(createBillingParams.billingConfigId()))
@@ -580,7 +566,7 @@ class BillingServiceTest {
         @Test
         void test_fetchBilling_withInvalidUuid_exceptionIsThrown() {
                 // Arrange
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "invalid-uuid"))
                                 .thenReturn(Optional.empty());
 
@@ -591,13 +577,13 @@ class BillingServiceTest {
 
                 assertEquals("Billing not found", exception.getMessage());
                 verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "invalid-uuid");
-                verify(subscriberRepository).findByUuid(subscriberUuid);
+                verify(subscriberService).getSubscriber(subscriberUuid);
         }
 
         @Test
         void test_fetchBilling_withValidUuid_billingIsReturned() {
                 // Arrange
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
                                 .thenReturn(Optional.of(billing1));
 
@@ -607,13 +593,13 @@ class BillingServiceTest {
                 // Assert
                 assertThat(result, is(billing1));
                 verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
-                verify(subscriberRepository).findByUuid(subscriberUuid);
+                verify(subscriberService).getSubscriber(subscriberUuid);
         }
 
         @Test
         void test_fetchInstallment_withInvalidInstallmentUuid_exceptionIsThrown() {
                 // Arrange
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
                                 .thenReturn(Optional.of(billing1));
 
@@ -624,13 +610,13 @@ class BillingServiceTest {
 
                 assertEquals("Installment not found", exception.getMessage());
                 verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
-                verify(subscriberRepository).findByUuid(subscriberUuid);
+                verify(subscriberService).getSubscriber(subscriberUuid);
         }
 
         @Test
         void test_fetchInstallment_withValidInstallmentUuid_installmentIsReturned() {
                 // Arrange
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-3"))
                                 .thenReturn(Optional.of(billing3));
 
@@ -641,13 +627,13 @@ class BillingServiceTest {
                 // Assert
                 assertThat(result, is(billing3.getInstallments().get(0)));
                 verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-3");
-                verify(subscriberRepository).findByUuid(subscriberUuid);
+                verify(subscriberService).getSubscriber(subscriberUuid);
         }
 
         @Test
         void test_payInstallment_withInvalidInstallmentUuid_exceptionIsThrown() {
                 // Arrange
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
                                 .thenReturn(Optional.of(billing1));
 
@@ -659,7 +645,7 @@ class BillingServiceTest {
 
                 assertEquals("Installment not found", exception.getMessage());
                 verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
-                verify(subscriberRepository).findByUuid(subscriberUuid);
+                verify(subscriberService).getSubscriber(subscriberUuid);
         }
 
         @Test
@@ -674,7 +660,7 @@ class BillingServiceTest {
                                 .build()));
                 billing1.getInstallments().get(0).setBilling(billing1);
 
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
                                 .thenReturn(Optional.of(billing1));
 
@@ -686,13 +672,13 @@ class BillingServiceTest {
 
                 assertEquals("Installment is not in pending status", exception.getMessage());
                 verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
-                verify(subscriberRepository).findByUuid(subscriberUuid);
+                verify(subscriberService).getSubscriber(subscriberUuid);
         }
 
         @Test
         void test_payInstallment_withValidInstallmentUuid_installmentIsReturned() {
                 // Arrange
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
                                 .thenReturn(Optional.of(billing3));
                 when(installmentRepository.save(any(Installment.class)))
@@ -709,13 +695,13 @@ class BillingServiceTest {
                 assertThat(result.getBilling().getTotalPaidValue(), is(100.0));
 
                 verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
-                verify(subscriberRepository).findByUuid(subscriberUuid);
+                verify(subscriberService).getSubscriber(subscriberUuid);
         }
 
         @Test
         void test_payInstallment_withValidInstallmentUuid_payAllInstallments_installmentIsReturnedAndBillingIsClosed() {
                 // Arrange
-                when(subscriberRepository.findByUuid(subscriberUuid)).thenReturn(Optional.of(subscriber));
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
                 when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
                                 .thenReturn(Optional.of(billing3));
                 when(installmentRepository.save(any(Installment.class)))
@@ -751,6 +737,41 @@ class BillingServiceTest {
                                 is(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
 
                 verify(billingRepository, atLeast(2)).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
-                verify(subscriberRepository, atLeast(2)).findByUuid(subscriberUuid);
+                verify(subscriberService, atLeast(2)).getSubscriber(subscriberUuid);
+        }
+
+        @Test
+        void test_getInstallments_withInvalidParams_emptyResultsIsReturned() {
+                // Arrange
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
+                when(installmentRepository.findAll(any(Predicate.class))).thenReturn(Collections.emptyList());
+
+                // Act
+                List<Installment> result = billingService.getInstallments(subscriberUuid,
+                                new FilterInstallmentsParams(null, null, null));
+
+                // Assert
+                assertThat(result.size(), is(0));
+                verify(subscriberService).getSubscriber(subscriberUuid);
+                verify(installmentRepository).findAll(any(Predicate.class));
+        }
+
+        @Test
+        void test_getInstallments_withValidParams_installmentsAreReturned() {
+                // Arrange
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
+                when(installmentRepository.findAll(any(Predicate.class)))
+                                .thenReturn(Collections.singletonList(billing3.getInstallments().get(0)));
+
+                // Act
+                List<Installment> result = billingService.getInstallments(subscriberUuid,
+                                new FilterInstallmentsParams(LocalDate.now().minusDays(1), LocalDate.now().plusDays(1),
+                                                List.of(InstallmentStatus.PENDING)));
+
+                // Assert
+                assertThat(result.size(), is(1));
+                assertThat(result.get(0), is(billing3.getInstallments().get(0)));
+                verify(subscriberService).getSubscriber(subscriberUuid);
+                verify(installmentRepository).findAll(any(Predicate.class));
         }
 }

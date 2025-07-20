@@ -1,5 +1,6 @@
 package br.com.brainyit.posystem2.billing.api;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,8 @@ import br.com.brainyit.posystem2.api.BillingApiDelegate;
 import br.com.brainyit.posystem2.billing.mapper.BillingMapper;
 import br.com.brainyit.posystem2.billing.service.BillingService;
 import br.com.brainyit.posystem2.billing.service.CreateBillingParams;
+import br.com.brainyit.posystem2.billing.service.FilterInstallmentsParams;
+import br.com.brainyit.posystem2.domain.InstallmentStatus;
 import br.com.brainyit.posystem2.model.BillingModel;
 import br.com.brainyit.posystem2.model.CreateBillingRequestBody;
 import br.com.brainyit.posystem2.model.InstallmentModel;
@@ -94,6 +97,21 @@ public class BillingApiDelegateImpl implements BillingApiDelegate {
 
                 return ResponseEntity.ok(BillingMapper.builder().build()
                                 .toInstallmentModel(installment));
+        }
+
+        @Override
+        public ResponseEntity<List<InstallmentModel>> subscriberInstallmentsGet(String subscriber, LocalDate from,
+                        LocalDate to, List<String> status) throws Exception {
+
+                var statuses = status == null ? List.of(InstallmentStatus.PENDING)
+                                : status.stream().map(InstallmentStatus::valueOf).toList();
+
+                final var installments = billingService.getInstallments(subscriber, new FilterInstallmentsParams(from,
+                                to, statuses));
+
+                return ResponseEntity.ok(installments.stream()
+                                .map(BillingMapper.builder().build()::toInstallmentModel)
+                                .toList());
         }
 
 }

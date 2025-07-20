@@ -176,4 +176,49 @@ public class ReadBillingEndpointTest extends BaseBillingTest {
                                 .andExpect(jsonPath("$.paidValue").value(0.0));
         }
 
+        @Test
+        void test_getBillingInstallments_withNoFilters_returnsOnlyOnePendingInstallment() throws Exception {
+                mockMvc.perform(get(ApiPaths.BILLING_INSTALLMENTS_BY_STATUS_PATH, SUBSCRIBER_4)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").isNotEmpty())
+                                .andExpect(jsonPath("$.size()").value(1));
+        }
+
+        @Test
+        void test_getBillingInstallments_withFromAndToDateAndPendingStatus_returnsAllInstallment() throws Exception {
+                mockMvc.perform(get(
+                                ApiPaths.BILLING_INSTALLMENTS_BY_STATUS_PATH + "?from="
+                                                + BILLING_START_DATE.minusMonths(3).format(DateTimeFormatter.ISO_DATE)
+                                                + "&to="
+                                                + BILLING_START_DATE.plusMonths(6).format(DateTimeFormatter.ISO_DATE)
+                                                + "&status=PENDING",
+                                SUBSCRIBER_4)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").isNotEmpty())
+                                .andExpect(jsonPath("$.size()").value(7));
+        }
+
+        @Test
+        void test_getBillingInstallments_withFromAndToDateAndPaidAndLateStatus_returnsAllInstallment()
+                        throws Exception {
+                mockMvc.perform(get(
+                                ApiPaths.BILLING_INSTALLMENTS_BY_STATUS_PATH + "?from="
+                                                + BILLING_START_DATE.minusMonths(3).format(DateTimeFormatter.ISO_DATE)
+                                                + "&to="
+                                                + BILLING_START_DATE.plusMonths(6).format(DateTimeFormatter.ISO_DATE)
+                                                + "&status=PAID,LATE",
+                                SUBSCRIBER_4)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").isEmpty());
+        }
+
 }

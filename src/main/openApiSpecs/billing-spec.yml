@@ -288,6 +288,67 @@ paths:
             application/json:
               schema:
                 $ref: "./common-spec.yml#/components/schemas/Message"
+  /{subscriber}/installments:
+    get:
+      tags:
+        - Billing
+      summary: Get installments by subscriber
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: from
+          description: Filter installments by from date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: to
+          description: Filter installments by to date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: status
+          description: Filter installments by status
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - PENDING
+                - PAID
+                - LATE
+                - CANCELLED
+      responses:
+        200:
+          description: List of billings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "./common-spec.yml#/components/schemas/InstallmentModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
 
 components:
   schemas:
