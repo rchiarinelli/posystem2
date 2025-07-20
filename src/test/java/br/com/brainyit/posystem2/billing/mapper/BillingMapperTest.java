@@ -11,19 +11,21 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import br.com.brainyit.posystem2.domain.Billing;
+import br.com.brainyit.posystem2.domain.BillingConfig;
 import br.com.brainyit.posystem2.domain.BillingStatus;
 import br.com.brainyit.posystem2.domain.Customer;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Installment;
+import br.com.brainyit.posystem2.domain.InstallmentIntervalUnit;
 import br.com.brainyit.posystem2.domain.InstallmentStatus;
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.OrderStatus;
+import br.com.brainyit.posystem2.domain.PaymentType;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.model.BillingModel;
 import br.com.brainyit.posystem2.model.InstallmentModel;
@@ -105,6 +107,15 @@ class BillingMapperTest {
                 .status(BillingStatus.OPEN)
                 .subscriber(subscriber)
                 .installments(installments)
+                .billingConfig(BillingConfig.builder()
+                        .id(1)
+                        .name("Test Billing Config")
+                        .paymentType(PaymentType.ONE_TIME)
+                        .installmentsQuantity((short) 1)
+                        .installmentsInterval((short) 0)
+                        .installmentIntervalUnit(InstallmentIntervalUnit.MONTH)
+                        .subscriber(subscriber)
+                        .build())
                 .build();
     }
 
@@ -253,6 +264,14 @@ class BillingMapperTest {
                 .status(BillingStatus.CLOSED)
                 .subscriber(subscriber)
                 .installments(new ArrayList<>())
+                .billingConfig(BillingConfig.builder()
+                        .id(1)
+                        .name("Test Billing Config")
+                        .paymentType(PaymentType.ONE_TIME)
+                        .installmentsQuantity((short) 1)
+                        .installmentsInterval((short) 0)
+                        .installmentIntervalUnit(InstallmentIntervalUnit.MONTH)
+                        .subscriber(subscriber).build())
                 .build();
 
         List<Billing> billings = Arrays.asList(billing, billing2);

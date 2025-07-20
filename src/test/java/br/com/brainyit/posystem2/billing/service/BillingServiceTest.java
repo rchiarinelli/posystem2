@@ -736,6 +736,12 @@ class BillingServiceTest {
                 assertThat(result2.getBilling().getClosedAt().format(DateTimeFormatter.ISO_LOCAL_DATE),
                                 is(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
 
+                assertThat(result.getBilling().getOrder().getStatus(), is(OrderStatus.CLOSED));
+                assertThat(result.getBilling().getOrder().getCloseDate(), is(not(nullValue())));
+
+                assertThat(result2.getBilling().getOrder().getStatus(), is(OrderStatus.CLOSED));
+                assertThat(result2.getBilling().getOrder().getCloseDate(), is(not(nullValue())));
+
                 verify(billingRepository, atLeast(2)).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
                 verify(subscriberService, atLeast(2)).getSubscriber(subscriberUuid);
         }
@@ -773,5 +779,42 @@ class BillingServiceTest {
                 assertThat(result.get(0), is(billing3.getInstallments().get(0)));
                 verify(subscriberService).getSubscriber(subscriberUuid);
                 verify(installmentRepository).findAll(any(Predicate.class));
+        }
+
+        @Test
+        void test_cancelBilling_billingNotInOpenState_exceptionIsThrown() {
+                billing1.setStatus(BillingStatus.OPEN);
+                billing1.setInstallments(List.of(Installment.builder().build()));
+
+                // Arrange
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
+                when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
+                                .thenReturn(Optional.of(billing2));
+
+                // Act & Assert
+                BusinessException exception = assertThrows(BusinessException.class, () -> {
+                        billingService.cancelBilling(subscriberUuid, "billing-uuid-1");
+                });
+
+                assertThat(exception.getMessage(), is("Billing is not in open state"));
+                verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
+                verify(subscriberService).getSubscriber(subscriberUuid);
+        }
+
+        @Test
+        void test_cancelBilling_billingInOpenState_billingIsCancelledAndOrderIsSetToPendingBilling() {
+                // Arrange
+                when(subscriberService.getSubscriber(subscriberUuid)).thenReturn(subscriber);
+                when(billingRepository.findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1"))
+                                .thenReturn(Optional.of(billing1));
+
+                // Act
+                billingService.cancelBilling(subscriberUuid, "billing-uuid-1");
+
+                // Assert
+                assertThat(billing1.getStatus(), is(BillingStatus.CANCELLED));
+                assertThat(billing1.getOrder().getStatus(), is(OrderStatus.PENDING_BILLING));
+                verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
+                verify(subscriberService).getSubscriber(subscriberUuid);
         }
 }

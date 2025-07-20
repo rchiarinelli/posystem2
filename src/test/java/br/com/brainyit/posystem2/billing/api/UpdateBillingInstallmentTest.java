@@ -124,6 +124,8 @@ public class UpdateBillingInstallmentTest extends BaseBillingTest {
                 billingResult.andExpect(jsonPath("$.totalPaidValue").value(300.0));
                 billingResult.andExpect(jsonPath("$.status").value("CLOSED"));
                 billingResult.andExpect(jsonPath("$.closedAt").isNotEmpty());
+                billingResult.andExpect(jsonPath("$.order.status").value("CLOSED"));
+                billingResult.andExpect(jsonPath("$.order.closeDate").exists());
         }
 
         @Test

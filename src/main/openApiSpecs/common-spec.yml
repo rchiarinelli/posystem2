@@ -63,6 +63,13 @@ components:
             $ref: "#/components/schemas/InstallmentModel"
         order:
           $ref: "#/components/schemas/OrderRestModel"
+        billingConfig:
+          type: object
+          properties:
+            name:
+              type: string
+            billingType:
+              type: string
 
     InstallmentModel:
       type: object

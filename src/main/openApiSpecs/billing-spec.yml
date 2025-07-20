@@ -150,6 +150,45 @@ paths:
               schema:
                 $ref: "./common-spec.yml#/components/schemas/Message"
 
+  /{subscriber}/billings/{billingUuid}/cancel:
+    post:
+      tags:
+        - Billing
+      summary: Cancel billing
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: billingUuid
+          description: UUID billing identifier
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Billing cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/BillingModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+
   /{subscriber}/billings/{billingUuid}/installments:
     get:
       tags:

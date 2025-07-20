@@ -564,8 +564,8 @@ INSERT INTO t_order (
     'ORD-2024-001',
     3500.00,  -- Order value
     1.0,      -- Quantity
-    CURRENT_DATE - INTERVAL '3 months',  -- Order opened 3 months ago
-    CURRENT_DATE - INTERVAL '1 month'    -- Planned delivery 1 month ago
+    CURRENT_DATE - INTERVAL '3 months',
+    CURRENT_DATE - INTERVAL '1 month'
 );
 
 -- Update order sequence

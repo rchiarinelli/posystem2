@@ -32,5 +32,7 @@ public class ApiPaths {
 
     public static final String BILLING_INSTALLMENT_ENDPOINT_PATH = "/{subscriberId}/billings/{billingUuid}/installments/{installmentUuid}";
 
+    public static final String BILLING_CANCEL_ENDPOINT_PATH = "/{subscriberId}/billings/{billingUuid}/cancel";
+
     public static final String BILLING_INSTALLMENTS_BY_STATUS_PATH = "/{subscriberId}/installments";
 }

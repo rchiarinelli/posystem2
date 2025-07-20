@@ -51,6 +51,10 @@ public class ReadBillingEndpointTest extends BaseBillingTest {
                                         .andExpect(jsonPath(String.format("$[?(@.finalValue==%s)]", 100.0)).exists())
                                         .andExpect(jsonPath(String.format("$[?(@.order.orderCode=='%s')]", orderCode))
                                                         .exists())
+                                        .andExpect(jsonPath(String.format("$[?(@.billingConfig.name=='%s')]",
+                                                        "Pagamento à Vista")).exists())
+                                        .andExpect(jsonPath(String.format("$[?(@.billingConfig.billingType=='%s')]",
+                                                        "ONE_TIME")).exists())
                                         .andExpect(jsonPath(
                                                         String.format("$[?(@.installments[0].status=='%s')]",
                                                                         "PENDING"))

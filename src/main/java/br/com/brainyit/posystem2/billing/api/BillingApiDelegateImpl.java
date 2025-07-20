@@ -114,4 +114,13 @@ public class BillingApiDelegateImpl implements BillingApiDelegate {
                                 .toList());
         }
 
+        @Override
+        public ResponseEntity<BillingModel> subscriberBillingsBillingUuidCancelPost(String subscriber,
+                        String billingUuid) throws Exception {
+
+                final var billing = billingService.cancelBilling(subscriber, billingUuid);
+
+                return ResponseEntity.ok(BillingMapper.builder().build().toRestModel(billing));
+        }
+
 }

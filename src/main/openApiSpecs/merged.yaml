@@ -21,6 +21,8 @@ paths:
     $ref: "./ref-data-spec copy.yml#/paths/~1{subscriber}~1billing-configs"
   /{subscriber}/billings/{billingUuid}/installments:
     $ref: "./billing-spec.yml#/paths/~1{subscriber}~1billings~1{billingUuid}~1installments"
+  /{subscriber}/billings/{billingUuid}/cancel:
+    $ref: "./billing-spec.yml#/paths/~1{subscriber}~1billings~1{billingUuid}~1cancel"
   /{subscriber}/production-orders/{poNumber}:
     $ref: "./production-order-spec.yml#/paths/~1{subscriber}~1production-orders~1{poNumber}"
   /about-me:

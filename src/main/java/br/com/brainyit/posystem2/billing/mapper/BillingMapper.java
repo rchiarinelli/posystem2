@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import br.com.brainyit.posystem2.domain.Billing;
 import br.com.brainyit.posystem2.domain.Installment;
 import br.com.brainyit.posystem2.model.BillingModel;
+import br.com.brainyit.posystem2.model.BillingModelBillingConfig;
 import br.com.brainyit.posystem2.model.InstallmentModel;
 import br.com.brainyit.posystem2.model.OrderRestModel;
 import br.com.brainyit.posystem2.order.mapper.OrderMapper;
@@ -46,6 +47,11 @@ public class BillingMapper {
             OrderRestModel orderModel = orderMapper.toRestBean(billing.getOrder());
             model.setOrder(orderModel);
         }
+
+        BillingModelBillingConfig billingConfigModel = new BillingModelBillingConfig();
+        billingConfigModel.setName(billing.getBillingConfig().getName());
+        billingConfigModel.setBillingType(billing.getBillingConfig().getPaymentType().name());
+        model.setBillingConfig(billingConfigModel);
 
         return model;
     }

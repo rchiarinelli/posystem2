@@ -1,11 +1,10 @@
 package br.com.brainyit.posystem2.billing.service;
 
 import java.time.LocalDate;
-import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -140,6 +139,8 @@ public class BillingService {
                 .createdAt(LocalDate.now())
                 .build();
 
+        order.setStatus(OrderStatus.BILLED);
+
         billing.setInstallments(generateInstallments(billing, billingConfig));
 
         billing.setLastInstallmentPaymentDate(
@@ -217,6 +218,8 @@ public class BillingService {
         if (installment.getBilling().getTotalPaidValue() >= installment.getBilling().getFinalValue()) {
             installment.getBilling().setClosedAt(LocalDate.now());
             installment.getBilling().setStatus(BillingStatus.CLOSED);
+            installment.getBilling().getOrder().setStatus(OrderStatus.CLOSED);
+            installment.getBilling().getOrder().setCloseDate(new Date());
         }
         return installmentRepository.save(installment);
     }
@@ -250,5 +253,16 @@ public class BillingService {
 
         return StreamSupport.stream(installmentRepository.findAll(installmentPredicate).spliterator(), false)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Billing cancelBilling(final String subscriberUuid, final String billingUuid) {
+        var billing = fetchBilling(subscriberUuid, billingUuid);
+        if (billing.getStatus() != BillingStatus.OPEN) {
+            throw new BusinessException("Billing is not in open state");
+        }
+        billing.setStatus(BillingStatus.CANCELLED);
+        billing.getOrder().setStatus(OrderStatus.PENDING_BILLING);
+        return billingRepository.save(billing);
     }
 }
