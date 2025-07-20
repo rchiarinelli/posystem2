@@ -13,3 +13,78 @@ components:
         transactionUuid:
           type: string
           description: The transaction UUID
+
+    OrderRestModel:
+      type: object
+      properties:
+        orderCode:
+          type: string
+        customerName:
+          type: string
+        orderDescription:
+          type: string
+        price:
+          type: double
+        quantity:
+          type: double
+        deliverDate:
+          type: string
+        status:
+          type: string
+        openDate:
+          type: string
+        closeDate:
+          type: string
+        orderStatus:
+          type: string
+        plannedDeliverDate:
+          type: string
+
+    BillingModel:
+      type: object
+      properties:
+        uuid:
+          type: string
+        createdAt:
+          type: string
+        closedAt:
+          type: string
+        status:
+          type: string
+        calculatedValue:
+          type: double
+        finalValue:
+          type: double
+        totalPaidValue:
+          type: double
+        installments:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstallmentModel"
+        order:
+          $ref: "#/components/schemas/OrderRestModel"
+        billingConfig:
+          type: object
+          properties:
+            name:
+              type: string
+            billingType:
+              type: string
+
+    InstallmentModel:
+      type: object
+      properties:
+        uuid:
+          type: string
+        dueValue:
+          type: double
+        dueDate:
+          type: string
+        createdAt:
+          type: string
+        paymentDate:
+          type: string
+        paidValue:
+          type: double
+        status:
+          type: string

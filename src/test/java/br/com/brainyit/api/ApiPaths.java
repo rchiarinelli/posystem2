@@ -2,11 +2,10 @@ package br.com.brainyit.api;
 
 public class ApiPaths {
 
-    
     private ApiPaths() {
         throw new IllegalStateException("Utility class");
     }
-    
+
     public static final String ORDERS_ENDPOINT_PATH = "/{subscriberId}/orders";
 
     public static final String ORDER_ENDPOINT_PATH = "/{subscriberId}/orders/{orderCode}";
@@ -23,4 +22,17 @@ public class ApiPaths {
 
     public static final String PLACE_PRODUCTION_ORDER_ENDPOINT_PATH = "/{subscriberId}/orders/{orderCode}/place-production-order";
 
+    public static final String BILLING_CONFIGS_ENDPOINT_PATH = "/{subscriberId}/billing-configs";
+
+    public static final String BILLINGS_ENDPOINT_PATH = "/{subscriberId}/billings";
+
+    public static final String BILLING_ENDPOINT_PATH = "/{subscriberId}/billings/{billingUuid}";
+
+    public static final String BILLING_INSTALLMENTS_ENDPOINT_PATH = "/{subscriberId}/billings/{billingUuid}/installments";
+
+    public static final String BILLING_INSTALLMENT_ENDPOINT_PATH = "/{subscriberId}/billings/{billingUuid}/installments/{installmentUuid}";
+
+    public static final String BILLING_CANCEL_ENDPOINT_PATH = "/{subscriberId}/billings/{billingUuid}/cancel";
+
+    public static final String BILLING_INSTALLMENTS_BY_STATUS_PATH = "/{subscriberId}/installments";
 }

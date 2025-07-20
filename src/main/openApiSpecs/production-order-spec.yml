@@ -256,5 +256,5 @@ components:
         plannedStartDate:
           type: string
           format: date
-        orderCode:
-          type: string
+        order:
+          $ref: "./common-spec.yml#/components/schemas/OrderRestModel"

@@ -1,0 +1,418 @@
+openapi: 3.0.0
+
+info:
+  title: Billing API
+  version: 1.0.0
+
+tags:
+  - name: Billing
+    description: Billing management endpoints
+    x-interface-name: BillingApi
+
+parameters:
+  subscriberParam:
+    name: subscriber
+    in: path
+    required: true
+    schema:
+      type: string
+    description: Subscriber identifier
+
+paths:
+  /{subscriber}/billings:
+    get:
+      tags:
+        - Billing
+      summary: Get billings by subscriber
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: searchTerm
+          description: Filter billings by search term (partial match)
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          description: Filter billings by status (exact match)
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - OPEN
+                - CLOSED
+                - CANCELLED
+                - RENEWED
+
+      responses:
+        200:
+          description: List of billings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "./common-spec.yml#/components/schemas/BillingModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+    post:
+      tags:
+        - Billing
+      summary: Create a new billing
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/CreateBillingRequestBody"
+      responses:
+        200:
+          description: Billing created successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "./common-spec.yml#/components/schemas/BillingModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+
+  /{subscriber}/billings/{billingUuid}:
+    get:
+      tags:
+        - Billing
+      summary: Get billings by subscriber
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: billingUuid
+          description: UUID billing identifier
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: Billing by UUID
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "./common-spec.yml#/components/schemas/BillingModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+
+  /{subscriber}/billings/{billingUuid}/cancel:
+    post:
+      tags:
+        - Billing
+      summary: Cancel billing
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: billingUuid
+          description: UUID billing identifier
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Billing cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/BillingModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+
+  /{subscriber}/billings/{billingUuid}/installments:
+    get:
+      tags:
+        - Billing
+      summary: Get billing installments
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: billingUuid
+          description: UUID billing identifier
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: Billing installments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "./common-spec.yml#/components/schemas/InstallmentModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+
+  /{subscriber}/billings/{billingUuid}/installments/{installmentUuid}:
+    get:
+      tags:
+        - Billing
+      summary: Get billing installment by UUID
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: billingUuid
+          description: UUID billing identifier
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: installmentUuid
+          description: UUID installment identifier
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: Billing installment by UUID
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "./common-spec.yml#/components/schemas/InstallmentModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+
+    put:
+      tags:
+        - Billing
+      summary: Update billing installment
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: billingUuid
+          description: UUID billing identifier
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: installmentUuid
+          description: UUID installment identifier
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBillingInstallmentRequestBody"
+      responses:
+        200:
+          description: Billing installment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/InstallmentModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+  /{subscriber}/installments:
+    get:
+      tags:
+        - Billing
+      summary: Get installments by subscriber
+      x-interface-name: BillingApi
+      parameters:
+        - $ref: "#/parameters/subscriberParam"
+        - name: subscriber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: from
+          description: Filter installments by from date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: to
+          description: Filter installments by to date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: status
+          description: Filter installments by status
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - PENDING
+                - PAID
+                - LATE
+                - CANCELLED
+      responses:
+        200:
+          description: List of billings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "./common-spec.yml#/components/schemas/InstallmentModel"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "./common-spec.yml#/components/schemas/Message"
+
+components:
+  schemas:
+    CreateBillingRequestBody:
+      type: object
+      properties:
+        orderCode:
+          type: string
+        finalValue:
+          type: number
+          format: double
+        startDate:
+          type: string
+          format: date
+        billingConfigId:
+          type: integer
+      required:
+        - orderCode
+        - finalValue
+        - startDate
+        - billingConfigId
+
+    UpdateBillingInstallmentRequestBody:
+      type: object
+      properties:
+        paidValue:
+          type: number
+          format: double

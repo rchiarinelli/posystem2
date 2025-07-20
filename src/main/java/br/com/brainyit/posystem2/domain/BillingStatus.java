@@ -5,21 +5,21 @@ package br.com.brainyit.posystem2.domain;
 
 /**
  * Contem os status possiveis de serem associados a um faturamento.
+ * 
  * @author leafar
  *
  */
 public enum BillingStatus {
 
-	OPEN("Aberto"), CLOSED("Fechado"), CANCELLED("Cancelado"), RENEWED("Renegociado");
-	
-	
+	OPEN("Em andamento"), CLOSED("Fechado"), CANCELLED("Cancelado"), RENEWED("Renegociado");
+
 	private final String status;
-	
-	private BillingStatus(String c){
+
+	private BillingStatus(String c) {
 		this.status = c;
 	}
-	
-	public String getStatusValue(){
+
+	public String getStatusValue() {
 		return this.status;
 	}
 }

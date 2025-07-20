@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -30,15 +31,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="t_subscriber")
+@Table(name = "t_subscriber")
 public class Subscriber implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6709193260259588229L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6709193260259588229L;
 
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "subscriber_seq")
+    @SequenceGenerator(name = "subscriber_seq", sequenceName = "t_subscriber_seq", allocationSize = 1)
     private Long id;
 
     @Builder.Default

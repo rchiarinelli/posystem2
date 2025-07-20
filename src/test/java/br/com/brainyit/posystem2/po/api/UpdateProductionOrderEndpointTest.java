@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import br.com.brainyit.api.ApiPaths;
 import br.com.brainyit.api.BaseApiTest;
@@ -26,7 +27,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
 
         final String validSubscriberId = "123e4567-e89b-12d3-a456-426614174000";
 
-        final String invalidSubscriberId = "123e4567-e89b-12d3-a456-426614174003";
+        final String invalidSubscriberId = "INVALID_SUBSCRIBER_ID";
 
         @Test
         void test_updateProductionOrder_success() throws Exception {
@@ -524,7 +525,7 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
         }
 
         @Test
-        void test_proceedProductionOrder_whenAlreadyInProgress_returns400() throws Exception {
+        void test_proceedProductionOrder_productionOrderIsExecuting_returns200() throws Exception {
                 // Arrange - First create an order and a production order
                 String orderRequestBody = """
                                 {
@@ -558,6 +559,10 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                                 .content(poRequestBody)
                                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
+                TestTransaction.flagForCommit();
+                TestTransaction.end();
+                TestTransaction.start();
+
                 String poNumber = (String) TestUtils
                                 .convertResponseToMap(poResult.andReturn().getResponse().getContentAsString())
                                 .get("poNumber");
@@ -574,8 +579,9 @@ class UpdateProductionOrderEndpointTest extends BaseApiTest {
                                                 .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
                 progResultActions.andExpect(status().isOk())
-                                .andExpect(jsonPath("$.status").value("DONE"));
-
+                                .andExpect(jsonPath("$.status").value("DONE"))
+                                .andExpect(jsonPath("$.order.status").value("PENDING_BILLING"))
+                                .andExpect(jsonPath("$.order.orderCode").value(orderCode));
         }
 
         @Test

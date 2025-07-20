@@ -59,7 +59,7 @@ class ProductionOrderMapperTest {
                 assertThat(result.getQuantity(), is(po.getQtd()));
                 assertThat(result.getActualCompletionDate(), is(po.getActualCompletionDate()));
                 assertThat(result.getCustomerName(), is(customer.getName()));
-                assertThat(result.getOrderCode(), is(order.getOrderCode()));
+                assertThat(result.getOrder().getOrderCode(), is(order.getOrderCode()));
         }
 
         @Test

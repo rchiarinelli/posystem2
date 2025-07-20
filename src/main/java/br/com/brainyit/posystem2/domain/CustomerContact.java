@@ -13,6 +13,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
@@ -20,49 +21,46 @@ import jakarta.persistence.ManyToOne;
  * @author leafar
  *
  */
-@Entity(name="t_customer_contact")
+@Entity(name = "t_customer_contact")
 public class CustomerContact implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6182917470004897444L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id_contact")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_contact_seq")
+	@SequenceGenerator(name = "customer_contact_seq", sequenceName = "t_customer_contact_seq", allocationSize = 1)
+	@Column(name = "id_contact")
 	private Integer id;
-	
-	@Column(name="name",length=45,nullable=true)
+
+	@Column(name = "name", length = 45, nullable = true)
 	private String name;
-	
-	@Column(name="email",length=45,nullable=true)
+
+	@Column(name = "email", length = 45, nullable = true)
 	private String email;
-	
-	@Column(name="office_phone_number",length=20,nullable=true)
+
+	@Column(name = "office_phone_number", length = 20, nullable = true)
 	private String officePhoneNumber;
-	
-	@Column(name="mobile_phone_number",length=20,nullable=true)
+
+	@Column(name = "mobile_phone_number", length = 20, nullable = true)
 	private String mobilePhoneNumber;
-	
-	@Column(name="contact_status",nullable=false)
+
+	@Column(name = "contact_status", nullable = false)
 	@Enumerated(EnumType.ORDINAL)
 	private ContactStatus status;
-	
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="id_customer",insertable=false,updatable=false)
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_customer", insertable = false, updatable = false)
 	private Customer customer;
 
-	
-	
 	/**
 	 * 
 	 */
 	public CustomerContact() {
 		super();
 	}
-	
-	
 
 	/**
 	 * @param name
@@ -104,8 +102,6 @@ public class CustomerContact implements Serializable {
 		this.status = status;
 		this.customer = customer;
 	}
-
-
 
 	/**
 	 * @return the id

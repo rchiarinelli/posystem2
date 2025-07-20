@@ -15,10 +15,10 @@ spring:
 
   datasource:
       name: posystem2-ds
-      url: jdbc:mysql://localhost:3306/sas_db
+      url: jdbc:postgresql://localhost:5432/sas_db
       username: sas_app
       password: abcd4321
-      driver-class-name: com.mysql.cj.jdbc.Driver        
+      driver-class-name: org.postgresql.Driver
   jpa:
       show-sql: true
       defer-datasource-initialization: true

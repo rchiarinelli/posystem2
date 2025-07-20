@@ -1,25 +1,41 @@
 services:
 
-  db:
-    image: mysql:9.3.0
+  db-test:
+    image: postgres:17.5-alpine3.21
     restart: always
     ports:
-      - "3306:3306"
-    volumes:
-        - ./src/etc/containers/db/sql/:/docker-entrypoint-initdb.d/
+      - "5433:5432"
     networks:
       - local-env-network
     environment:
-      MYSQL_USER: sas_app
-      MYSQL_PASSWORD: abcd4321
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      POSTGRES_USER: sas_app
+      POSTGRES_DB: sas_db
+      POSTGRES_PASSWORD: abcd4321
+    command: postgres -c max_prepared_transactions=10
+    deploy:
+      resources:
+        limits:
+          memory: 1GB  
+
+  db:
+    image: postgres:17.5-alpine3.21
+    restart: always
+    ports:
+      - "5432:5432"
+    networks:
+      - local-env-network
+    volumes:
+        - ./src/etc/containers/db/sql/:/docker-entrypoint-initdb.d/
+    environment:
+      POSTGRES_PASSWORD: abcd4321
     deploy:
       resources:
         limits:
           memory: 1GB    
 
+
   auth-server:
-    image: ghcr.io/rchiarinelli/base-auth-server:latest
+    image: ghcr.io/rchiarinelli/base-auth-server:local
     depends_on:
       - db
     environment:
@@ -32,17 +48,17 @@ services:
       KC_HEALTH_ENABLED: "true"
       KC_LOG_LEVEL: info
 
-      KC_DB: mysql
-      KC_DB_URL: jdbc:mysql://db:3306/sas_auth_server_db
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/sas_auth_server_db
       KC_DB_USERNAME: sas_app
       KC_DB_PASSWORD: abcd4321
+      KC_TRANSACTION_XA_ENABLED: true
       
-      QUARKUS_DATASOURCE_USERS_DB_KIND: mysql
+      QUARKUS_DATASOURCE_USERS_DB_KIND: postgresql
       QUARKUS_DATASOURCE_USERS_USERNAME: sas_app
       QUARKUS_DATASOURCE_USERS_PASSWORD: abcd4321
-      QUARKUS_DATASOURCE_USERS_JDBC_URL: jdbc:mysql://db:3306/sas_db
-      QUARKUS_DATASOURCE_USERS_JDBC_DRIVER: com.mysql.cj.jdbc.MysqlXADataSource
-      QUARKUS_DATASOURCE_USERS_JDBC_TRANSACTIONS: xa
+      QUARKUS_DATASOURCE_USERS_JDBC_URL: jdbc:postgresql://db:5432/sas_db
+      QUARKUS_DATASOURCE_USERS_JDBC_TRANSACTIONS: disabled
 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/health/ready"]
@@ -65,7 +81,7 @@ services:
           memory: 1GB
 
   admin-services:
-    image: ghcr.io/rchiarinelli/base-sas-backend:latest
+    image: ghcr.io/rchiarinelli/base-sas-backend:local
     network_mode: host
     depends_on:
       - db
@@ -78,19 +94,19 @@ services:
         limits:
           memory: 256M
 
-  posystem-services:
-    image: ghcr.io/rchiarinelli/posystem2:latest
-    network_mode: host
-    depends_on:
-      - db
-      - auth-server
-    restart: always
-    volumes:
-      - ./src/etc/containers/posystem/application.yml:/opt/config/application.yml
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+  # posystem-services:
+  #   image: ghcr.io/rchiarinelli/posystem2:local
+  #   network_mode: host
+  #   depends_on:
+  #     - db
+  #     - auth-server
+  #   restart: always
+  #   volumes:
+  #     - ./src/etc/containers/posystem/application.yml:/opt/config/application.yml
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 256M
 
 
 networks:

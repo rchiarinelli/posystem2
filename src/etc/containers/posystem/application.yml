@@ -19,18 +19,14 @@ spring:
 
   datasource:
     name: posystem-services-ds
-    url: jdbc:mysql://localhost:3306/sas_db
+    url: jdbc:postgresql://localhost:5432/sas_db
     username: sas_app
     password: abcd4321
-    driver-class-name: com.mysql.cj.jdbc.Driver        
   jpa:
     show-sql: true
     defer-datasource-initialization: false
     hibernate:
       ddl-auto: validate
-    properties:
-      hibernate:
-          dialect: org.hibernate.dialect.MySQLDialect
 
 logging:
   level:

@@ -1,6 +1,7 @@
 package br.com.brainyit.util;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -23,12 +24,14 @@ public class TestUtils {
         throw new UnsupportedOperationException("This is a utility class and should not be instantiated");
     }
 
-
     @SuppressWarnings("unchecked")
     public static Map<String, Object> convertResponseToMap(final String response) {
         return GSON.fromJson(response, Map.class);
     }
 
+    public static List<Map<String, Object>> convertResponseToList(final String response) {
+        return GSON.fromJson(response, List.class);
+    }
 
     public static Customer createIndividualCustomer(final String name, final String document) {
         return Individual.builder()
@@ -44,7 +47,8 @@ public class TestUtils {
                 .build();
     }
 
-    public static Order createOrder(final Customer customer, final String description, final Double quantity, final OrderStatus status, final Date openDate, final String orderCode) {
+    public static Order createOrder(final Customer customer, final String description, final Double quantity,
+            final OrderStatus status, final Date openDate, final String orderCode) {
         return Order.builder()
                 .customer(customer)
                 .description(description)

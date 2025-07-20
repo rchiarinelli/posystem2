@@ -2,8 +2,6 @@ package br.com.brainyit.posystem2.order.mapper;
 
 import java.text.SimpleDateFormat;
 
-import org.apache.commons.lang3.time.DateFormatUtils;
-
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.model.OrderRestModel;
 import br.com.brainyit.posystem2.util.MessagesUtil;
