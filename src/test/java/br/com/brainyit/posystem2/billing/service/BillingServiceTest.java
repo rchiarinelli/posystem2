@@ -122,7 +122,13 @@ class BillingServiceTest {
                                 .createdAt(LocalDate.now())
                                 .status(BillingStatus.OPEN)
                                 .subscriber(subscriber)
-                                .installments(List.of())
+                                .installments(List.of(Installment.builder()
+                                                .id(1L)
+                                                .uuid("installment-uuid-1")
+                                                .dueValue(100.0)
+                                                .dueDate(LocalDate.now())
+                                                .status(InstallmentStatus.PENDING)
+                                                .build()))
                                 .build();
 
                 billing2 = Billing.builder()
@@ -814,6 +820,7 @@ class BillingServiceTest {
                 // Assert
                 assertThat(billing1.getStatus(), is(BillingStatus.CANCELLED));
                 assertThat(billing1.getOrder().getStatus(), is(OrderStatus.PENDING_BILLING));
+                assertThat(billing1.getInstallments().get(0).getStatus(), is(InstallmentStatus.CANCELLED));
                 verify(billingRepository).findBySubscriberIdAndUuid(subscriber.getId(), "billing-uuid-1");
                 verify(subscriberService).getSubscriber(subscriberUuid);
         }

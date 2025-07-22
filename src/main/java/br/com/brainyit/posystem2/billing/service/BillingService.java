@@ -263,6 +263,7 @@ public class BillingService {
         }
         billing.setStatus(BillingStatus.CANCELLED);
         billing.getOrder().setStatus(OrderStatus.PENDING_BILLING);
+        billing.getInstallments().forEach(installment -> installment.setStatus(InstallmentStatus.CANCELLED));
         return billingRepository.save(billing);
     }
 }

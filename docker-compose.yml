@@ -1,22 +1,5 @@
 services:
 
-  db-test:
-    image: postgres:17.5-alpine3.21
-    restart: always
-    ports:
-      - "5433:5432"
-    networks:
-      - local-env-network
-    environment:
-      POSTGRES_USER: sas_app
-      POSTGRES_DB: sas_db
-      POSTGRES_PASSWORD: abcd4321
-    command: postgres -c max_prepared_transactions=10
-    deploy:
-      resources:
-        limits:
-          memory: 1GB  
-
   db:
     image: postgres:17.5-alpine3.21
     restart: always
@@ -35,7 +18,7 @@ services:
 
 
   auth-server:
-    image: ghcr.io/rchiarinelli/base-auth-server:local
+    image: ghcr.io/rchiarinelli/base-auth-server:latest
     depends_on:
       - db
     environment:
@@ -46,13 +29,14 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
       KC_LOG_LEVEL: info
 
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://db:5432/sas_auth_server_db
       KC_DB_USERNAME: sas_app
       KC_DB_PASSWORD: abcd4321
-      KC_TRANSACTION_XA_ENABLED: true
+      KC_TRANSACTION_XA_ENABLED: "true"
       
       QUARKUS_DATASOURCE_USERS_DB_KIND: postgresql
       QUARKUS_DATASOURCE_USERS_USERNAME: sas_app
@@ -65,7 +49,7 @@ services:
       interval: 15s
       timeout: 2s
       retries: 15
-    command: ["start-dev", "--http-port", "7080", "--https-port", "7443", "--import-realm"]
+    command: ["start-dev", "--http-port", "7080", "--https-port", "7443", "--import-realm", "--health-enabled=true"]
     restart: always
     volumes:
       - ./src/etc/containers/authserver/local-po-realm.json:/opt/keycloak/data/import/po-realm.json
@@ -81,7 +65,7 @@ services:
           memory: 1GB
 
   admin-services:
-    image: ghcr.io/rchiarinelli/base-sas-backend:local
+    image: ghcr.io/rchiarinelli/base-sas-backend:latest
     network_mode: host
     depends_on:
       - db

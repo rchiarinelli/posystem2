@@ -1914,5 +1914,6 @@
   },
   "clientPolicies": {
     "policies": []
-  }
+  },
+  "loginTheme": "brainy"
 }
