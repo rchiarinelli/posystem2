@@ -29,13 +29,14 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
       KC_LOG_LEVEL: info
 
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://db:5432/sas_auth_server_db
       KC_DB_USERNAME: sas_app
       KC_DB_PASSWORD: abcd4321
-      KC_TRANSACTION_XA_ENABLED: true
+      KC_TRANSACTION_XA_ENABLED: "true"
       
       QUARKUS_DATASOURCE_USERS_DB_KIND: postgresql
       QUARKUS_DATASOURCE_USERS_USERNAME: sas_app
@@ -48,7 +49,7 @@ services:
       interval: 15s
       timeout: 2s
       retries: 15
-    command: ["start-dev", "--http-port", "7080", "--https-port", "7443", "--import-realm"]
+    command: ["start-dev", "--http-port", "7080", "--https-port", "7443", "--import-realm", "--health-enabled=true"]
     restart: always
     volumes:
       - ./src/etc/containers/authserver/local-po-realm.json:/opt/keycloak/data/import/po-realm.json

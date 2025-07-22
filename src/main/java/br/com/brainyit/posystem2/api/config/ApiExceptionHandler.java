@@ -15,12 +15,15 @@ import br.com.brainyit.posystem2.exception.ForbiddenOperationException;
 import br.com.brainyit.posystem2.exception.NotFoundException;
 import br.com.brainyit.posystem2.model.Message;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Message> handleException(final BusinessException ex, final WebRequest request) {
+        log.error("BusinessException: {}", ex.getMessage());
         final var message = new Message();
         message.setMessage(ex.getMessage());
         message.setEndpoint(request.getDescription(false));
@@ -31,21 +34,25 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(final IllegalArgumentException ex,
             final WebRequest request) {
+        log.error("IllegalArgumentException: {}", ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(ForbiddenOperationException.class)
     public ResponseEntity<Object> handleException(final ForbiddenOperationException ex, final WebRequest request) {
+        log.error("ForbiddenOperationException: {}", ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleException(final ConstraintViolationException ex, final WebRequest request) {
+        log.error("ConstraintViolationException: {}", ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Message> handleException(final NotFoundException ex, final WebRequest request) {
+        log.error("NotFoundException: {}", ex.getMessage());
         final var message = new Message();
         message.setMessage(ex.getMessage());
         message.setEndpoint(request.getDescription(false));

@@ -19,59 +19,61 @@ import br.com.brainyit.util.TestUtils;
 @Transactional
 public class CancelBillingEndpointTest extends BaseBillingTest {
 
-    @Test
-    void test_cancelBilling_billingNotInOpenState_internalServerErrorIsReturned() throws Exception {
-        // Given billing is paid
-        final Pair<String, String> billingData = prepareOrderData(SUBSCRIBER_3, 17, true,
-                DEFAULT_BILLING_REQUEST_BODY);
-        final String billingUuid = billingData.getRight();
+        @Test
+        void test_cancelBilling_billingNotInOpenState_internalServerErrorIsReturned() throws Exception {
+                // Given billing is paid
+                final Pair<String, String> billingData = prepareOrderData(SUBSCRIBER_3, 17, true,
+                                DEFAULT_BILLING_REQUEST_BODY);
+                final String billingUuid = billingData.getRight();
 
-        ResultActions installmentsResult = mockMvc
-                .perform(get(ApiPaths.BILLING_INSTALLMENTS_ENDPOINT_PATH, SUBSCRIBER_3,
-                        billingUuid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .with(SecurityMockMvcRequestPostProcessors.jwt()));
+                ResultActions installmentsResult = mockMvc
+                                .perform(get(ApiPaths.BILLING_INSTALLMENTS_ENDPOINT_PATH, SUBSCRIBER_3,
+                                                billingUuid)
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
-        final String installmentUuid = TestUtils
-                .convertResponseToList(installmentsResult.andReturn().getResponse()
-                        .getContentAsString())
-                .get(0)
-                .get("uuid").toString();
+                final String installmentUuid = TestUtils
+                                .convertResponseToList(installmentsResult.andReturn().getResponse()
+                                                .getContentAsString())
+                                .get(0)
+                                .get("uuid").toString();
 
-        final ResultActions results = mockMvc
-                .perform(put(ApiPaths.BILLING_INSTALLMENT_ENDPOINT_PATH, SUBSCRIBER_3,
-                        billingUuid, installmentUuid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(String.format(DEFAULT_UPDATE_INSTALLMENT_REQUEST_BODY,
-                                100.0D))
-                        .with(SecurityMockMvcRequestPostProcessors.jwt()));
+                final ResultActions results = mockMvc
+                                .perform(put(ApiPaths.BILLING_INSTALLMENT_ENDPOINT_PATH, SUBSCRIBER_3,
+                                                billingUuid, installmentUuid)
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(String.format(DEFAULT_UPDATE_INSTALLMENT_REQUEST_BODY,
+                                                                100.0D))
+                                                .with(SecurityMockMvcRequestPostProcessors.jwt()));
 
-        results.andExpect(status().isOk())
-                .andExpect(jsonPath("$.paidValue").value(100.0))
-                .andExpect(jsonPath("$.status").value("PAID"));
+                results.andExpect(status().isOk())
+                                .andExpect(jsonPath("$.paidValue").value(100.0))
+                                .andExpect(jsonPath("$.status").value("PAID"));
 
-        // When try to cancel billing
-        // Then internal server error is returned
-        mockMvc.perform(post(ApiPaths.BILLING_CANCEL_ENDPOINT_PATH, SUBSCRIBER_3, billingUuid)
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(status().isInternalServerError());
-    }
+                // When try to cancel billing
+                // Then internal server error is returned
+                mockMvc.perform(post(ApiPaths.BILLING_CANCEL_ENDPOINT_PATH, SUBSCRIBER_3, billingUuid)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                                .andExpect(status().isInternalServerError());
+        }
 
-    @Test
-    void test_cancelBilling_billingInOpenState_billingIsCancelledAndOrderIsInPendingBillingState() throws Exception {
-        // Given billing is not paid
-        final Pair<String, String> billingData = prepareOrderData(SUBSCRIBER_3, 17, true,
-                DEFAULT_BILLING_REQUEST_BODY);
-        final String billingUuid = billingData.getRight();
-        // When try to cancel billing
-        // Then billing is cancelled and order is in pending billing state
-        mockMvc.perform(post(ApiPaths.BILLING_CANCEL_ENDPOINT_PATH, SUBSCRIBER_3, billingUuid)
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("CANCELLED"))
-                .andExpect(jsonPath("$.order.status").value("PENDING_BILLING"));
-    }
+        @Test
+        void test_cancelBilling_billingInOpenState_billingIsCancelledAndOrderIsInPendingBillingState()
+                        throws Exception {
+                // Given billing is not paid
+                final Pair<String, String> billingData = prepareOrderData(SUBSCRIBER_3, 17, true,
+                                DEFAULT_BILLING_REQUEST_BODY);
+                final String billingUuid = billingData.getRight();
+                // When try to cancel billing
+                // Then billing is cancelled and order is in pending billing state
+                mockMvc.perform(post(ApiPaths.BILLING_CANCEL_ENDPOINT_PATH, SUBSCRIBER_3, billingUuid)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.status").value("CANCELLED"))
+                                .andExpect(jsonPath("$.order.status").value("PENDING_BILLING"))
+                                .andExpect(jsonPath("$.installments[0].status").value("CANCELLED"));
+        }
 
 }
