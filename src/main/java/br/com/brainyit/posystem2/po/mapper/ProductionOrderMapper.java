@@ -1,8 +1,8 @@
 package br.com.brainyit.posystem2.po.mapper;
 
+import br.com.brainyit.posystem2.domain.ProductionOrder;
 import br.com.brainyit.posystem2.model.ProductionOrderRestModel;
 import br.com.brainyit.posystem2.order.mapper.OrderMapper;
-import br.com.brainyit.posystem2.po.ProductionOrder;
 import lombok.Builder;
 
 /**

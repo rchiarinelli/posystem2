@@ -10,16 +10,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import br.com.brainyit.posystem2.domain.POStatus;
-import br.com.brainyit.posystem2.po.ProductionOrder;
+import br.com.brainyit.posystem2.domain.ProductionOrder;
 
 @Repository
 public interface ProductionOrderRepository
-        extends JpaRepository<ProductionOrder, Long>, QuerydslPredicateExecutor<ProductionOrder> {
+                extends JpaRepository<ProductionOrder, Long>, QuerydslPredicateExecutor<ProductionOrder> {
 
-    @Query("SELECT po FROM ProductionOrder po WHERE po.subscriber.id = :subscriberId AND po.status IN (:statuses)")
-    List<ProductionOrder> findBySubscriberIdAndInStatuses(@Param("subscriberId") final Long subscriberId,
-            @Param("statuses") final POStatus... statuses);
+        @Query("SELECT po FROM ProductionOrder po WHERE po.subscriber.id = :subscriberId AND po.status IN (:statuses)")
+        List<ProductionOrder> findBySubscriberIdAndInStatuses(@Param("subscriberId") final Long subscriberId,
+                        @Param("statuses") final POStatus... statuses);
 
-    Optional<ProductionOrder> findBySubscriberIdAndPoNumber(final Long subscriberId, final String poNumber);
+        Optional<ProductionOrder> findBySubscriberIdAndPoNumber(final Long subscriberId, final String poNumber);
 
 }

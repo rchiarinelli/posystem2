@@ -1,6 +1,3 @@
-/**
- * 
- */
 package br.com.brainyit.posystem2.domain;
 
 import java.io.Serializable;

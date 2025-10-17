@@ -1,4 +1,4 @@
-package br.com.brainyit.posystem2.po;
+package br.com.brainyit.posystem2.domain;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.brainyit.posystem2.domain.Order;
-import br.com.brainyit.posystem2.domain.POStatus;
 import br.com.brainyit.posystem2.exception.BusinessException;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package br.com.brainyit.posystem2.domain;
 
 import java.io.Serializable;
@@ -38,11 +35,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Installment implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9121900563716300941L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "billing_installments_seq")
