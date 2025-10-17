@@ -1,6 +1,5 @@
 package br.com.brainyit.posystem2.po.api;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,9 +9,9 @@ import org.springframework.stereotype.Component;
 import br.com.brainyit.posystem2.api.ProductionOrderApiDelegate;
 import br.com.brainyit.posystem2.domain.POPriority;
 import br.com.brainyit.posystem2.domain.POStatus;
+import br.com.brainyit.posystem2.domain.ProductionOrder;
 import br.com.brainyit.posystem2.model.ProductionOrderRestModel;
 import br.com.brainyit.posystem2.model.UpdateProductionOrderRequestBody;
-import br.com.brainyit.posystem2.po.ProductionOrder;
 import br.com.brainyit.posystem2.po.mapper.ProductionOrderMapper;
 import br.com.brainyit.posystem2.po.service.FilterProductionOrdersParams;
 import br.com.brainyit.posystem2.po.service.ProductionOrderService;

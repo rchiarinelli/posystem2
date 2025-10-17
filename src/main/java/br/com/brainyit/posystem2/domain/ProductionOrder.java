@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.brainyit.posystem2.po;
+package br.com.brainyit.posystem2.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -12,11 +12,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.util.CollectionUtils;
 
-import br.com.brainyit.posystem2.domain.Order;
-import br.com.brainyit.posystem2.domain.OrderStatus;
-import br.com.brainyit.posystem2.domain.POPriority;
-import br.com.brainyit.posystem2.domain.POStatus;
-import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

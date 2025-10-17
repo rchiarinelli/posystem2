@@ -31,10 +31,10 @@ import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.OrderStatus;
 import br.com.brainyit.posystem2.domain.POPriority;
 import br.com.brainyit.posystem2.domain.POStatus;
+import br.com.brainyit.posystem2.domain.ProductionOrder;
 import br.com.brainyit.posystem2.domain.Subscriber;
 import br.com.brainyit.posystem2.exception.BusinessException;
 import br.com.brainyit.posystem2.order.repository.OrderRepository;
-import br.com.brainyit.posystem2.po.ProductionOrder;
 import br.com.brainyit.posystem2.po.repository.ProductionOrderRepository;
 import br.com.brainyit.posystem2.repository.SubscriberRepository;
 

@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import br.com.brainyit.posystem2.domain.Individual;
 import br.com.brainyit.posystem2.domain.Order;
 import br.com.brainyit.posystem2.domain.POStatus;
+import br.com.brainyit.posystem2.domain.ProductionOrder;
 import br.com.brainyit.posystem2.model.ProductionOrderRestModel;
-import br.com.brainyit.posystem2.po.ProductionOrder;
 
 class ProductionOrderMapperTest {
 
