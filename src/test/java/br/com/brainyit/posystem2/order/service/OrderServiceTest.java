@@ -142,8 +142,10 @@ class OrderServiceTest {
                 when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
                 // when
+                final Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DAY_OF_YEAR, 2);
                 final PlaceOrderParams requestParam = new PlaceOrderParams(customer.getId(), ORDER_DESC,
-                                ORDER_QTY, new Date());
+                                ORDER_QTY, calendar.getTime());
                 Order result = orderService.placeOrder(subscriber.getUuid(), requestParam);
 
                 // then
