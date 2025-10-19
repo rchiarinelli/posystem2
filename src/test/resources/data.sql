@@ -783,3 +783,201 @@ INSERT INTO t_billing_installments (
 
 -- Update installments sequence
 SELECT setval('t_billing_installments_seq', 8);
+
+-- Work schedule test data
+-- Standard 5-day work week (Monday to Friday), 8 hours per day
+insert into t_work_schedule (
+   id_work_schedule,
+   status,
+   week_start_day,
+   week_end_day,
+   shift_duration_in_minutes
+) values ( 1,
+           'ACTIVE',
+           2,  -- Monday
+           6,  -- Friday
+           480 ); -- 8 hours
+
+-- Standard 6-day work week (Monday to Saturday), 8 hours per day
+insert into t_work_schedule (
+   id_work_schedule,
+   status,
+   week_start_day,
+   week_end_day,
+   shift_duration_in_minutes
+) values ( 2,
+           'ACTIVE',
+           2,  -- Monday
+           7,  -- Saturday
+           480 ); -- 8 hours
+
+-- Full 7-day work week (Sunday to Saturday), 8 hours per day
+insert into t_work_schedule (
+   id_work_schedule,
+   status,
+   week_start_day,
+   week_end_day,
+   shift_duration_in_minutes
+) values ( 3,
+           'ACTIVE',
+           1,  -- Sunday
+           7,  -- Saturday
+           480 ); -- 8 hours
+
+-- Part-time schedule (Monday to Friday), 4 hours per day
+insert into t_work_schedule (
+   id_work_schedule,
+   status,
+   week_start_day,
+   week_end_day,
+   shift_duration_in_minutes
+) values ( 4,
+           'ACTIVE',
+           2,  -- Monday
+           6,  -- Friday
+           240 ); -- 4 hours
+
+-- Extended schedule (Monday to Friday), 10 hours per day
+insert into t_work_schedule (
+   id_work_schedule,
+   status,
+   week_start_day,
+   week_end_day,
+   shift_duration_in_minutes
+) values ( 5,
+           'ACTIVE',
+           2,  -- Monday
+           6,  -- Friday
+           600 ); -- 10 hours
+
+-- Inactive schedule (Monday to Friday), 8 hours per day
+insert into t_work_schedule (
+   id_work_schedule,
+   status,
+   week_start_day,
+   week_end_day,
+   shift_duration_in_minutes
+) values ( 6,
+           'INACTIVE',
+           2,  -- Monday
+           6,  -- Friday
+           480 ); -- 8 hours
+
+-- Weekend schedule (Saturday to Sunday), 6 hours per day
+insert into t_work_schedule (
+   id_work_schedule,
+   status,
+   week_start_day,
+   week_end_day,
+   shift_duration_in_minutes
+) values ( 7,
+           'ACTIVE',
+           7,  -- Saturday
+           1,  -- Sunday
+           360 ); -- 6 hours
+
+select setval(
+   't_work_schedule_seq',
+   8
+);
+
+-- Work resource test data
+-- Lathe machine
+insert into t_work_resource (
+   id_work_resource,
+   name,
+   description,
+   type,
+   status,
+   setup_time_in_minutes,
+   cost_per_hour,
+   id_work_schedule
+) values ( 1,
+           'Lathe',
+           'CNC Lathe Machine for precision turning operations',
+           'MACHINE',
+           'ACTIVE',
+           30,  -- 30 minutes setup time
+           75.00,  -- $75.00 per hour
+           1 ); -- Standard 5-day work week
+
+-- Drill machine
+insert into t_work_resource (
+   id_work_resource,
+   name,
+   description,
+   type,
+   status,
+   setup_time_in_minutes,
+   cost_per_hour,
+   id_work_schedule
+) values ( 2,
+           'Drill',
+           'Industrial drill press for drilling operations',
+           'MACHINE',
+           'ACTIVE',
+           15,  -- 15 minutes setup time
+           50.00,  -- $50.00 per hour
+           1 ); -- Standard 5-day work week
+
+-- Bending machine
+insert into t_work_resource (
+   id_work_resource,
+   name,
+   description,
+   type,
+   status,
+   setup_time_in_minutes,
+   cost_per_hour,
+   id_work_schedule
+) values ( 3,
+           'Bending',
+           'Hydraulic press brake for metal bending',
+           'MACHINE',
+           'ACTIVE',
+           20,  -- 20 minutes setup time
+           85.00,  -- $85.00 per hour
+           1 ); -- Standard 5-day work week
+
+-- Welding machine
+insert into t_work_resource (
+   id_work_resource,
+   name,
+   description,
+   type,
+   status,
+   setup_time_in_minutes,
+   cost_per_hour,
+   id_work_schedule
+) values ( 4,
+           'Welding',
+           'MIG/TIG welding station for joining metal parts',
+           'MACHINE',
+           'ACTIVE',
+           25,  -- 25 minutes setup time
+           65.00,  -- $65.00 per hour
+           1 ); -- Standard 5-day work week
+
+-- Saw machine
+insert into t_work_resource (
+   id_work_resource,
+   name,
+   description,
+   type,
+   status,
+   setup_time_in_minutes,
+   cost_per_hour,
+   id_work_schedule
+) values ( 5,
+           'Saw',
+           'Band saw for cutting metal and other materials',
+           'MACHINE',
+           'ACTIVE',
+           10,  -- 10 minutes setup time
+           45.00,  -- $45.00 per hour
+           1 ); -- Standard 5-day work week
+
+select setval(
+   't_work_resource_seq',
+   6
+);
