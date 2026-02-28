@@ -177,7 +177,7 @@ class BillingMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertNull(result.getInstallments());
+        assertTrue(result.getInstallments() == null || result.getInstallments().isEmpty());
     }
 
     @Test

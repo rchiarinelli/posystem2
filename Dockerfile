@@ -15,4 +15,3 @@ WORKDIR /opt/app
 
 
 ENTRYPOINT ["java", "-Dspring.config.location=/opt/config/application.yml", "-jar", "/opt/app/app.jar"]
-

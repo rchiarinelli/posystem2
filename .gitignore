@@ -10,3 +10,8 @@ buid/
 java/*
 bin/*
 
+/.apt_generated/
+/.apt_generated_tests/
+.eclipse/
+.classpath
+.settings/

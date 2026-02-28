@@ -791,12 +791,18 @@ insert into t_work_schedule (
    status,
    week_start_day,
    week_end_day,
-   shift_duration_in_minutes
+   start_time,
+   end_time,
+   shift_duration_in_minutes,
+   id_subscriber
 ) values ( 1,
            'ACTIVE',
            2,  -- Monday
            6,  -- Friday
-           480 ); -- 8 hours
+           '08:00:00',  -- Start time
+           '17:00:00',  -- End time
+           480, -- 8 hours
+           1 ); -- Subscriber ID
 
 -- Standard 6-day work week (Monday to Saturday), 8 hours per day
 insert into t_work_schedule (
@@ -804,12 +810,18 @@ insert into t_work_schedule (
    status,
    week_start_day,
    week_end_day,
-   shift_duration_in_minutes
+   start_time,
+   end_time,
+   shift_duration_in_minutes,
+   id_subscriber
 ) values ( 2,
            'ACTIVE',
            2,  -- Monday
            7,  -- Saturday
-           480 ); -- 8 hours
+           '08:00:00',  -- Start time
+           '17:00:00',  -- End time
+           480, -- 8 hours
+           1 ); -- Subscriber ID
 
 -- Full 7-day work week (Sunday to Saturday), 8 hours per day
 insert into t_work_schedule (
@@ -817,12 +829,18 @@ insert into t_work_schedule (
    status,
    week_start_day,
    week_end_day,
-   shift_duration_in_minutes
+   start_time,
+   end_time,
+   shift_duration_in_minutes,
+   id_subscriber
 ) values ( 3,
            'ACTIVE',
            1,  -- Sunday
            7,  -- Saturday
-           480 ); -- 8 hours
+           '08:00:00',  -- Start time
+           '17:00:00',  -- End time
+           480, -- 8 hours
+           1 ); -- Subscriber ID
 
 -- Part-time schedule (Monday to Friday), 4 hours per day
 insert into t_work_schedule (
@@ -830,12 +848,18 @@ insert into t_work_schedule (
    status,
    week_start_day,
    week_end_day,
-   shift_duration_in_minutes
+   start_time,
+   end_time,
+   shift_duration_in_minutes,
+   id_subscriber
 ) values ( 4,
            'ACTIVE',
            2,  -- Monday
            6,  -- Friday
-           240 ); -- 4 hours
+           '09:00:00',  -- Start time
+           '13:00:00',  -- End time (4 hours)
+           240, -- 4 hours
+           1 ); -- Subscriber ID
 
 -- Extended schedule (Monday to Friday), 10 hours per day
 insert into t_work_schedule (
@@ -843,12 +867,18 @@ insert into t_work_schedule (
    status,
    week_start_day,
    week_end_day,
-   shift_duration_in_minutes
+   start_time,
+   end_time,
+   shift_duration_in_minutes,
+   id_subscriber
 ) values ( 5,
            'ACTIVE',
            2,  -- Monday
            6,  -- Friday
-           600 ); -- 10 hours
+           '07:00:00',  -- Start time
+           '18:00:00',  -- End time (11 hours with 1 hour break)
+           600, -- 10 hours
+           1 ); -- Subscriber ID
 
 -- Inactive schedule (Monday to Friday), 8 hours per day
 insert into t_work_schedule (
@@ -856,12 +886,18 @@ insert into t_work_schedule (
    status,
    week_start_day,
    week_end_day,
-   shift_duration_in_minutes
+   start_time,
+   end_time,
+   shift_duration_in_minutes,
+   id_subscriber  
 ) values ( 6,
            'INACTIVE',
            2,  -- Monday
            6,  -- Friday
-           480 ); -- 8 hours
+           '08:00:00',  -- Start time
+           '17:00:00',  -- End time
+           480, -- 8 hours
+           1 ); -- Subscriber ID
 
 -- Weekend schedule (Saturday to Sunday), 6 hours per day
 insert into t_work_schedule (
@@ -869,12 +905,18 @@ insert into t_work_schedule (
    status,
    week_start_day,
    week_end_day,
-   shift_duration_in_minutes
+   start_time,
+   end_time,
+   shift_duration_in_minutes,
+   id_subscriber
 ) values ( 7,
            'ACTIVE',
            7,  -- Saturday
            1,  -- Sunday
-           360 ); -- 6 hours
+           '10:00:00',  -- Start time
+           '16:00:00',  -- End time (6 hours)
+           360, -- 6 hours
+           1 ); -- Subscriber ID
 
 select setval(
    't_work_schedule_seq',
@@ -891,7 +933,8 @@ insert into t_work_resource (
    status,
    setup_time_in_minutes,
    cost_per_hour,
-   id_work_schedule
+   id_work_schedule,
+   id_subscriber
 ) values ( 1,
            'Lathe',
            'CNC Lathe Machine for precision turning operations',
@@ -899,7 +942,8 @@ insert into t_work_resource (
            'ACTIVE',
            30,  -- 30 minutes setup time
            75.00,  -- $75.00 per hour
-           1 ); -- Standard 5-day work week
+           1, -- Standard 5-day work week
+           1 ); -- Subscriber ID
 
 -- Drill machine
 insert into t_work_resource (
@@ -910,7 +954,8 @@ insert into t_work_resource (
    status,
    setup_time_in_minutes,
    cost_per_hour,
-   id_work_schedule
+   id_work_schedule,
+   id_subscriber
 ) values ( 2,
            'Drill',
            'Industrial drill press for drilling operations',
@@ -918,7 +963,8 @@ insert into t_work_resource (
            'ACTIVE',
            15,  -- 15 minutes setup time
            50.00,  -- $50.00 per hour
-           1 ); -- Standard 5-day work week
+           1, -- Standard 5-day work week
+           1 ); -- Subscriber ID
 
 -- Bending machine
 insert into t_work_resource (
@@ -929,7 +975,8 @@ insert into t_work_resource (
    status,
    setup_time_in_minutes,
    cost_per_hour,
-   id_work_schedule
+   id_work_schedule,
+   id_subscriber
 ) values ( 3,
            'Bending',
            'Hydraulic press brake for metal bending',
@@ -937,7 +984,8 @@ insert into t_work_resource (
            'ACTIVE',
            20,  -- 20 minutes setup time
            85.00,  -- $85.00 per hour
-           1 ); -- Standard 5-day work week
+           1, -- Standard 5-day work week
+           1 ); -- Subscriber ID
 
 -- Welding machine
 insert into t_work_resource (
@@ -948,7 +996,8 @@ insert into t_work_resource (
    status,
    setup_time_in_minutes,
    cost_per_hour,
-   id_work_schedule
+   id_work_schedule,
+   id_subscriber
 ) values ( 4,
            'Welding',
            'MIG/TIG welding station for joining metal parts',
@@ -956,7 +1005,8 @@ insert into t_work_resource (
            'ACTIVE',
            25,  -- 25 minutes setup time
            65.00,  -- $65.00 per hour
-           1 ); -- Standard 5-day work week
+           1, -- Standard 5-day work week
+           1 ); -- Subscriber ID
 
 -- Saw machine
 insert into t_work_resource (
@@ -967,7 +1017,8 @@ insert into t_work_resource (
    status,
    setup_time_in_minutes,
    cost_per_hour,
-   id_work_schedule
+   id_work_schedule,
+   id_subscriber
 ) values ( 5,
            'Saw',
            'Band saw for cutting metal and other materials',
@@ -975,7 +1026,8 @@ insert into t_work_resource (
            'ACTIVE',
            10,  -- 10 minutes setup time
            45.00,  -- $45.00 per hour
-           1 ); -- Standard 5-day work week
+           1, -- Standard 5-day work week
+           1 ); -- Subscriber ID
 
 select setval(
    't_work_resource_seq',

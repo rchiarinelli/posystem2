@@ -2,10 +2,10 @@ plugins {
 	id 'java'
 	id 'java-library'
 	id 'maven-publish'
-	id 'org.springframework.boot' version '3.5.3'
+	id 'org.springframework.boot' version '3.5.11'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'com.javiersc.semver' version '0.8.0'
-	id 'org.openapi.generator' version '7.2.0'
+	id 'com.javiersc.semver' version '0.9.0'
+	id 'org.openapi.generator' version '7.15.0'
 }
 
 group = 'br.com.brainyi'
@@ -13,18 +13,18 @@ group = 'br.com.brainyi'
 semver.tagPrefix='v'
 
 ext {
-	mockitoVersion = '5.13.0'
+	mockitoVersion = '5.14.2'
 	hamcrestVersion = '3.0'
-	springDocOpenAPIVersion = '2.8.8'
-	openApiGeneratorVersion = '7.13.0'
+	springDocOpenAPIVersion = '2.8.13'
+	openApiGeneratorVersion = '7.15.0'
 	jakartaValidationVersion = '3.1.1'
 	swaggerVersion = '2.2.31'
 	jacksonDatabindVersion = '0.2.6'
 	jakartaXmlBindVersion = '4.0.1'
 	jaxbRuntimeVersion = '4.0.4'
-	commonsLangVersion = '3.17.0'
+	commonsLangVersion = '3.20.0'
 	queryDslVersion = '5.1.0'
-	postgresqlVersion = '42.7.7'
+	postgresqlVersion = '42.7.9'
 }
 
 
@@ -63,12 +63,15 @@ repositories {
 	mavenLocal()
 	mavenCentral()
 	maven {
-        url = uri("https://maven.pkg.github.com/rchiarinelli/posystem2")
-        credentials {
-            username = project.findProperty("gpr.usr") ?: System.getenv("GH_USERNAME")
-            password = project.findProperty("gpr.key") ?: System.getenv("GH_TOKEN")
-        }
-   }
+		url = uri("https://maven.pkg.github.com/rchiarinelli/posystem2")
+		credentials {
+			username = project.findProperty("gpr.usr") ?: System.getenv("GH_USERNAME")
+			password = project.findProperty("gpr.key") ?: System.getenv("GH_TOKEN")
+		}
+		content {
+			includeGroup "br.com.brainyi"
+		}
+	}
 }
 
 configurations.all {

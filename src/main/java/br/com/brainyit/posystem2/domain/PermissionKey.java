@@ -20,10 +20,10 @@ import lombok.NoArgsConstructor;
  * @author leafar
  *
  */
+@Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Embeddable
 public class PermissionKey implements Serializable {
 	/**
 	 * 

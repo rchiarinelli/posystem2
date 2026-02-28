@@ -97,7 +97,7 @@ public class ProductionOrder implements Serializable {
 	@Column(name = "service_type", nullable = false, length = 30)
 	@Enumerated(EnumType.STRING)
 	@Builder.Default
-	private ServiceType serviceType = ServiceType.MATERIAL;
+	private ServiceType serviceType = ServiceType.MACHINE;
 
 	public ProductionOrder moveToNextPhase() {
 		Hibernate.initialize(order.getProductionOrders());

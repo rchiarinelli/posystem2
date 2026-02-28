@@ -1,0 +1,78 @@
+Allocation logic
+
+/{subscriber}/allocate-production-orders
+
+Request Body:
+{
+    "fromDateTime": "2025-01-01T00:00:00Z", 
+    // start date time to allocate production orders. Must be always starting on the next day from current date.
+}
+
+Get all ProductionOrders in "Ready To Produce" status and group by service type and priority
+
+Retrieve all related work schedule related with the service types from ProductionOrders
+
+Retrieve the all available work resources by service type starting from the "fromDateTime" parameter, verifying any existing allocations 
+for the production orders.
+
+Example:
+
+Assuming that "Lathe" work schedule is 8 hours per day, from Monday to Friday and the setup time is 90 minutes
+and earliest avaible date time for workResource "Lathe" is 2025-01-01T15:00:00Z, 2025-01-01 would only have 2 hours available,
+it would be not a good approach to allocate the production order to "Lathe" work resource on 2025-01-01, as it would only
+have 30 minutes available on 2025-01-01. So, the earliest avaible date time for "Lathe" would be:
+
+workSchedule.startTime = 08:00:00Z
+workSchedule.endTime = 17:00:00Z
+
+if workSchedule.endTime - (ealiestAvailableDateTime + setupTimeInHours) >= 3 hours then
+    allocationStartDateTime = (ealiestAvailableDateTime + setupTimeInHours)
+else
+    allocationStartDateTime = next day from ealiestAvailableDateTime
+
+
+Calculate the amount of time available per day for each work resource, based on work resource's schedule. 
+It should be done following the formula:
+
+hourAvailablePerDay = workSchedule.shiftDurationInMinutes/60
+
+
+Example:
+fromDateTime = 2025-01-01T00:00:00Z
+ealiestAvailableDateTime = 2025-01-01T15:00:00Z
+hoursworkResource.setupTimeInMinutes = 90
+setupTimeInHours = hoursworkResource.setupTimeInMinutes / 60
+productionOrder.estimatedTime = 25 hours
+workSchedule.shiftDurationInMinutes = 480 minutes
+hourAvailablePerDay = 480/60 = 8 hours
+workSchedule.startTime = 08:00:00Z
+workSchedule.endTime = 17:00:00Z
+totalHours = productionOrder.estimatedTime + setupTimeInHours (26.5 hour taking hourAvailablePerDay into account)
+daysNeeded = (int) Math.ceil(totalHours / hoursPerDay);
+
+will result in 4 days allocation for "Lathe" work resources, (starting from 2025-01-02T08:00:00Z as 2025-01-01 has only 2 hours available):
+
+IMPORTANT: the allocation day interval must be validated if its a work data according to resource's work schedule. For example,
+a work resource might be available also in weekends, so the allocation days can be in weekends also.
+
+allocation1:
+startDateTime = 2025-01-02T08:00:00Z
+endDateTime = 2025-01-02T17:00:00Z
+hoursPerDay = 8
+
+allocation2:
+startDateTime = 2025-01-03T08:00:00Z
+endDateTime = 2025-01-03T17:00:00Z
+hoursPerDay = 8
+
+allocation3:
+startDateTime = 2025-01-04T08:00:00Z
+endDateTime = 2025-01-04T17:00:00Z
+hoursPerDay = 8
+
+allocation4:
+startDateTime = 2025-01-05T08:00:00Z
+endDateTime = 2025-01-05T10:30:00Z
+hoursPerDay = 2.5
+
+This allocations should be saved in the database as ProductionOrderWorkAllocation entity.

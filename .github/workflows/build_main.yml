@@ -43,16 +43,16 @@ jobs:
       packages_token: ${{ secrets.GH_PACKAGES_TOKEN }}
         
 
-  publish_docker_image:
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-    needs: [publish_java_artifacts]
-    uses: rchiarinelli/common-cd_cd-workflows/.github/workflows/docker_publish.yml@main
-    with:
-      gh_user_name: ${{ github.actor }}
-    secrets: 
-      packages_token: ${{ secrets.GH_PACKAGES_TOKEN }}
+  # publish_docker_image:
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #     attestations: write
+  #     id-token: write
+  #   needs: [publish_java_artifacts]
+  #   uses: rchiarinelli/common-cd_cd-workflows/.github/workflows/docker_publish.yml@main
+  #   with:
+  #     gh_user_name: ${{ github.actor }}
+  #   secrets: 
+  #     packages_token: ${{ secrets.GH_PACKAGES_TOKEN }}
         
